@@ -2,19 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom styles for WorkoutTimer component */
+@layer components {
+  .workout-timer {
+    @apply max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl;
+  }
+
+  .workout-timer h1 {
+    @apply text-3xl font-bold mb-4 text-center;
+  }
+
+  .workout-timer .timer-display {
+    @apply text-6xl font-bold mb-6 text-center;
+  }
+
+  .workout-timer .current-activity {
+    @apply text-2xl font-bold mb-2;
+  }
+
+  .workout-timer .next-activity {
+    @apply text-lg text-gray-600;
+  }
+
+  .workout-timer .control-buttons {
+    @apply flex justify-center space-x-4 mb-6;
+  }
+
+  .workout-timer .control-button {
+    @apply p-2 rounded-full;
+  }
+
+  .workout-timer .start-stop-button {
+    @apply bg-blue-500 text-white;
+  }
+
+  .workout-timer .reset-button {
+    @apply bg-red-500 text-white;
+  }
+
+  .workout-timer .progress-bar {
+    @apply relative h-4 rounded-full overflow-hidden bg-gray-200;
+  }
+
+  .workout-timer .progress-indicator {
+    @apply absolute top-0 h-full bg-black opacity-75 w-1;
+  }
+
+  .workout-timer .expand-button {
+    @apply w-full flex justify-between items-center p-2 bg-gray-100 rounded;
+  }
+
+  .workout-timer .expanded-view {
+    @apply mt-2 p-2 bg-gray-50 rounded;
+  }
+
+  .workout-timer .section-item {
+    @apply flex justify-between items-center py-1 px-2 rounded;
+  }
+
+  .workout-timer .section-item-active {
+    @apply bg-blue-100 font-bold;
+  }
+
+  .workout-timer .section-color-indicator {
+    @apply w-4 h-4 rounded-full;
+  }
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 20, 20, 20;
   }
-}
+} */
 
 body {
   color: rgb(var(--foreground-rgb));

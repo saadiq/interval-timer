@@ -1,320 +1,187 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useInterval } from 'react-use';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
+import './globals.css';
 
-const warmupIntervals = [
-  { label: 'Dynamic Stretches', duration: 60 }, // 1 minute
-  { label: 'Jump Rope Warm-Up', duration: 120 }, // 2 minutes
-];
+interface WorkoutSection {
+  name: string;
+  duration: number;
+  color: string;
+}
 
-const circuitIntervals = [
-  { label: 'Jump Rope', duration: 50 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Push-Ups', duration: 30 },
-  { label: 'Jump Rope', duration: 50 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Squats', duration: 30 },
-  { label: 'Jump Rope', duration: 50 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Reverse Crunches', duration: 30 },
-  { label: 'Jump Rope', duration: 50 },
-  { label: 'Rest', duration: 10 },
-  { label: 'Plank', duration: 30 },
-];
+const WorkoutTimer: React.FC = () => {
+  const [time, setTime] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const [currentSection, setCurrentSection] = useState<number>(0);
+  const [isWorkoutViewExpanded, setIsWorkoutViewExpanded] = useState<boolean>(false);
 
-const cooldownIntervals = [
-  { label: 'Cool Down Stretches', duration: 120 } // 2 minutes
-];
+  const workoutSections: WorkoutSection[] = [
+    { name: 'Warm Up', duration: 300, color: 'bg-yellow-300' },
+    { name: 'High Intensity', duration: 600, color: 'bg-red-500' },
+    { name: 'Rest', duration: 120, color: 'bg-green-400' },
+    { name: 'Moderate Intensity', duration: 600, color: 'bg-orange-400' },
+    { name: 'Cool Down', duration: 180, color: 'bg-blue-300' },
+  ];
 
-const IntervalTimer = () => {
-  const [currentInterval, setCurrentInterval] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(warmupIntervals[0].duration);
-  const [isActive, setIsActive] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [stage, setStage] = useState('warmup');
-  const [repeats, setRepeats] = useState(0);
-  const [isClient, setIsClient] = useState(false);
-  const [totalElapsedTime, setTotalElapsedTime] = useState(0);
+  const totalDuration: number = workoutSections.reduce((total, section) => total + section.duration, 0);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  useEffect(() => {
-    setIsClient(true);
-    audioRef.current = new Audio('/path-to-your-audio-file.mp3'); // Replace with your audio file path
-  }, []);
-
-  const playAudioCue = () => {
-    if (audioRef.current) {
-      audioRef.current.play().catch(error => console.error('Audio playback failed', error));
-    }
+  const formatTime = (timeInSeconds: number): string => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const getTotalDuration = () => {
-    const warmupDuration = warmupIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-    const circuitDuration = circuitIntervals.reduce((sum, interval) => sum + interval.duration, 0) * 3;
-    const cooldownDuration = cooldownIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-    return warmupDuration + circuitDuration + cooldownDuration;
-  };
-
-  const getCurrentIntervals = () => {
-    switch (stage) {
-      case 'warmup':
-        return warmupIntervals;
-      case 'circuit':
-        return circuitIntervals;
-      case 'cooldown':
-        return cooldownIntervals;
-      default:
-        return [];
-    }
-  };
-
-  const getNextActivity = () => {
-    const intervals = getCurrentIntervals();
-    if (currentInterval < intervals.length - 1) {
-      return intervals[currentInterval + 1].label;
-    } else if (stage === 'warmup') {
-      return circuitIntervals[0].label;
-    } else if (stage === 'circuit' && repeats < 2) {
-      return circuitIntervals[0].label;
-    } else if (stage === 'circuit' && repeats === 2) {
-      return cooldownIntervals[0].label;
-    } else {
-      return 'Workout Complete';
-    }
-  };
-
-  const calculateElapsedTime = (currentStage: string, currentRepeat: number, currentIntervalIndex: number) => {
-    let elapsedTime = 0;
-    
-    if (currentStage === 'warmup') {
-      elapsedTime = warmupIntervals.slice(0, currentIntervalIndex).reduce((sum, interval) => sum + interval.duration, 0);
-    } else if (currentStage === 'circuit') {
-      elapsedTime = warmupIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-      elapsedTime += currentRepeat * circuitIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-      elapsedTime += circuitIntervals.slice(0, currentIntervalIndex).reduce((sum, interval) => sum + interval.duration, 0);
-    } else if (currentStage === 'cooldown') {
-      elapsedTime = warmupIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-      elapsedTime += 3 * circuitIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-      elapsedTime += cooldownIntervals.slice(0, currentIntervalIndex).reduce((sum, interval) => sum + interval.duration, 0);
-    }
-
-    return elapsedTime;
-  };
-
-  const moveToNextInterval = () => {
-    const intervals = getCurrentIntervals();
-    if (currentInterval < intervals.length - 1) {
-      setCurrentInterval(currentInterval + 1);
-      setTimeLeft(intervals[currentInterval + 1].duration);
-    } else if (stage === 'warmup') {
-      setStage('circuit');
-      setCurrentInterval(0);
-      setTimeLeft(circuitIntervals[0].duration);
-    } else if (stage === 'circuit' && repeats < 2) {
-      setRepeats(repeats + 1);
-      setCurrentInterval(0);
-      setTimeLeft(circuitIntervals[0].duration);
-    } else if (stage === 'circuit' && repeats === 2) {
-      setStage('cooldown');
-      setCurrentInterval(0);
-      setTimeLeft(cooldownIntervals[0].duration);
-    } else {
-      setIsActive(false);
-      setCurrentInterval(0);
-      setTimeLeft(warmupIntervals[0].duration);
-      setStage('warmup');
-      setRepeats(0);
-      setTotalElapsedTime(0);
-      return;
-    }
-    
-    const newElapsedTime = calculateElapsedTime(
-      stage === 'warmup' && currentInterval === warmupIntervals.length - 1 ? 'circuit' : 
-      stage === 'circuit' && currentInterval === circuitIntervals.length - 1 && repeats === 2 ? 'cooldown' : stage,
-      stage === 'circuit' && currentInterval === circuitIntervals.length - 1 ? (repeats + 1) % 3 : repeats,
-      currentInterval < getCurrentIntervals().length - 1 ? currentInterval + 1 : 0
-    );
-    setTotalElapsedTime(newElapsedTime);
-  };
-
-  const moveToPreviousInterval = () => {
-    if (currentInterval > 0) {
-      setCurrentInterval(currentInterval - 1);
-      setTimeLeft(getCurrentIntervals()[currentInterval - 1].duration);
-    } else if (stage === 'circuit' && repeats > 0) {
-      setRepeats(repeats - 1);
-      setCurrentInterval(circuitIntervals.length - 1);
-      setTimeLeft(circuitIntervals[circuitIntervals.length - 1].duration);
-    } else if (stage === 'circuit' && repeats === 0) {
-      setStage('warmup');
-      setCurrentInterval(warmupIntervals.length - 1);
-      setTimeLeft(warmupIntervals[warmupIntervals.length - 1].duration);
-    } else if (stage === 'cooldown') {
-      setStage('circuit');
-      setRepeats(2);
-      setCurrentInterval(circuitIntervals.length - 1);
-      setTimeLeft(circuitIntervals[circuitIntervals.length - 1].duration);
-    } else {
-      return; // If we're at the very beginning, do nothing
-    }
-    
-    const newElapsedTime = calculateElapsedTime(
-      stage === 'circuit' && currentInterval === 0 && repeats === 0 ? 'warmup' :
-      stage === 'cooldown' && currentInterval === 0 ? 'circuit' : stage,
-      stage === 'circuit' && currentInterval === 0 ? (repeats - 1 + 3) % 3 : repeats,
-      currentInterval > 0 ? currentInterval - 1 : 
-      stage === 'warmup' ? warmupIntervals.length - 1 :
-      stage === 'circuit' ? circuitIntervals.length - 1 :
-      cooldownIntervals.length - 1
-    );
-    setTotalElapsedTime(newElapsedTime);
-  };
-
-  useInterval(() => {
-    if (isActive && !isPaused) {
-      if (timeLeft > 0) {
-        setTimeLeft(timeLeft - 1);
-        setTotalElapsedTime(prev => prev + 1);
-      } else {
-        playAudioCue();
-        moveToNextInterval();
+  const getCurrentSectionIndex = useCallback((currentTime: number): number => {
+    let accumulatedTime = 0;
+    for (let i = 0; i < workoutSections.length; i++) {
+      accumulatedTime += workoutSections[i].duration;
+      if (currentTime < accumulatedTime) {
+        return i;
       }
     }
-  }, isClient ? 1000 : null);
+    return workoutSections.length - 1;
+  }, [workoutSections]);
 
-  const startTimer = () => {
-    setIsActive(true);
-    setIsPaused(false);
+  const getTimeLeftInSection = useCallback((currentTime: number): number => {
+    const currentSectionIndex = getCurrentSectionIndex(currentTime);
+    const timeInPreviousSections = workoutSections
+      .slice(0, currentSectionIndex)
+      .reduce((total, section) => total + section.duration, 0);
+    return workoutSections[currentSectionIndex].duration - (currentTime - timeInPreviousSections);
+  }, [workoutSections, getCurrentSectionIndex]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+    if (isRunning) {
+      interval = setInterval(() => {
+        setTime((prevTime) => {
+          const newTime = prevTime + 1;
+          setCurrentSection(getCurrentSectionIndex(newTime));
+          return newTime < totalDuration ? newTime : totalDuration;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isRunning, totalDuration, getCurrentSectionIndex]);
+
+  const handleStartStop = (): void => {
+    setIsRunning(!isRunning);
   };
 
-  const resetTimer = () => {
-    setIsActive(false);
-    setIsPaused(false);
-    setCurrentInterval(0);
-    setTimeLeft(warmupIntervals[0].duration);
-    setStage('warmup');
-    setRepeats(0);
-    setTotalElapsedTime(0);
+  const handleReset = (): void => {
+    setTime(0);
+    setIsRunning(false);
+    setCurrentSection(0);
   };
 
-  const pauseTimer = () => {
-    setIsPaused(!isPaused);
-  };
-
-  const getCurrentIntervalLabel = () => {
-    if (stage === 'warmup') {
-      return warmupIntervals[currentInterval].label;
-    } else if (stage === 'circuit') {
-      return circuitIntervals[currentInterval].label;
-    } else if (stage === 'cooldown') {
-      return cooldownIntervals[currentInterval].label;
+  const handlePrevious = (): void => {
+    if (currentSection > 0) {
+      const newSection = currentSection - 1;
+      setCurrentSection(newSection);
+      setTime(workoutSections.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
     }
   };
 
-  const renderProgressBar = () => {
-    const totalDuration = getTotalDuration();
-    const warmupDuration = warmupIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-    const circuitDuration = circuitIntervals.reduce((sum, interval) => sum + interval.duration, 0) * 3;
-    const cooldownDuration = cooldownIntervals.reduce((sum, interval) => sum + interval.duration, 0);
-
-    return (
-      <div className="w-full h-4 bg-gray-200 rounded-full overflow-hidden mb-4">
-        <div className="h-full bg-blue-500 inline-block" style={{width: `${(warmupDuration / totalDuration) * 100}%`}}></div>
-        <div className="h-full inline-block" style={{width: `${(circuitDuration / totalDuration) * 100}%`}}>
-          {circuitIntervals.map((interval, index) => (
-            <div 
-              key={index}
-              className={`h-full inline-block ${interval.label === 'Rest' ? 'bg-gray-400' : 'bg-green-500'}`}
-              style={{width: `${(interval.duration / circuitDuration) * 100}%`}}
-            ></div>
-          ))}
-        </div>
-        <div className="h-full bg-yellow-500 inline-block" style={{width: `${(cooldownDuration / totalDuration) * 100}%`}}></div>
-        <div 
-          className="h-full bg-red-500 transition-all duration-300 ease-in-out" 
-          style={{width: `${(totalElapsedTime / totalDuration) * 100}%`, marginTop: '-100%'}}
-        ></div>
-      </div>
-    );
+  const handleNext = (): void => {
+    if (currentSection < workoutSections.length - 1) {
+      const newSection = currentSection + 1;
+      setCurrentSection(newSection);
+      setTime(workoutSections.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
+    }
   };
 
-  if (!isClient) {
-    return <div>Loading...</div>; // Or any loading indicator you prefer
-  }
+  const toggleWorkoutView = (): void => {
+    setIsWorkoutViewExpanded(!isWorkoutViewExpanded);
+  };
+
+  // Calculate the progress percentage
+  const progressPercentage = (time / totalDuration) * 100;
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-        <h1 className="text-4xl font-bold text-center mb-4">Interval Timer</h1>
-        
-        {/* Current Activity and Countdown */}
-        <div className="bg-blue-100 dark:bg-blue-900 rounded-lg p-6 mb-4 flex items-center justify-between">
-          <button onClick={moveToPreviousInterval} className="text-3xl">←</button>
-          <div className="text-center">
-            <h2 className="text-3xl font-semibold mb-2">{getCurrentIntervalLabel()}</h2>
-            <h3 className="text-7xl font-bold">{`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}</h3>
+    <div className="workout-timer">
+      <h1>Workout Timer</h1>
+      <div className="timer-display">{formatTime(getTimeLeftInSection(time))}</div>
+      
+      {/* Current and Next Activity Display */}
+      <div className="mb-6 text-center">
+        <div className="current-activity">
+          {workoutSections[currentSection].name}
+        </div>
+        <div className="next-activity">
+          Next: {currentSection < workoutSections.length - 1 ? workoutSections[currentSection + 1].name : 'Workout Complete'}
+        </div>
+      </div>
+
+      <div className="control-buttons">
+        <button onClick={handlePrevious} className="control-button bg-gray-200">
+          <ChevronLeft size={24} />
+        </button>
+        <button onClick={handleStartStop} className="control-button start-stop-button">
+          {isRunning ? <Pause size={24} /> : <Play size={24} />}
+        </button>
+        <button onClick={handleNext} className="control-button bg-gray-200">
+          <ChevronRight size={24} />
+        </button>
+        <button onClick={handleReset} className="control-button reset-button">
+          <RotateCcw size={24} />
+        </button>
+      </div>
+
+      <div className="mb-4">
+        <div className="font-bold mb-2">Progress:</div>
+        <div className="progress-bar">
+          {workoutSections.map((section, index) => {
+            const sectionStart = workoutSections.slice(0, index).reduce((total, s) => total + s.duration, 0);
+            const sectionWidth = (section.duration / totalDuration) * 100;
+            return (
+              <div
+                key={index}
+                className={`absolute top-0 h-full ${section.color}`}
+                style={{
+                  left: `${(sectionStart / totalDuration) * 100}%`,
+                  width: `${sectionWidth}%`
+                }}
+              ></div>
+            );
+          })}
+          <div 
+            className="progress-indicator"
+            style={{ left: `${progressPercentage}%` }}
+          ></div>
+        </div>
+      </div>
+
+      {/* Collapsible Workout View */}
+      <div className="mt-6">
+        <button 
+          onClick={toggleWorkoutView} 
+          className="expand-button"
+        >
+          <span>Full Workout</span>
+          {isWorkoutViewExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+        {isWorkoutViewExpanded && (
+          <div className="expanded-view">
+            {workoutSections.map((section, index) => (
+              <div 
+                key={index} 
+                className={`section-item ${index === currentSection ? 'section-item-active' : ''}`}
+              >
+                <div className="flex items-center">
+                  <span className={`section-color-indicator ${section.color}`}></span>
+                  <span className="ml-2">{section.name}</span>
+                </div>
+                <span>{formatTime(section.duration)}</span>
+              </div>
+            ))}
           </div>
-          <button onClick={moveToNextInterval} className="text-3xl">→</button>
-        </div>
-        
-        {/* Next Activity */}
-        <div className="bg-green-100 dark:bg-green-900 rounded-lg p-4 mb-4">
-          <h2 className="text-2xl font-semibold text-center">Next: {getNextActivity()}</h2>
-        </div>
-
-        {/* Progress Bar */}
-        {renderProgressBar()}
-
-        <div className="flex justify-center mb-6">
-          {!isActive ? (
-            <button className="bg-blue-500 text-white py-2 px-4 rounded-lg text-2xl" onClick={startTimer}>Start</button>
-          ) : (
-            <>
-              <button className="bg-red-500 text-white py-2 px-4 rounded-lg text-2xl mr-2" onClick={resetTimer}>Reset</button>
-              <button className="bg-yellow-500 text-white py-2 px-4 rounded-lg text-2xl" onClick={pauseTimer}>{isPaused ? 'Resume' : 'Pause'}</button>
-            </>
-          )}
-        </div>
-
-        <h2 className="text-2xl font-bold mb-4">Workout Plan</h2>
-        <h3 className="text-xl font-semibold mb-2 text-blue-500">Warm-Up</h3>
-        <ul className="mb-4">
-          {warmupIntervals.map((interval, index) => (
-            <li
-              key={index}
-              className={`text-lg text-blue-500 ${stage === 'warmup' && currentInterval === index ? 'font-bold' : ''}`}
-            >
-              {interval.label} - {Math.floor(interval.duration / 60)}:{String(interval.duration % 60).padStart(2, '0')}
-            </li>
-          ))}
-        </ul>
-        <h3 className="text-xl font-semibold mb-2 text-green-500">Workout Circuit (Repeat 3 times)</h3>
-        <ul className="mb-4">
-          {circuitIntervals.map((interval, index) => (
-            <li
-              key={index}
-              className={`text-lg ${interval.label === 'Rest' ? 'text-gray-500' : 'text-green-500'} ${stage === 'circuit' && currentInterval === index ? 'font-bold' : ''}`}
-            >
-              {interval.label} - {Math.floor(interval.duration / 60)}:{String(interval.duration % 60).padStart(2, '0')}
-            </li>
-          ))}
-        </ul>
-        <h3 className="text-xl font-semibold mb-2 text-yellow-500">Cool Down</h3>
-        <ul>
-          {cooldownIntervals.map((interval, index) => (
-            <li
-              key={index}
-              className={`text-lg text-yellow-500 ${stage === 'cooldown' && currentInterval === index ? 'font-bold' : ''}`}
-            >
-              {interval.label} - {Math.floor(interval.duration / 60)}:{String(interval.duration % 60).padStart(2, '0')}
-            </li>
-          ))}
-        </ul>
+        )}
       </div>
     </div>
   );
 };
 
-export default IntervalTimer;
+export default WorkoutTimer;
