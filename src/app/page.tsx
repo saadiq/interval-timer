@@ -14,7 +14,7 @@ const WorkoutTimer: React.FC = () => {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentSection, setCurrentSection] = useState<number>(0);
-  const [isWorkoutViewExpanded, setIsWorkoutViewExpanded] = useState<boolean>(false);
+  const [isWorkoutViewExpanded, setIsWorkoutViewExpanded] = useState<boolean>(true);
 
   const workoutSections: WorkoutSection[] = [
     { name: 'Warm Up', duration: 300, color: 'bg-yellow-300' },
