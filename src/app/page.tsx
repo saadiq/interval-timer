@@ -8,23 +8,49 @@ interface WorkoutSection {
   name: string;
   duration: number;
   color: string;
+  description?: string;
 }
 
 const WorkoutTimer: React.FC = () => {
   const [time, setTime] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [currentSection, setCurrentSection] = useState<number>(0);
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
   const [isWorkoutViewExpanded, setIsWorkoutViewExpanded] = useState<boolean>(true);
 
-  const workoutSections: WorkoutSection[] = [
-    { name: 'Warm Up', duration: 300, color: 'bg-yellow-300' },
-    { name: 'High Intensity', duration: 600, color: 'bg-red-500' },
-    { name: 'Rest', duration: 120, color: 'bg-green-400' },
-    { name: 'Moderate Intensity', duration: 600, color: 'bg-orange-400' },
-    { name: 'Cool Down', duration: 180, color: 'bg-blue-300' },
+  const warmUp: WorkoutSection = { 
+    name: 'Warm-Up', 
+    duration: 180, 
+    color: 'bg-yellow-300', 
+    description: 'Dynamic stretches and light jump rope' 
+  };
+
+  const coolDown: WorkoutSection = { 
+    name: 'Cool Down', 
+    duration: 120, 
+    color: 'bg-yellow-300', 
+    description: 'Stretch: calves, hamstrings, shoulders, and arms' 
+  };
+
+  const circuitExercises: WorkoutSection[] = [
+    { name: 'Jump Rope 1', duration: 40, color: 'bg-blue-300', description: 'Basic bounce or alternating foot jumps' },
+    { name: 'Jumping Jacks', duration: 20, color: 'bg-green-400' },
+    { name: 'Jump Rope 2', duration: 40, color: 'bg-blue-300', description: 'Boxer step or high knees' },
+    { name: 'Lunges', duration: 20, color: 'bg-green-400', description: 'Alternating legs' },
+    { name: 'Jump Rope 3', duration: 40, color: 'bg-blue-300', description: 'Criss-cross or side-to-side jumps' },
+    { name: 'Tricep Dips', duration: 20, color: 'bg-green-400', description: 'Use a sturdy chair or bench' },
+    { name: 'Jump Rope 4', duration: 40, color: 'bg-blue-300', description: 'Freestyle, mix in different jump styles' },
+    { name: 'Bicycle Crunches', duration: 20, color: 'bg-green-400' },
+    { name: 'Jump Rope 5', duration: 40, color: 'bg-blue-300', description: 'Double unders if you can' },
+    { name: 'Mountain Climbers', duration: 20, color: 'bg-green-400' },
   ];
 
-  const totalDuration: number = workoutSections.reduce((total, section) => total + section.duration, 0);
+  const fullWorkout: WorkoutSection[] = [
+    warmUp,
+    ...Array(4).fill(circuitExercises).flat(),
+    coolDown
+  ];
+
+  const totalDuration: number = fullWorkout.reduce((total, section) => total + section.duration, 0);
 
   const formatTime = (timeInSeconds: number): string => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -34,22 +60,42 @@ const WorkoutTimer: React.FC = () => {
 
   const getCurrentSectionIndex = useCallback((currentTime: number): number => {
     let accumulatedTime = 0;
-    for (let i = 0; i < workoutSections.length; i++) {
-      accumulatedTime += workoutSections[i].duration;
+    for (let i = 0; i < fullWorkout.length; i++) {
+      accumulatedTime += fullWorkout[i].duration;
       if (currentTime < accumulatedTime) {
         return i;
       }
     }
-    return workoutSections.length - 1;
-  }, [workoutSections]);
+    return fullWorkout.length - 1;
+  }, [fullWorkout]);
 
   const getTimeLeftInSection = useCallback((currentTime: number): number => {
-    const currentSectionIndex = getCurrentSectionIndex(currentTime);
-    const timeInPreviousSections = workoutSections
-      .slice(0, currentSectionIndex)
+    const currentIndex = getCurrentSectionIndex(currentTime);
+    const timeInPreviousSections = fullWorkout
+      .slice(0, currentIndex)
       .reduce((total, section) => total + section.duration, 0);
-    return workoutSections[currentSectionIndex].duration - (currentTime - timeInPreviousSections);
-  }, [workoutSections, getCurrentSectionIndex]);
+    return fullWorkout[currentIndex].duration - (currentTime - timeInPreviousSections);
+  }, [fullWorkout, getCurrentSectionIndex]);
+
+  const getCurrentCircuitExerciseIndex = useCallback((currentTime: number): number => {
+    if (currentSectionIndex <= 0 || currentSectionIndex >= fullWorkout.length - 1) {
+      return -1; // Not in the main circuit
+    }
+    const circuitStartTime = warmUp.duration;
+    const timeInCircuit = currentTime - circuitStartTime;
+    const circuitRepetitionDuration = circuitExercises.reduce((total, exercise) => total + exercise.duration, 0);
+    const currentRepetition = Math.floor(timeInCircuit / circuitRepetitionDuration);
+    const timeInCurrentRepetition = timeInCircuit % circuitRepetitionDuration;
+    
+    let accumulatedTime = 0;
+    for (let i = 0; i < circuitExercises.length; i++) {
+      accumulatedTime += circuitExercises[i].duration;
+      if (timeInCurrentRepetition < accumulatedTime) {
+        return i;
+      }
+    }
+    return circuitExercises.length - 1;
+  }, [currentSectionIndex, fullWorkout, warmUp.duration, circuitExercises]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -57,7 +103,7 @@ const WorkoutTimer: React.FC = () => {
       interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime + 1;
-          setCurrentSection(getCurrentSectionIndex(newTime));
+          setCurrentSectionIndex(getCurrentSectionIndex(newTime));
           return newTime < totalDuration ? newTime : totalDuration;
         });
       }, 1000);
@@ -74,22 +120,22 @@ const WorkoutTimer: React.FC = () => {
   const handleReset = (): void => {
     setTime(0);
     setIsRunning(false);
-    setCurrentSection(0);
+    setCurrentSectionIndex(0);
   };
 
   const handlePrevious = (): void => {
-    if (currentSection > 0) {
-      const newSection = currentSection - 1;
-      setCurrentSection(newSection);
-      setTime(workoutSections.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
+    if (currentSectionIndex > 0) {
+      const newSection = currentSectionIndex - 1;
+      setCurrentSectionIndex(newSection);
+      setTime(fullWorkout.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
     }
   };
 
   const handleNext = (): void => {
-    if (currentSection < workoutSections.length - 1) {
-      const newSection = currentSection + 1;
-      setCurrentSection(newSection);
-      setTime(workoutSections.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
+    if (currentSectionIndex < fullWorkout.length - 1) {
+      const newSection = currentSectionIndex + 1;
+      setCurrentSectionIndex(newSection);
+      setTime(fullWorkout.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
     }
   };
 
@@ -100,18 +146,20 @@ const WorkoutTimer: React.FC = () => {
   // Calculate the progress percentage
   const progressPercentage = (time / totalDuration) * 100;
 
+  const currentCircuitExerciseIndex = getCurrentCircuitExerciseIndex(time);
+
   return (
     <div className="workout-timer">
-      <h1>Workout Timer</h1>
+      <h1>20-Minute Bodyweight Full-Body Workout</h1>
       <div className="timer-display">{formatTime(getTimeLeftInSection(time))}</div>
       
       {/* Current and Next Activity Display */}
       <div className="mb-6 text-center">
         <div className="current-activity">
-          {workoutSections[currentSection].name}
+          {fullWorkout[currentSectionIndex].name}
         </div>
         <div className="next-activity">
-          Next: {currentSection < workoutSections.length - 1 ? workoutSections[currentSection + 1].name : 'Workout Complete'}
+          Next: {currentSectionIndex < fullWorkout.length - 1 ? fullWorkout[currentSectionIndex + 1].name : 'Workout Complete'}
         </div>
       </div>
 
@@ -133,8 +181,8 @@ const WorkoutTimer: React.FC = () => {
       <div className="mb-4">
         <div className="font-bold mb-2">Progress:</div>
         <div className="progress-bar">
-          {workoutSections.map((section, index) => {
-            const sectionStart = workoutSections.slice(0, index).reduce((total, s) => total + s.duration, 0);
+          {fullWorkout.map((section, index) => {
+            const sectionStart = fullWorkout.slice(0, index).reduce((total, s) => total + s.duration, 0);
             const sectionWidth = (section.duration / totalDuration) * 100;
             return (
               <div
@@ -165,18 +213,37 @@ const WorkoutTimer: React.FC = () => {
         </button>
         {isWorkoutViewExpanded && (
           <div className="expanded-view">
-            {workoutSections.map((section, index) => (
-              <div 
-                key={index} 
-                className={`section-item ${index === currentSection ? 'section-item-active' : ''}`}
-              >
-                <div className="flex items-center">
-                  <span className={`section-color-indicator ${section.color}`}></span>
-                  <span className="ml-2">{section.name}</span>
+            <div className={`section-item ${currentSectionIndex === 0 ? 'section-item-active' : ''}`}>
+              <div className="flex items-center">
+                <span className={`section-color-indicator ${warmUp.color}`}></span>
+                <span className="ml-2">{warmUp.name}</span>
+              </div>
+              <span>{formatTime(warmUp.duration)}</span>
+            </div>
+            {warmUp.description && <div className="text-sm text-gray-600 ml-6 mb-2">{warmUp.description}</div>}
+            
+            <div className="font-bold mt-2 mb-1">Main Circuit (Repeat 4 times)</div>
+            {circuitExercises.map((exercise, index) => (
+              <div key={index}>
+                <div className={`section-item ${index === currentCircuitExerciseIndex ? 'section-item-active' : ''}`}>
+                  <div className="flex items-center">
+                    <span className={`section-color-indicator ${exercise.color}`}></span>
+                    <span className="ml-2">{exercise.name}</span>
+                  </div>
+                  <span>{formatTime(exercise.duration)}</span>
                 </div>
-                <span>{formatTime(section.duration)}</span>
+                {exercise.description && <div className="text-sm text-gray-600 ml-6 mb-2">{exercise.description}</div>}
               </div>
             ))}
+            
+            <div className={`section-item ${currentSectionIndex === fullWorkout.length - 1 ? 'section-item-active' : ''}`}>
+              <div className="flex items-center">
+                <span className={`section-color-indicator ${coolDown.color}`}></span>
+                <span className="ml-2">{coolDown.name}</span>
+              </div>
+              <span>{formatTime(coolDown.duration)}</span>
+            </div>
+            {coolDown.description && <div className="text-sm text-gray-600 ml-6 mb-2">{coolDown.description}</div>}
           </div>
         )}
       </div>
