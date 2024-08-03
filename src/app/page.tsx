@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import './globals.css';
 
@@ -16,6 +16,8 @@ const WorkoutTimer: React.FC = () => {
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
   const [isWorkoutViewExpanded, setIsWorkoutViewExpanded] = useState<boolean>(true);
+  const [shouldScroll, setShouldScroll] = useState<boolean>(false);
+  const workoutViewRef = useRef<HTMLDivElement>(null);
 
   const warmUp: WorkoutSection = { 
     name: 'Warm-Up', 
@@ -148,104 +150,137 @@ const WorkoutTimer: React.FC = () => {
 
   const currentCircuitExerciseIndex = getCurrentCircuitExerciseIndex(time);
 
+  useEffect(() => {
+    const checkOverflow = () => {
+      if (workoutViewRef.current) {
+        const isOverflowing = workoutViewRef.current.scrollHeight > workoutViewRef.current.clientHeight;
+        setShouldScroll(isOverflowing);
+      }
+    };
+
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+
+    return () => {
+      window.removeEventListener('resize', checkOverflow);
+    };
+  }, [isWorkoutViewExpanded]);
+
   return (
-    <div className="workout-timer">
-      <h1>20-Minute Bodyweight Full-Body Workout</h1>
-      <div className="timer-display">{formatTime(getTimeLeftInSection(time))}</div>
+    <div className="workout-timer max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-4 text-center">20-Minute Bodyweight Full-Body Workout</h1>
       
-      {/* Current and Next Activity Display */}
-      <div className="mb-6 text-center">
-        <div className="current-activity">
-          {fullWorkout[currentSectionIndex].name}
-        </div>
-        <div className="next-activity">
-          Next: {currentSectionIndex < fullWorkout.length - 1 ? fullWorkout[currentSectionIndex + 1].name : 'Workout Complete'}
-        </div>
-      </div>
-
-      <div className="control-buttons">
-        <button onClick={handlePrevious} className="control-button bg-gray-200">
-          <ChevronLeft size={24} />
-        </button>
-        <button onClick={handleStartStop} className="control-button start-stop-button">
-          {isRunning ? <Pause size={24} /> : <Play size={24} />}
-        </button>
-        <button onClick={handleNext} className="control-button bg-gray-200">
-          <ChevronRight size={24} />
-        </button>
-        <button onClick={handleReset} className="control-button reset-button">
-          <RotateCcw size={24} />
-        </button>
-      </div>
-
-      <div className="mb-4">
-        <div className="font-bold mb-2">Progress:</div>
-        <div className="progress-bar">
-          {fullWorkout.map((section, index) => {
-            const sectionStart = fullWorkout.slice(0, index).reduce((total, s) => total + s.duration, 0);
-            const sectionWidth = (section.duration / totalDuration) * 100;
-            return (
-              <div
-                key={index}
-                className={`absolute top-0 h-full ${section.color}`}
-                style={{
-                  left: `${(sectionStart / totalDuration) * 100}%`,
-                  width: `${sectionWidth}%`
-                }}
-              ></div>
-            );
-          })}
-          <div 
-            className="progress-indicator"
-            style={{ left: `${progressPercentage}%` }}
-          ></div>
-        </div>
-      </div>
-
-      {/* Collapsible Workout View */}
-      <div className="mt-6">
-        <button 
-          onClick={toggleWorkoutView} 
-          className="expand-button"
-        >
-          <span>Full Workout</span>
-          {isWorkoutViewExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        </button>
-        {isWorkoutViewExpanded && (
-          <div className="expanded-view">
-            <div className={`section-item ${currentSectionIndex === 0 ? 'section-item-active' : ''}`}>
-              <div className="flex items-center">
-                <span className={`section-color-indicator ${warmUp.color}`}></span>
-                <span className="ml-2">{warmUp.name}</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 h-full flex flex-col justify-between">
+            <div>
+              <div className="timer-display text-8xl lg:text-10xl font-bold mb-4 text-center">
+                {formatTime(getTimeLeftInSection(time))}
               </div>
-              <span>{formatTime(warmUp.duration)}</span>
-            </div>
-            {warmUp.description && <div className="text-sm text-gray-600 ml-6 mb-2">{warmUp.description}</div>}
-            
-            <div className="font-bold mt-2 mb-1">Main Circuit (Repeat 4 times)</div>
-            {circuitExercises.map((exercise, index) => (
-              <div key={index}>
-                <div className={`section-item ${index === currentCircuitExerciseIndex ? 'section-item-active' : ''}`}>
-                  <div className="flex items-center">
-                    <span className={`section-color-indicator ${exercise.color}`}></span>
-                    <span className="ml-2">{exercise.name}</span>
-                  </div>
-                  <span>{formatTime(exercise.duration)}</span>
+              
+              <div className="mb-4 text-center">
+                <div className="current-activity text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
+                  {fullWorkout[currentSectionIndex].name}
                 </div>
-                {exercise.description && <div className="text-sm text-gray-600 ml-6 mb-2">{exercise.description}</div>}
+                <div className="exercise-description text-base sm:text-lg mb-2">
+                  {fullWorkout[currentSectionIndex].description || 'Get it!'}
+                </div>
+                <div className="next-activity text-xl sm:text-2xl text-gray-600">
+                  Next: {currentSectionIndex < fullWorkout.length - 1 ? fullWorkout[currentSectionIndex + 1].name : 'Workout Complete'}
+                </div>
               </div>
-            ))}
-            
-            <div className={`section-item ${currentSectionIndex === fullWorkout.length - 1 ? 'section-item-active' : ''}`}>
-              <div className="flex items-center">
-                <span className={`section-color-indicator ${coolDown.color}`}></span>
-                <span className="ml-2">{coolDown.name}</span>
+
+              <div className="control-buttons flex justify-center space-x-4 mb-4">
+                <button onClick={handlePrevious} className="control-button bg-gray-200 p-3 rounded-full">
+                  <ChevronLeft size={24} />
+                </button>
+                <button onClick={handleStartStop} className="control-button start-stop-button p-3 rounded-full">
+                  {isRunning ? <Pause size={24} /> : <Play size={24} />}
+                </button>
+                <button onClick={handleNext} className="control-button bg-gray-200 p-3 rounded-full">
+                  <ChevronRight size={24} />
+                </button>
+                <button onClick={handleReset} className="control-button reset-button p-3 rounded-full">
+                  <RotateCcw size={24} />
+                </button>
               </div>
-              <span>{formatTime(coolDown.duration)}</span>
+
+              <div className="mb-4">
+                <div className="font-bold mb-2">Progress:</div>
+                <div className="progress-bar relative h-6 rounded-full overflow-hidden bg-gray-200">
+                  {fullWorkout.map((section, index) => {
+                    const sectionStart = fullWorkout.slice(0, index).reduce((total, s) => total + s.duration, 0);
+                    const sectionWidth = (section.duration / totalDuration) * 100;
+                    return (
+                      <div
+                        key={index}
+                        className={`absolute top-0 h-full ${section.color}`}
+                        style={{
+                          left: `${(sectionStart / totalDuration) * 100}%`,
+                          width: `${sectionWidth}%`
+                        }}
+                      ></div>
+                    );
+                  })}
+                  <div 
+                    className="progress-indicator"
+                    style={{ left: `${progressPercentage}%` }}
+                  ></div>
+                </div>
+              </div>
             </div>
-            {coolDown.description && <div className="text-sm text-gray-600 ml-6 mb-2">{coolDown.description}</div>}
           </div>
-        )}
+        </div>
+
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-lg shadow-xl p-6">
+            <button 
+              onClick={toggleWorkoutView} 
+              className="expand-button w-full flex justify-between items-center p-2 bg-gray-100 rounded mb-4"
+            >
+              <span className="font-bold">Full Workout</span>
+              {isWorkoutViewExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </button>
+            {isWorkoutViewExpanded && (
+              <div 
+                ref={workoutViewRef}
+                className={`expanded-view ${shouldScroll ? 'max-h-[60vh] overflow-y-auto' : ''}`}
+              >
+                <div className={`section-item ${currentSectionIndex === 0 ? 'section-item-active' : ''}`}>
+                  <div className="flex items-center">
+                    <span className={`section-color-indicator ${warmUp.color}`}></span>
+                    <span className="ml-2">{warmUp.name}</span>
+                  </div>
+                  <span>{formatTime(warmUp.duration)}</span>
+                </div>
+                {warmUp.description && <div className="text-sm text-gray-600 ml-6 mb-2">{warmUp.description}</div>}
+                
+                <div className="font-bold mt-4 mb-2">Main Circuit (Repeat 4 times)</div>
+                {circuitExercises.map((exercise, index) => (
+                  <div key={index}>
+                    <div className={`section-item ${index === currentCircuitExerciseIndex ? 'section-item-active' : ''}`}>
+                      <div className="flex items-center">
+                        <span className={`section-color-indicator ${exercise.color}`}></span>
+                        <span className="ml-2">{exercise.name}</span>
+                      </div>
+                      <span>{formatTime(exercise.duration)}</span>
+                    </div>
+                    {exercise.description && <div className="text-sm text-gray-600 ml-6 mb-2">{exercise.description}</div>}
+                  </div>
+                ))}
+                
+                <div className={`section-item ${currentSectionIndex === fullWorkout.length - 1 ? 'section-item-active' : ''}`}>
+                  <div className="flex items-center">
+                    <span className={`section-color-indicator ${coolDown.color}`}></span>
+                    <span className="ml-2">{coolDown.name}</span>
+                  </div>
+                  <span>{formatTime(coolDown.duration)}</span>
+                </div>
+                {coolDown.description && <div className="text-sm text-gray-600 ml-6 mb-2">{coolDown.description}</div>}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
