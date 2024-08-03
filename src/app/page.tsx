@@ -167,47 +167,47 @@ const WorkoutTimer: React.FC = () => {
   }, [isWorkoutViewExpanded]);
 
   return (
-    <div className="workout-timer max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="workout-timer">
       <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-4 text-center">20-Minute Bodyweight Full-Body Workout</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 h-full flex flex-col justify-between">
             <div>
-              <div className="timer-display text-8xl lg:text-10xl font-bold mb-4 text-center">
+              <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
                 {formatTime(getTimeLeftInSection(time))}
               </div>
               
               <div className="mb-4 text-center">
-                <div className="current-activity text-3xl sm:text-4xl lg:text-5xl font-bold mb-2">
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
                   {fullWorkout[currentSectionIndex].name}
                 </div>
-                <div className="exercise-description text-base sm:text-lg mb-2">
+                <div className="text-base sm:text-lg mb-2">
                   {fullWorkout[currentSectionIndex].description || 'Get it!'}
                 </div>
-                <div className="next-activity text-xl sm:text-2xl text-gray-600">
+                <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
                   Next: {currentSectionIndex < fullWorkout.length - 1 ? fullWorkout[currentSectionIndex + 1].name : 'Workout Complete'}
                 </div>
               </div>
 
-              <div className="control-buttons flex justify-center space-x-4 mb-4">
-                <button onClick={handlePrevious} className="control-button bg-gray-200 p-3 rounded-full">
-                  <ChevronLeft size={24} />
+              <div className="control-buttons flex justify-center space-x-6 mb-6">
+                <button onClick={handlePrevious} className="control-button bg-gray-200 p-4 rounded-full">
+                  <ChevronLeft size={32} />
                 </button>
-                <button onClick={handleStartStop} className="control-button start-stop-button p-3 rounded-full">
-                  {isRunning ? <Pause size={24} /> : <Play size={24} />}
+                <button onClick={handleStartStop} className="control-button start-stop-button p-4 rounded-full">
+                  {isRunning ? <Pause size={32} /> : <Play size={32} />}
                 </button>
-                <button onClick={handleNext} className="control-button bg-gray-200 p-3 rounded-full">
-                  <ChevronRight size={24} />
+                <button onClick={handleNext} className="control-button bg-gray-200 p-4 rounded-full">
+                  <ChevronRight size={32} />
                 </button>
-                <button onClick={handleReset} className="control-button reset-button p-3 rounded-full">
-                  <RotateCcw size={24} />
+                <button onClick={handleReset} className="control-button reset-button p-4 rounded-full">
+                  <RotateCcw size={32} />
                 </button>
               </div>
 
               <div className="mb-4">
                 <div className="font-bold mb-2">Progress:</div>
-                <div className="progress-bar relative h-6 rounded-full overflow-hidden bg-gray-200">
+                <div className="progress-bar">
                   {fullWorkout.map((section, index) => {
                     const sectionStart = fullWorkout.slice(0, index).reduce((total, s) => total + s.duration, 0);
                     const sectionWidth = (section.duration / totalDuration) * 100;
@@ -236,10 +236,10 @@ const WorkoutTimer: React.FC = () => {
           <div className="bg-white rounded-lg shadow-xl p-6">
             <button 
               onClick={toggleWorkoutView} 
-              className="expand-button w-full flex justify-between items-center p-2 bg-gray-100 rounded mb-4"
+              className="expand-button"
             >
               <span className="font-bold">Full Workout</span>
-              {isWorkoutViewExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+              {isWorkoutViewExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
             </button>
             {isWorkoutViewExpanded && (
               <div 
