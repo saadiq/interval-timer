@@ -1,0 +1,170 @@
+{
+  "2024-08-04": {
+    "warmUp": [
+      {
+        "name": "Dynamic stretches",
+        "duration": 60
+      },
+      {
+        "name": "Light jump rope",
+        "duration": 60
+      }
+    ],
+    "circuit": {
+      "repetitions": 4,
+      "exercises": [
+        {
+          "name": "Jump Rope",
+          "duration": 40,
+          "description": "Basic bounce or alternating foot jumps"
+        },
+        {
+          "name": "Jumping Jacks",
+          "duration": 20
+        },
+        {
+          "name": "Jump Rope",
+          "duration": 40,
+          "description": "Boxer step or high knees"
+        },
+        {
+          "name": "Lunges",
+          "duration": 20,
+          "description": "Alternating legs"
+        },
+        {
+          "name": "Jump Rope",
+          "duration": 40,
+          "description": "Criss-cross or side-to-side jumps"
+        },
+        {
+          "name": "Tricep Dips",
+          "duration": 20,
+          "description": "Use a sturdy chair or bench"
+        },
+        {
+          "name": "Jump Rope",
+          "duration": 40,
+          "description": "Freestyle, mix in different jump styles"
+        },
+        {
+          "name": "Bicycle Crunches",
+          "duration": 20
+        },
+        {
+          "name": "Jump Rope",
+          "duration": 40,
+          "description": "Double unders if you can"
+        },
+        {
+          "name": "Mountain Climbers",
+          "duration": 20
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Cool Down",
+        "duration": 120,
+        "description": "Stretch: calves, hamstrings, shoulders, and arms"
+      }
+    ]
+  },
+  "2024-08-05": 
+  {
+    "warmUp": [
+      {
+        "name": "High Knees",
+        "duration": 60
+      },
+      {
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "30 seconds forward and 30 seconds backward"
+      },
+      {
+        "name": "Jumping Jacks",
+        "duration": 60
+      }
+    ],
+    "circuit": {
+      "repetitions": 2,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Squats",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Mountain Climbers",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Reverse Lunges",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Plank to Push-Up",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Glute Bridges",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Bicycle Crunches",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Burpees",
+          "duration": 40
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Forward Fold",
+        "duration": 30
+      },
+      {
+        "name": "Child's Pose",
+        "duration": 30
+      }
+    ]
+  }
+}
