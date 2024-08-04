@@ -91,7 +91,7 @@ export default function Home() {
       setWorkout(parsedWorkout);
       setWorkoutTitle(`${workoutDate}`);
     } else {
-      setWorkoutTitle("No workout found for the specified date");
+      setWorkoutTitle(`No workout found for ${dateParam}`);
       setWorkout([]);
     }
   }, [getWorkoutForDate, parseWorkout, searchParams]);
@@ -323,7 +323,7 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <p>No workout available for the specified date. Try a different date!</p>
+        <p></p>
       )}
     </div>
   );
