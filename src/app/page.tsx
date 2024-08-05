@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import './globals.css';
 import workoutsData from './workouts.json';
+import { useWakeLock } from './useWakeLock';
 
 type WorkoutsData = {
   [date: string]: WorkoutData;
@@ -351,6 +352,16 @@ function HomeContent() {
     return { section: 'complete', index: -1 };
   }, [getWorkoutSections, circuitRepetitions]);
 
+  const { isSupported, isActive, request, release } = useWakeLock();
+
+  useEffect(() => {
+    if (isSupported && isRunning) {
+      request();
+    } else if (!isRunning) {
+      release();
+    }
+  }, [isSupported, isRunning, request, release]);
+
   return (
     <div className="workout-timer">
       <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-4 text-center">{workoutTitle}</h1>
@@ -422,6 +433,17 @@ function HomeContent() {
                     ></div>
                   </div>
                 </div>
+
+                {/* Add this new section for wake lock info */}
+                {isSupported && (
+                  <div className="text-center mt-4">
+                    <p>
+                      {isActive
+                        ? "Screen will stay awake during workout"
+                        : "Screen may sleep during inactivity"}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
