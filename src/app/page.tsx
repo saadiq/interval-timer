@@ -149,16 +149,6 @@ export default function Home() {
     };
   }, [getWorkoutProgression]);
 
-  const calculateProgressPercentage = useCallback((currentTime: number) => {
-    const currentSection = getCurrentSectionInfo(currentTime);
-    if (!currentSection) return 100; // Workout complete
-
-    const sectionProgress = currentTime - currentSection.sectionStartTime;
-    const overallProgress = currentSection.sectionStartTime + sectionProgress;
-
-    return (overallProgress / totalDuration) * 100;
-  }, [getCurrentSectionInfo, totalDuration]);
-
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     if (isRunning) {
