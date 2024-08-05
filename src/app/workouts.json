@@ -166,5 +166,62 @@
         "duration": 30
       }
     ]
+  },
+  "2024-08-06": 
+  {
+    "warmUp": [
+      {
+        "name": "High Knees",
+        "duration": 10
+      },
+      {
+        "name": "Arm Circles",
+        "duration": 10,
+        "description": "30 seconds forward and 30 seconds backward"
+      }
+    ],
+    "circuit": {
+      "repetitions": 2,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "duration": 10
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Squats",
+          "duration": 10
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Mountain Climbers",
+          "duration": 10
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Reverse Lunges",
+          "duration": 10
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Forward Fold",
+        "duration": 10
+      },
+      {
+        "name": "Child's Pose",
+        "duration": 10
+      }
+    ]
   }
 }

@@ -6,12 +6,10 @@ import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, ChevronDown, Chevron
 import './globals.css';
 import workoutsData from './workouts.json';
 
-// Add this type definition
 type WorkoutsData = {
   [date: string]: WorkoutData;
 };
 
-// Cast the imported data to our new type
 const typedWorkoutsData = workoutsData as WorkoutsData;
 
 interface WorkoutSection {
@@ -19,6 +17,7 @@ interface WorkoutSection {
   duration: number;
   color: string;
   description?: string;
+  isCircuit?: boolean;
 }
 
 interface WorkoutData {
@@ -51,6 +50,8 @@ export default function Home() {
   const [shouldScroll, setShouldScroll] = useState<boolean>(false);
   const [workout, setWorkout] = useState<WorkoutSection[]>([]);
   const [workoutTitle, setWorkoutTitle] = useState<string>("");
+  const [circuitRepetitions, setCircuitRepetitions] = useState<number>(0);
+  const [currentRepetition, setCurrentRepetition] = useState<number>(1);
   const workoutViewRef = useRef<HTMLDivElement>(null);
 
   const getWorkoutForDate = useCallback((targetDate: string): [WorkoutData, string] | null => {
@@ -68,15 +69,18 @@ export default function Home() {
       color: 'bg-yellow-300'
     }));
 
-    const circuit: WorkoutSection[] = Array(workoutData.circuit.repetitions).fill(workoutData.circuit.exercises).flat().map((exercise, index) => ({
+    const circuit: WorkoutSection[] = workoutData.circuit.exercises.map((exercise, index) => ({
       ...exercise,
-      color: index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
+      color: index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400',
+      isCircuit: true
     }));
 
     const coolDown: WorkoutSection[] = workoutData.coolDown.map(exercise => ({
       ...exercise,
       color: 'bg-yellow-300'
     }));
+
+    setCircuitRepetitions(workoutData.circuit.repetitions);
 
     return [...warmUp, ...circuit, ...coolDown];
   }, []);
@@ -96,67 +100,49 @@ export default function Home() {
     }
   }, [getWorkoutForDate, parseWorkout, searchParams]);
 
-  const totalDuration: number = workout.reduce((total, section) => total + section.duration, 0);
+  const getWorkoutProgression = useCallback(() => {
+    let progression: { section: WorkoutSection; isCircuit: boolean; repetition: number }[] = [];
+    let circuitStartIndex = workout.findIndex(section => section.isCircuit);
+    let circuitEndIndex = workout.findLastIndex(section => section.isCircuit);
 
-  const formatTime = (timeInSeconds: number): string => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
+    workout.forEach((section, index) => {
+      if (index < circuitStartIndex || index > circuitEndIndex) {
+        progression.push({ section, isCircuit: false, repetition: 1 });
+      } else if (index === circuitStartIndex) {
+        for (let rep = 1; rep <= circuitRepetitions; rep++) {
+          for (let i = circuitStartIndex; i <= circuitEndIndex; i++) {
+            progression.push({ section: workout[i], isCircuit: true, repetition: rep });
+          }
+        }
+      }
+    });
 
-  const getCurrentSectionIndex = useCallback((currentTime: number): number => {
-    if (workout.length === 0) {
-      return -1; // Return -1 if there's no workout
-    }
+    return progression;
+  }, [workout, circuitRepetitions]);
 
+  const getCurrentSectionInfo = useCallback((currentTime: number) => {
+    const progression = getWorkoutProgression();
     let accumulatedTime = 0;
-    for (let i = 0; i < workout.length; i++) {
-      accumulatedTime += workout[i].duration;
+
+    for (let i = 0; i < progression.length; i++) {
+      const { section, isCircuit, repetition } = progression[i];
+      accumulatedTime += section.duration;
+
       if (currentTime < accumulatedTime) {
-        return i;
+        return {
+          index: i,
+          section,
+          isCircuit,
+          repetition,
+          timeRemaining: accumulatedTime - currentTime
+        };
       }
     }
-    return workout.length - 1;
-  }, [workout]);
 
-  const getTimeLeftInSection = useCallback((currentTime: number): number => {
-    if (workout.length === 0) {
-      return 0; // Return 0 if there's no workout
-    }
+    return null;
+  }, [getWorkoutProgression]);
 
-    const currentIndex = getCurrentSectionIndex(currentTime);
-    const timeInPreviousSections = workout
-      .slice(0, currentIndex)
-      .reduce((total, section) => total + section.duration, 0);
-
-    // Check if currentIndex is valid
-    if (currentIndex >= 0 && currentIndex < workout.length) {
-      return workout[currentIndex].duration - (currentTime - timeInPreviousSections);
-    } else {
-      return 0; // Return 0 if currentIndex is out of bounds
-    }
-  }, [workout, getCurrentSectionIndex]);
-
-  const getCurrentCircuitExerciseIndex = useCallback((currentTime: number): number => {
-    if (currentSectionIndex <= 0 || currentSectionIndex >= workout.length - 1) {
-      return -1; // Not in the main circuit
-    }
-    const circuitStartTime = workout[0].duration;
-    const timeInCircuit = currentTime - circuitStartTime;
-    const circuitExercises = workout.slice(1, -1);
-    const circuitRepetitionDuration = circuitExercises.reduce((total, exercise) => total + exercise.duration, 0);
-    const currentRepetition = Math.floor(timeInCircuit / circuitRepetitionDuration);
-    const timeInCurrentRepetition = timeInCircuit % circuitRepetitionDuration;
-
-    let accumulatedTime = 0;
-    for (let i = 0; i < circuitExercises.length; i++) {
-      accumulatedTime += circuitExercises[i].duration;
-      if (timeInCurrentRepetition < accumulatedTime) {
-        return i;
-      }
-    }
-    return circuitExercises.length - 1;
-  }, [currentSectionIndex, workout]);
+  const totalDuration: number = getWorkoutProgression().reduce((total, item) => total + item.section.duration, 0);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -164,7 +150,11 @@ export default function Home() {
       interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime + 1;
-          setCurrentSectionIndex(getCurrentSectionIndex(newTime));
+          const currentInfo = getCurrentSectionInfo(newTime);
+          if (currentInfo) {
+            setCurrentSectionIndex(currentInfo.index);
+            setCurrentRepetition(currentInfo.repetition);
+          }
           return newTime < totalDuration ? newTime : totalDuration;
         });
       }, 1000);
@@ -172,7 +162,13 @@ export default function Home() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, totalDuration, getCurrentSectionIndex]);
+  }, [isRunning, totalDuration, getCurrentSectionInfo]);
+
+  const formatTime = (timeInSeconds: number): string => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
 
   const handleStartStop = (): void => {
     setIsRunning(!isRunning);
@@ -182,22 +178,38 @@ export default function Home() {
     setTime(0);
     setIsRunning(false);
     setCurrentSectionIndex(0);
+    setCurrentRepetition(1);
   };
 
   const handlePrevious = (): void => {
-    if (currentSectionIndex > 0) {
-      const newSection = currentSectionIndex - 1;
-      setCurrentSectionIndex(newSection);
-      setTime(workout.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
-    }
+    setTime((prevTime) => {
+      const currentInfo = getCurrentSectionInfo(prevTime);
+      if (currentInfo && currentInfo.index > 0) {
+        const prevInfo = getCurrentSectionInfo(prevTime - currentInfo.timeRemaining - 1);
+        if (prevInfo) {
+          setCurrentSectionIndex(prevInfo.index);
+          setCurrentRepetition(prevInfo.repetition);
+          return prevTime - currentInfo.timeRemaining;
+        }
+      }
+      return prevTime;
+    });
   };
 
   const handleNext = (): void => {
-    if (currentSectionIndex < workout.length - 1) {
-      const newSection = currentSectionIndex + 1;
-      setCurrentSectionIndex(newSection);
-      setTime(workout.slice(0, newSection).reduce((total, section) => total + section.duration, 0));
-    }
+    setTime((prevTime) => {
+      const currentInfo = getCurrentSectionInfo(prevTime);
+      if (currentInfo) {
+        const nextTime = prevTime + currentInfo.timeRemaining + 1;
+        const nextInfo = getCurrentSectionInfo(nextTime);
+        if (nextInfo) {
+          setCurrentSectionIndex(nextInfo.index);
+          setCurrentRepetition(nextInfo.repetition);
+          return nextTime;
+        }
+      }
+      return prevTime;
+    });
   };
 
   const toggleWorkoutView = (): void => {
@@ -205,8 +217,6 @@ export default function Home() {
   };
 
   const progressPercentage = (time / totalDuration) * 100;
-
-  const currentCircuitExerciseIndex = getCurrentCircuitExerciseIndex(time);
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -224,6 +234,51 @@ export default function Home() {
     };
   }, [isWorkoutViewExpanded]);
 
+  const getWorkoutSections = useCallback(() => {
+    const circuitStartIndex = workout.findIndex(section => section.isCircuit);
+    const circuitEndIndex = workout.findLastIndex(section => section.isCircuit);
+
+    return {
+      warmUp: workout.slice(0, circuitStartIndex),
+      circuit: workout.slice(circuitStartIndex, circuitEndIndex + 1),
+      coolDown: workout.slice(circuitEndIndex + 1)
+    };
+  }, [workout]);
+
+  const getCurrentPosition = useCallback((currentTime: number) => {
+    const { warmUp, circuit, coolDown } = getWorkoutSections();
+    let accumulatedTime = 0;
+
+    // Check warm-up
+    for (let i = 0; i < warmUp.length; i++) {
+      accumulatedTime += warmUp[i].duration;
+      if (currentTime < accumulatedTime) {
+        return { section: 'warmUp', index: i };
+      }
+    }
+
+    // Check circuit
+    const circuitDuration = circuit.reduce((total, exercise) => total + exercise.duration, 0);
+    for (let rep = 0; rep < circuitRepetitions; rep++) {
+      for (let i = 0; i < circuit.length; i++) {
+        accumulatedTime += circuit[i].duration;
+        if (currentTime < accumulatedTime) {
+          return { section: 'circuit', index: i, repetition: rep + 1 };
+        }
+      }
+    }
+
+    // Check cool-down
+    for (let i = 0; i < coolDown.length; i++) {
+      accumulatedTime += coolDown[i].duration;
+      if (currentTime < accumulatedTime) {
+        return { section: 'coolDown', index: i };
+      }
+    }
+
+    return { section: 'complete', index: -1 };
+  }, [getWorkoutSections, circuitRepetitions]);
+
   return (
     <div className="workout-timer">
       <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-4 text-center">{workoutTitle}</h1>
@@ -234,18 +289,19 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 h-full flex flex-col justify-between">
               <div>
                 <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
-                  {formatTime(getTimeLeftInSection(time))}
+                  {formatTime(getCurrentSectionInfo(time)?.timeRemaining || 0)}
                 </div>
 
                 <div className="mb-4 text-center">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-                    {workout[currentSectionIndex]?.name}
+                    {getCurrentSectionInfo(time)?.section.name}
+                    {getCurrentSectionInfo(time)?.isCircuit && ` (Round ${currentRepetition}/${circuitRepetitions})`}
                   </div>
                   <div className="text-base sm:text-lg mb-2">
-                    {workout[currentSectionIndex]?.description || 'Get it!'}
+                    {getCurrentSectionInfo(time)?.section.description || 'Get it!'}
                   </div>
                   <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
-                    Next: {currentSectionIndex < workout.length - 1 ? workout[currentSectionIndex + 1]?.name : 'Workout Complete'}
+                    Next: {currentSectionIndex < getWorkoutProgression().length - 1 ? getWorkoutProgression()[currentSectionIndex + 1].section.name : 'Workout Complete'}
                   </div>
                 </div>
 
@@ -267,13 +323,13 @@ export default function Home() {
                 <div className="mb-4">
                   <div className="font-bold mb-2">Progress:</div>
                   <div className="progress-bar">
-                    {workout.map((section, index) => {
-                      const sectionStart = workout.slice(0, index).reduce((total, s) => total + s.duration, 0);
-                      const sectionWidth = (section.duration / totalDuration) * 100;
+                    {getWorkoutProgression().map((item, index) => {
+                      const sectionStart = getWorkoutProgression().slice(0, index).reduce((total, s) => total + s.section.duration, 0);
+                      const sectionWidth = (item.section.duration / totalDuration) * 100;
                       return (
                         <div
                           key={index}
-                          className={`absolute top-0 h-full ${section.color}`}
+                          className={`absolute top-0 h-full ${item.section.color}`}
                           style={{
                             left: `${(sectionStart / totalDuration) * 100}%`,
                             width: `${sectionWidth}%`
@@ -305,25 +361,66 @@ export default function Home() {
                   ref={workoutViewRef}
                   className={`expanded-view ${shouldScroll ? 'max-h-[60vh] overflow-y-auto' : ''}`}
                 >
-                  {workout.map((section, index) => (
-                    <div key={index}>
-                      <div className={`section-item ${index === currentSectionIndex ? 'section-item-active' : ''}`}>
-                        <div className="flex items-center">
-                          <span className={`section-color-indicator ${section.color}`}></span>
-                          <span className="ml-2">{section.name}</span>
+                  {(() => {
+                    const { warmUp, circuit, coolDown } = getWorkoutSections();
+                    const currentPosition = getCurrentPosition(time);
+
+                    return (
+                      <>
+                        <div className="workout-section">
+                          <h3 className="font-bold mb-2">Warm-up</h3>
+                          {warmUp.map((section, index) => (
+                            <div key={index} className={`section-item ${currentPosition.section === 'warmUp' && currentPosition.index === index ? 'section-item-active' : ''}`}>
+                              <div className="flex items-center">
+                                <span className={`section-color-indicator ${section.color}`}></span>
+                                <span className="ml-2">{section.name}</span>
+                              </div>
+                              <span>{formatTime(section.duration)}</span>
+                            </div>
+                          ))}
                         </div>
-                        <span>{formatTime(section.duration)}</span>
-                      </div>
-                      {section.description && <div className="text-sm text-gray-600 ml-6 mb-2">{section.description}</div>}
-                    </div>
-                  ))}
+
+                        <div className="workout-section mt-4">
+                          <h3 className="font-bold mb-2">Circuit (x{circuitRepetitions})</h3>
+                          {circuit.map((section, index) => (
+                            <div
+                              key={index}
+                              className={`section-item ${currentPosition.section === 'circuit' &&
+                                currentPosition.index === index ?
+                                'section-item-active' : ''
+                                }`}
+                            >
+                              <div className="flex items-center">
+                                <span className={`section-color-indicator ${section.color}`}></span>
+                                <span className="ml-2">{section.name}</span>
+                              </div>
+                              <span>{formatTime(section.duration)}</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="workout-section mt-4">
+                          <h3 className="font-bold mb-2">Cool-down</h3>
+                          {coolDown.map((section, index) => (
+                            <div key={index} className={`section-item ${currentPosition.section === 'coolDown' && currentPosition.index === index ? 'section-item-active' : ''}`}>
+                              <div className="flex items-center">
+                                <span className={`section-color-indicator ${section.color}`}></span>
+                                <span className="ml-2">{section.name}</span>
+                              </div>
+                              <span>{formatTime(section.duration)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </div>
           </div>
         </div>
       ) : (
-        <p></p>
+        <p>No workout found for the selected date.</p>
       )}
     </div>
   );
