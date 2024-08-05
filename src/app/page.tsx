@@ -41,6 +41,16 @@ interface WorkoutData {
   }[];
 }
 
+interface SectionInfo {
+  index: number;
+  section: WorkoutSection;
+  isCircuit: boolean;
+  repetition: number;
+  startTime: number;
+  timeRemaining: number;
+  nextSection: { section: WorkoutSection; isCircuit: boolean; repetition: number; startTime: number } | null;
+}
+
 export default function Home() {
   const searchParams = useSearchParams();
   const [time, setTime] = useState<number>(0);
@@ -125,7 +135,7 @@ export default function Home() {
 
   const totalDuration: number = getWorkoutProgression().reduce((total, item) => total + item.section.duration, 0);
 
-  const getCurrentSectionInfo = useCallback((currentTime: number) => {
+  const getCurrentSectionInfo = useCallback((currentTime: number): SectionInfo | null => {
     const progression = getWorkoutProgression();
 
     for (let i = 0; i < progression.length; i++) {
@@ -135,7 +145,8 @@ export default function Home() {
         return {
           index: i,
           ...current,
-          timeRemaining: next.startTime - currentTime
+          timeRemaining: next.startTime - currentTime,
+          nextSection: next
         };
       }
     }
@@ -145,9 +156,19 @@ export default function Home() {
     return {
       index: progression.length - 1,
       ...last,
-      timeRemaining: Math.max(0, (last.startTime + last.section.duration) - currentTime)
+      timeRemaining: Math.max(0, (last.startTime + last.section.duration) - currentTime),
+      nextSection: null
     };
   }, [getWorkoutProgression]);
+
+  const getSectionType = useCallback((section: WorkoutSection | undefined) => {
+    if (section && !section.isCircuit) {
+      const index = workout.indexOf(section);
+      if (index < workout.findIndex(s => s.isCircuit)) return 'Warm-up';
+      if (index > workout.findLastIndex(s => s.isCircuit)) return 'Cool-down';
+    }
+    return '';
+  }, [workout]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -259,7 +280,6 @@ export default function Home() {
     }
 
     // Check circuit
-    const circuitDuration = circuit.reduce((total, exercise) => total + exercise.duration, 0);
     for (let rep = 0; rep < circuitRepetitions; rep++) {
       for (let i = 0; i < circuit.length; i++) {
         accumulatedTime += circuit[i].duration;
@@ -290,19 +310,25 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 h-full flex flex-col justify-between">
               <div>
                 <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
-                  {formatTime(getCurrentSectionInfo(time)?.timeRemaining || 0)}
+                  {formatTime(getCurrentSectionInfo(time)?.timeRemaining ?? 0)}
                 </div>
 
                 <div className="mb-4 text-center">
                   <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2">
-                    {getCurrentSectionInfo(time)?.section.name}
-                    {getCurrentSectionInfo(time)?.isCircuit && ` (Round ${currentRepetition}/${circuitRepetitions})`}
+                    {getCurrentSectionInfo(time)?.section.name ?? ''}
+                    {!getCurrentSectionInfo(time)?.isCircuit &&
+                      ` (${getSectionType(getCurrentSectionInfo(time)?.section)})`}
                   </div>
                   <div className="text-base sm:text-lg mb-2">
                     {getCurrentSectionInfo(time)?.section.description || 'Get it!'}
                   </div>
                   <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">
-                    Next: {currentSectionIndex < getWorkoutProgression().length - 1 ? getWorkoutProgression()[currentSectionIndex + 1].section.name : 'Workout Complete'}
+                    Next: {getCurrentSectionInfo(time)?.nextSection ?
+                      `${getCurrentSectionInfo(time)?.nextSection?.section.name}${!getCurrentSectionInfo(time)?.nextSection?.isCircuit ?
+                        ` (${getSectionType(getCurrentSectionInfo(time)?.nextSection?.section)})` :
+                        ''
+                      }` :
+                      'Workout Complete'}
                   </div>
                 </div>
 
@@ -360,7 +386,7 @@ export default function Home() {
                 >
                   {(() => {
                     const { warmUp, circuit, coolDown } = getWorkoutSections();
-                    const currentPosition = getCurrentPosition(time);
+                    const currentPosition = getCurrentPosition(time) ?? { section: 'complete', index: -1 };
 
                     return (
                       <>

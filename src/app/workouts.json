@@ -167,7 +167,7 @@
       }
     ]
   },
-  "2024-08-06": 
+  "2024-08-01": 
   {
     "warmUp": [
       {
@@ -197,18 +197,6 @@
         },
         {
           "name": "Rest",
-          "duration": 10
-        },
-        {
-          "name": "Mountain Climbers",
-          "duration": 10
-        },
-        {
-          "name": "Rest",
-          "duration": 10
-        },
-        {
-          "name": "Reverse Lunges",
           "duration": 10
         }
       ]
