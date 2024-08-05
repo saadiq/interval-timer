@@ -194,7 +194,7 @@ function HomeContent() {
         setCountdown((prevCount) => {
           if (prevCount > 1) return prevCount - 1;
           setCountdownState('go');
-          return 0;
+          return 1; // Change this to 1 so it shows the last "1" before "Go!"
         });
       }, 1000);
     } else if (countdownState === 'go') {
@@ -220,6 +220,7 @@ function HomeContent() {
       if (interval) clearInterval(interval);
     };
   }, [isRunning, totalDuration, getCurrentSectionInfo, countdownState]);
+
 
 
   const formatTime = (timeInSeconds: number): string => {
