@@ -101,17 +101,20 @@ export default function Home() {
   }, [getWorkoutForDate, parseWorkout, searchParams]);
 
   const getWorkoutProgression = useCallback(() => {
-    let progression: { section: WorkoutSection; isCircuit: boolean; repetition: number }[] = [];
+    let progression: { section: WorkoutSection; isCircuit: boolean; repetition: number; startTime: number }[] = [];
     let circuitStartIndex = workout.findIndex(section => section.isCircuit);
     let circuitEndIndex = workout.findLastIndex(section => section.isCircuit);
+    let accumulatedTime = 0;
 
     workout.forEach((section, index) => {
       if (index < circuitStartIndex || index > circuitEndIndex) {
-        progression.push({ section, isCircuit: false, repetition: 1 });
+        progression.push({ section, isCircuit: false, repetition: 1, startTime: accumulatedTime });
+        accumulatedTime += section.duration;
       } else if (index === circuitStartIndex) {
         for (let rep = 1; rep <= circuitRepetitions; rep++) {
           for (let i = circuitStartIndex; i <= circuitEndIndex; i++) {
-            progression.push({ section: workout[i], isCircuit: true, repetition: rep });
+            progression.push({ section: workout[i], isCircuit: true, repetition: rep, startTime: accumulatedTime });
+            accumulatedTime += workout[i].duration;
           }
         }
       }
@@ -120,29 +123,41 @@ export default function Home() {
     return progression;
   }, [workout, circuitRepetitions]);
 
+  const totalDuration: number = getWorkoutProgression().reduce((total, item) => total + item.section.duration, 0);
+
   const getCurrentSectionInfo = useCallback((currentTime: number) => {
     const progression = getWorkoutProgression();
-    let accumulatedTime = 0;
 
     for (let i = 0; i < progression.length; i++) {
-      const { section, isCircuit, repetition } = progression[i];
-      accumulatedTime += section.duration;
-
-      if (currentTime < accumulatedTime) {
+      const current = progression[i];
+      const next = progression[i + 1];
+      if (next && currentTime < next.startTime) {
         return {
           index: i,
-          section,
-          isCircuit,
-          repetition,
-          timeRemaining: accumulatedTime - currentTime
+          ...current,
+          timeRemaining: next.startTime - currentTime
         };
       }
     }
 
-    return null;
+    // If we're at the last section
+    const last = progression[progression.length - 1];
+    return {
+      index: progression.length - 1,
+      ...last,
+      timeRemaining: Math.max(0, (last.startTime + last.section.duration) - currentTime)
+    };
   }, [getWorkoutProgression]);
 
-  const totalDuration: number = getWorkoutProgression().reduce((total, item) => total + item.section.duration, 0);
+  const calculateProgressPercentage = useCallback((currentTime: number) => {
+    const currentSection = getCurrentSectionInfo(currentTime);
+    if (!currentSection) return 100; // Workout complete
+
+    const sectionProgress = currentTime - currentSection.sectionStartTime;
+    const overallProgress = currentSection.sectionStartTime + sectionProgress;
+
+    return (overallProgress / totalDuration) * 100;
+  }, [getCurrentSectionInfo, totalDuration]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -185,30 +200,26 @@ export default function Home() {
     setTime((prevTime) => {
       const currentInfo = getCurrentSectionInfo(prevTime);
       if (currentInfo && currentInfo.index > 0) {
-        const prevInfo = getCurrentSectionInfo(prevTime - currentInfo.timeRemaining - 1);
-        if (prevInfo) {
-          setCurrentSectionIndex(prevInfo.index);
-          setCurrentRepetition(prevInfo.repetition);
-          return prevTime - currentInfo.timeRemaining;
-        }
+        const prevSection = getWorkoutProgression()[currentInfo.index - 1];
+        setCurrentSectionIndex(currentInfo.index - 1);
+        setCurrentRepetition(prevSection.repetition);
+        return prevSection.startTime;
       }
-      return prevTime;
+      return 0; // If we're at the first section, go to the start of the workout
     });
   };
 
   const handleNext = (): void => {
     setTime((prevTime) => {
       const currentInfo = getCurrentSectionInfo(prevTime);
-      if (currentInfo) {
-        const nextTime = prevTime + currentInfo.timeRemaining + 1;
-        const nextInfo = getCurrentSectionInfo(nextTime);
-        if (nextInfo) {
-          setCurrentSectionIndex(nextInfo.index);
-          setCurrentRepetition(nextInfo.repetition);
-          return nextTime;
-        }
+      const progression = getWorkoutProgression();
+      if (currentInfo && currentInfo.index < progression.length - 1) {
+        const nextSection = progression[currentInfo.index + 1];
+        setCurrentSectionIndex(currentInfo.index + 1);
+        setCurrentRepetition(nextSection.repetition);
+        return nextSection.startTime;
       }
-      return prevTime;
+      return totalDuration; // If we're at the last section, go to the end of the workout
     });
   };
 
@@ -323,23 +334,19 @@ export default function Home() {
                 <div className="mb-4">
                   <div className="font-bold mb-2">Progress:</div>
                   <div className="progress-bar">
-                    {getWorkoutProgression().map((item, index) => {
-                      const sectionStart = getWorkoutProgression().slice(0, index).reduce((total, s) => total + s.section.duration, 0);
-                      const sectionWidth = (item.section.duration / totalDuration) * 100;
-                      return (
-                        <div
-                          key={index}
-                          className={`absolute top-0 h-full ${item.section.color}`}
-                          style={{
-                            left: `${(sectionStart / totalDuration) * 100}%`,
-                            width: `${sectionWidth}%`
-                          }}
-                        ></div>
-                      );
-                    })}
+                    {getWorkoutProgression().map((item, index) => (
+                      <div
+                        key={index}
+                        className={`absolute top-0 h-full ${item.section.color}`}
+                        style={{
+                          left: `${(item.startTime / totalDuration) * 100}%`,
+                          width: `${(item.section.duration / totalDuration) * 100}%`
+                        }}
+                      ></div>
+                    ))}
                     <div
                       className="progress-indicator"
-                      style={{ left: `${progressPercentage}%` }}
+                      style={{ left: `${(time / totalDuration) * 100}%` }}
                     ></div>
                   </div>
                 </div>
