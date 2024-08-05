@@ -71,6 +71,8 @@ function HomeContent() {
   const [circuitRepetitions, setCircuitRepetitions] = useState<number>(0);
   const [currentRepetition, setCurrentRepetition] = useState<number>(1);
   const workoutViewRef = useRef<HTMLDivElement>(null);
+  const [countdownState, setCountdownState] = useState<'ready' | 'countdown' | 'go' | null>(null);
+  const [countdown, setCountdown] = useState<number>(3);
 
   const getWorkoutForDate = useCallback((targetDate: string): [WorkoutData, string] | null => {
     const dates = Object.keys(typedWorkoutsData).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
@@ -112,9 +114,11 @@ function HomeContent() {
       const parsedWorkout = parseWorkout(workoutData);
       setWorkout(parsedWorkout);
       setWorkoutTitle(`${workoutDate}`);
+      setCountdownState('ready'); // Set to 'ready' when workout is loaded
     } else {
       setWorkoutTitle(`No workout found for ${dateParam}`);
       setWorkout([]);
+      setCountdownState(null); // No countdown state if no workout
     }
   }, [getWorkoutForDate, parseWorkout, searchParams]);
 
@@ -180,7 +184,21 @@ function HomeContent() {
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
-    if (isRunning) {
+
+    if (countdownState === 'countdown') {
+      interval = setInterval(() => {
+        setCountdown((prevCount) => {
+          if (prevCount > 1) return prevCount - 1;
+          setCountdownState('go');
+          return 0;
+        });
+      }, 1000);
+    } else if (countdownState === 'go') {
+      setTimeout(() => {
+        setCountdownState(null);
+        setIsRunning(true);
+      }, 1000);
+    } else if (isRunning) {
       interval = setInterval(() => {
         setTime((prevTime) => {
           const newTime = prevTime + 1;
@@ -193,10 +211,11 @@ function HomeContent() {
         });
       }, 1000);
     }
+
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isRunning, totalDuration, getCurrentSectionInfo]);
+  }, [isRunning, totalDuration, getCurrentSectionInfo, countdownState]);
 
   const formatTime = (timeInSeconds: number): string => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -205,7 +224,14 @@ function HomeContent() {
   };
 
   const handleStartStop = (): void => {
-    setIsRunning(!isRunning);
+    if (countdownState === 'ready') {
+      setCountdownState('countdown');
+      setCountdown(3);
+    } else if (isRunning) {
+      setIsRunning(false);
+    } else if (time < totalDuration) {
+      setIsRunning(true);
+    }
   };
 
   const handleReset = (): void => {
@@ -213,6 +239,8 @@ function HomeContent() {
     setIsRunning(false);
     setCurrentSectionIndex(0);
     setCurrentRepetition(1);
+    setCountdownState('ready');
+    setCountdown(3);
   };
 
   const handlePrevious = (): void => {
@@ -318,7 +346,10 @@ function HomeContent() {
             <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 h-full flex flex-col justify-between">
               <div>
                 <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
-                  {formatTime(getCurrentSectionInfo(time)?.timeRemaining ?? 0)}
+                  {countdownState === 'ready' ? 'Ready?' :
+                   countdownState === 'countdown' ? countdown :
+                   countdownState === 'go' ? 'Go!' :
+                   formatTime(getCurrentSectionInfo(time)?.timeRemaining ?? 0)}
                 </div>
 
                 <div className="mb-4 text-center">
@@ -341,16 +372,16 @@ function HomeContent() {
                 </div>
 
                 <div className="control-buttons flex justify-center space-x-6 mb-6">
-                  <button onClick={handlePrevious} className="control-button bg-gray-200 p-4 rounded-full">
+                  <button onClick={handlePrevious} className="control-button bg-gray-200 p-4 rounded-full" disabled={countdownState !== null}>
                     <ChevronLeft size={32} />
                   </button>
                   <button onClick={handleStartStop} className="control-button start-stop-button p-4 rounded-full">
                     {isRunning ? <Pause size={32} /> : <Play size={32} />}
                   </button>
-                  <button onClick={handleNext} className="control-button bg-gray-200 p-4 rounded-full">
+                  <button onClick={handleNext} className="control-button bg-gray-200 p-4 rounded-full" disabled={countdownState !== null}>
                     <ChevronRight size={32} />
                   </button>
-                  <button onClick={handleReset} className="control-button reset-button p-4 rounded-full">
+                  <button onClick={handleReset} className="control-button reset-button p-4 rounded-full" disabled={countdownState === 'countdown' || countdownState === 'go'}>
                     <RotateCcw size={32} />
                   </button>
                 </div>
