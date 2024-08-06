@@ -332,12 +332,26 @@ function HomeContent() {
     const circuitStartIndex = workout.findIndex(section => section.isCircuit);
     const circuitEndIndex = workout.findLastIndex(section => section.isCircuit);
 
+    const warmUp = workout.slice(0, circuitStartIndex);
+    const circuit = workout.slice(circuitStartIndex, circuitEndIndex + 1);
+    const coolDown = workout.slice(circuitEndIndex + 1);
+
+    const warmUpDuration = warmUp.reduce((total, section) => total + section.duration, 0);
+    const circuitDuration = circuit.reduce((total, section) => total + section.duration, 0) * circuitRepetitions;
+    const coolDownDuration = coolDown.reduce((total, section) => total + section.duration, 0);
+
+    const totalWorkoutDuration = warmUpDuration + circuitDuration + coolDownDuration;
+
     return {
-      warmUp: workout.slice(0, circuitStartIndex),
-      circuit: workout.slice(circuitStartIndex, circuitEndIndex + 1),
-      coolDown: workout.slice(circuitEndIndex + 1)
+      warmUp,
+      circuit,
+      coolDown,
+      warmUpDuration,
+      circuitDuration,
+      coolDownDuration,
+      totalWorkoutDuration
     };
-  }, [workout]);
+  }, [workout, circuitRepetitions]);
 
   const getCurrentPosition = useCallback((currentTime: number) => {
     const { warmUp, circuit, coolDown } = getWorkoutSections();
@@ -474,7 +488,9 @@ function HomeContent() {
                 onClick={toggleWorkoutView}
                 className="expand-button"
               >
-                <span className="font-bold">Full Workout</span>
+                <span className="font-bold">
+                  Full Workout: {formatTime(getWorkoutSections().totalWorkoutDuration)}
+                </span>
                 {isWorkoutViewExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
               </button>
               {isWorkoutViewExpanded && (
@@ -483,13 +499,20 @@ function HomeContent() {
                   className={`expanded-view ${shouldScroll ? 'max-h-[60vh] overflow-y-auto' : ''}`}
                 >
                   {(() => {
-                    const { warmUp, circuit, coolDown } = getWorkoutSections();
+                    const {
+                      warmUp,
+                      circuit,
+                      coolDown,
+                      warmUpDuration,
+                      circuitDuration,
+                      coolDownDuration
+                    } = getWorkoutSections();
                     const currentPosition = getCurrentPosition(time) ?? { section: 'complete', index: -1 };
 
                     return (
                       <>
                         <div className="workout-section">
-                          <h3 className="font-bold mb-2">Warm-up</h3>
+                          <h3 className="font-bold mb-2">Warm-up: {formatTime(warmUpDuration)}</h3>
                           {warmUp.map((section, index) => (
                             <div key={index} className={`section-item ${currentPosition.section === 'warmUp' && currentPosition.index === index ? 'section-item-active' : ''}`}>
                               <div className="flex items-center">
@@ -502,7 +525,7 @@ function HomeContent() {
                         </div>
 
                         <div className="workout-section mt-4">
-                          <h3 className="font-bold mb-2">Circuit (x{circuitRepetitions})</h3>
+                          <h3 className="font-bold mb-2">Circuit (x{circuitRepetitions}): {formatTime(circuitDuration)}</h3>
                           {circuit.map((section, index) => (
                             <div
                               key={index}
@@ -521,7 +544,7 @@ function HomeContent() {
                         </div>
 
                         <div className="workout-section mt-4">
-                          <h3 className="font-bold mb-2">Cool-down</h3>
+                          <h3 className="font-bold mb-2">Cool-down: {formatTime(coolDownDuration)}</h3>
                           {coolDown.map((section, index) => (
                             <div key={index} className={`section-item ${currentPosition.section === 'coolDown' && currentPosition.index === index ? 'section-item-active' : ''}`}>
                               <div className="flex items-center">
