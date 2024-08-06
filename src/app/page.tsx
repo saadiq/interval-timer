@@ -437,7 +437,7 @@ function HomeContent() {
                 {/* Add this new section for wake lock info */}
                 {isSupported && (
                   <div className="text-center mt-4">
-                    <p>
+                    <p className={isActive ? "" : "italic text-gray-500"}>
                       {isActive
                         ? "Screen will stay awake during workout"
                         : "Screen may sleep during inactivity"}
