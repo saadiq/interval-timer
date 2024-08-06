@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef, Suspense } from 'react
 import { useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, ChevronDown, ChevronUp } from 'lucide-react';
 import './globals.css';
-import workoutsData from './workouts.json';
+import workoutsData from '@/app/workouts.json';
 import { useWakeLock } from './useWakeLock';
 import { useAudioCue } from './useAudioCue';
 
