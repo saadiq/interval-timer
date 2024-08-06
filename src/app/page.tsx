@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, ChevronDown, Chevron
 import './globals.css';
 import workoutsData from './workouts.json';
 import { useWakeLock } from './useWakeLock';
+import { useAudioCue } from './useAudioCue';
 
 type WorkoutsData = {
   [date: string]: WorkoutData;
@@ -187,15 +188,36 @@ function HomeContent() {
     return '';
   }, [workout]);
 
+  const formatTime = (timeInSeconds: number): string => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const playAudioCue = useAudioCue();
+  const audioTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
     if (countdownState === 'countdown') {
+      // Clear any existing audio timeout
+      if (audioTimeoutRef.current) {
+        clearTimeout(audioTimeoutRef.current);
+      }
+
+      // Schedule the audio cue to play 1 second before the "Go!"
+      audioTimeoutRef.current = setTimeout(() => {
+        playAudioCue(0, 3);
+      }, 1000);
+
       interval = setInterval(() => {
         setCountdown((prevCount) => {
-          if (prevCount > 1) return prevCount - 1;
+          if (prevCount > 1) {
+            return prevCount - 1;
+          }
           setCountdownState('go');
-          return 1; // Change this to 1 so it shows the last "1" before "Go!"
+          return 1;
         });
       }, 1000);
     } else if (countdownState === 'go') {
@@ -211,6 +233,11 @@ function HomeContent() {
           if (currentInfo) {
             setCurrentSectionIndex(currentInfo.index);
             setCurrentRepetition(currentInfo.repetition);
+
+            // Play audio cue when there are 2 seconds left in the current section
+            if (currentInfo.timeRemaining === 2) {
+              playAudioCue(0, 3);
+            }
           }
           return newTime < totalDuration ? newTime : totalDuration;
         });
@@ -219,16 +246,9 @@ function HomeContent() {
 
     return () => {
       if (interval) clearInterval(interval);
+      if (audioTimeoutRef.current) clearTimeout(audioTimeoutRef.current);
     };
-  }, [isRunning, totalDuration, getCurrentSectionInfo, countdownState]);
-
-
-
-  const formatTime = (timeInSeconds: number): string => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
+  }, [isRunning, totalDuration, getCurrentSectionInfo, countdownState, playAudioCue]);
 
   const handleStartStop = (): void => {
     if (countdownState === 'ready') {
