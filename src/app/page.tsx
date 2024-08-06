@@ -353,6 +353,11 @@ function HomeContent() {
     };
   }, [workout, circuitRepetitions]);
 
+  const getRemainingTime = useCallback(() => {
+    const { totalWorkoutDuration } = getWorkoutSections();
+    return Math.max(0, totalWorkoutDuration - time);
+  }, [getWorkoutSections, time]);
+
   const getCurrentPosition = useCallback((currentTime: number) => {
     const { warmUp, circuit, coolDown } = getWorkoutSections();
     let accumulatedTime = 0;
@@ -449,7 +454,9 @@ function HomeContent() {
                 </div>
 
                 <div className="mb-4">
-                  <div className="font-bold mb-2">Progress:</div>
+                  <div className="font-bold mb-2">
+                    Progress: {formatTime(getRemainingTime())} left
+                  </div>
                   <div className="progress-bar">
                     {getWorkoutProgression().map((item, index) => (
                       <div
@@ -471,10 +478,10 @@ function HomeContent() {
                 {/* Add this new section for wake lock info */}
                 {isSupported && (
                   <div className="text-center mt-4">
-                    <p className={isActive ? "" : "italic text-gray-500"}>
+                    <p className="italic text-gray-500">
                       {isActive
                         ? "Screen will stay awake during workout"
-                        : "Screen may sleep during inactivity"}
+                        : ""}
                     </p>
                   </div>
                 )}
