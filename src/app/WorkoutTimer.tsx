@@ -1,10 +1,10 @@
 // WorkoutTimer.tsx
 import React, { useEffect } from 'react';
 import { WorkoutProvider, useWorkoutContext } from './WorkoutContext';
-import { CountdownDisplay } from './CountdownDisplay';
-import { ProgressBar } from './ProgressBar';
-import { ControlButtons } from './ControlButtons';
-import { WorkoutSummary } from './WorkoutSummary';
+import { CountdownDisplay } from '@/components/CountdownDisplay';
+import { ProgressBar } from '@/components/ProgressBar';
+import { ControlButtons } from '@/components/ControlButtons';
+import { WorkoutSummary } from '@/components/WorkoutSummary';
 import { WorkoutData } from './types';
 
 interface WorkoutTimerProps {

@@ -1,18 +1,21 @@
 // TabataWorkout.ts
-import { TabataWorkout as TabataWorkoutData, TabataExercise, BaseSection } from './types';
+import { TabataWorkout as TabataWorkoutData, BaseExercise, BaseSection, WorkoutSection } from './types';
 import { Workout } from './Workout';
 
-type WorkoutSection = BaseSection | (TabataExercise & { duration: number, isRest: boolean });
+type TabataSection = WorkoutSection & {
+  isRest: boolean;
+};
 
 export class TabataWorkout extends Workout {
-  type = 'tabata';
-  duration: number;
-  sections: WorkoutSection[];
+  readonly type = 'tabata';
+  readonly duration: number;
+  readonly sections: ReadonlyArray<WorkoutSection>;
 
   constructor(data: TabataWorkoutData) {
     super(data);
-    const tabataExercises = data.workout.exercises.flatMap(exercise => [
-      { ...exercise, duration: data.workout.workDuration, isRest: false },
+    this.validateWorkoutData(data);
+    const tabataExercises: TabataSection[] = data.workout.exercises.flatMap(exercise => [
+      { ...exercise, name: exercise.name, duration: data.workout.workDuration, isRest: false },
       { name: 'Rest', duration: data.workout.restDuration, isRest: true }
     ]);
     this.sections = [
@@ -20,29 +23,40 @@ export class TabataWorkout extends Workout {
       ...Array(data.workout.rounds).fill(tabataExercises).flat(),
       ...data.coolDown
     ];
-    this.duration = this.sections.reduce((total, section) => total + section.duration, 0);
+    this.duration = this.calculateTotalDuration();
+  }
+
+  private validateWorkoutData(data: TabataWorkoutData): void {
+    if (data.workout.workDuration === undefined) {
+      throw new Error('Tabata work duration must be defined');
+    }
+    if (data.workout.restDuration === undefined) {
+      throw new Error('Tabata rest duration must be defined');
+    }
+    const allSections = [
+      ...data.warmUp,
+      ...data.workout.exercises,
+      ...data.coolDown
+    ];
+    allSections.forEach((section, index) => {
+      if (section.duration === undefined) {
+        throw new Error(`Section duration must be defined. Undefined duration found at index ${index}`);
+      }
+    });
+  }
+
+  private calculateTotalDuration(): number {
+    return this.sections.reduce((total, section) => total + this.getSectionDuration(section), 0);
   }
 
   getCurrentSection(time: number): WorkoutSection {
-    let accumulatedTime = 0;
-    for (const section of this.sections) {
-      accumulatedTime += section.duration;
-      if (time < accumulatedTime) {
-        return section;
-      }
-    }
-    return this.sections[this.sections.length - 1];
+    return this.getSectionAtTime(time)[0];
   }
 
   getNextSection(time: number): WorkoutSection | null {
-    let accumulatedTime = 0;
-    for (let i = 0; i < this.sections.length; i++) {
-      accumulatedTime += this.sections[i].duration;
-      if (time < accumulatedTime) {
-        return i < this.sections.length - 1 ? this.sections[i + 1] : null;
-      }
-    }
-    return null;
+    const [currentSection, sectionTime] = this.getSectionAtTime(time);
+    const currentIndex = this.sections.indexOf(currentSection);
+    return currentIndex < this.sections.length - 1 ? this.sections[currentIndex + 1] : null;
   }
 
   getProgress(time: number): number {
@@ -51,6 +65,17 @@ export class TabataWorkout extends Workout {
 
   isRestPeriod(time: number): boolean {
     const currentSection = this.getCurrentSection(time);
-    return 'isRest' in currentSection && currentSection.isRest;
+    return this.isTabataSection(currentSection) && currentSection.isRest;
+  }
+
+  protected getSectionDuration(section: WorkoutSection): number {
+    if (section.duration === undefined) {
+      throw new Error(`Undefined duration found in section: ${section.name}`);
+    }
+    return section.duration;
+  }
+
+  private isTabataSection(section: WorkoutSection): section is TabataSection {
+    return 'isRest' in section;
   }
 }

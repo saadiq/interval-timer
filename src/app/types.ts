@@ -13,6 +13,8 @@ export interface BaseExercise {
   description?: string;
 }
 
+export type WorkoutSection = BaseSection | BaseExercise;
+
 export interface BaseWorkout {
   type: string;
   warmUp: BaseSection[];

@@ -1,6 +1,6 @@
 // ControlButtons.tsx
 import React, { useState } from 'react';
-import { useWorkoutContext } from './WorkoutContext';
+import { useWorkoutContext } from '@/app/WorkoutContext';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const ControlButtons: React.FC = () => {
@@ -26,15 +26,23 @@ export const ControlButtons: React.FC = () => {
   };
 
   const handlePrevious = () => {
-    const newTime = Math.max(0, time - workout.getCurrentSection(time).duration);
-    setTime(newTime);
-    setIsRunning(false);
+    const currentSection = workout.getCurrentSection(time);
+    if (currentSection) {
+      const newTime = Math.max(0, time - (currentSection.duration ?? 0));
+      setTime(newTime);
+      setIsRunning(false);
+    }
   };
 
   const handleNext = () => {
     const nextSection = workout.getNextSection(time);
     if (nextSection) {
-      const newTime = workout.sections.slice(0, workout.sections.indexOf(nextSection)).reduce((total, section) => total + section.duration, 0);
+      const newTime = workout.sections.reduce((total, section, index) => {
+        if (workout.sections.indexOf(nextSection) > index) {
+          return total + (section.duration ?? 0);
+        }
+        return total;
+      }, 0);
       setTime(newTime);
     } else {
       setTime(workout.duration);

@@ -1,7 +1,8 @@
 // WorkoutSummary.tsx
 import React, { useState } from 'react';
-import { useWorkoutContext } from './WorkoutContext';
+import { useWorkoutContext } from '@/app/WorkoutContext';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { WorkoutSection } from '@/app/types'; // Assuming you have this type defined
 
 export const WorkoutSummary: React.FC = () => {
   const { workout, time } = useWorkoutContext();
@@ -11,7 +12,8 @@ export const WorkoutSummary: React.FC = () => {
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
-  const formatTime = (seconds: number) => {
+  const formatTime = (seconds: number | undefined) => {
+    if (seconds === undefined) return '00:00';
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -20,12 +22,20 @@ export const WorkoutSummary: React.FC = () => {
   const getCurrentSectionIndex = () => {
     let accumulatedTime = 0;
     for (let i = 0; i < workout.sections.length; i++) {
-      accumulatedTime += workout.sections[i].duration;
+      accumulatedTime += workout.sections[i].duration ?? 0;
       if (time < accumulatedTime) {
         return i;
       }
     }
     return workout.sections.length - 1;
+  };
+
+  const getSectionClassName = (section: WorkoutSection, index: number) => {
+    let className = 'section-item';
+    if (index === getCurrentSectionIndex()) {
+      className += ' section-item-active';
+    }
+    return className;
   };
 
   return (
@@ -44,10 +54,9 @@ export const WorkoutSummary: React.FC = () => {
           {workout.sections.map((section, index) => (
             <div 
               key={index} 
-              className={`section-item ${index === getCurrentSectionIndex() ? 'section-item-active' : ''}`}
+              className={getSectionClassName(section, index)}
             >
               <div className="flex items-center">
-                <span className={`section-color-indicator ${section.color}`}></span>
                 <span className="ml-2">{section.name}</span>
               </div>
               <span>{formatTime(section.duration)}</span>

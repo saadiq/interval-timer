@@ -1,6 +1,7 @@
 // CountdownDisplay.tsx
 import React from 'react';
-import { useWorkoutContext } from './WorkoutContext';
+import { useWorkoutContext } from '@/app/WorkoutContext';
+import { WorkoutSection } from '@/app/types'; // Assuming you have this type defined
 
 export const CountdownDisplay: React.FC = () => {
   const { workout, time } = useWorkoutContext();
@@ -9,7 +10,10 @@ export const CountdownDisplay: React.FC = () => {
 
   const currentSection = workout.getCurrentSection(time);
   const nextSection = workout.getNextSection(time);
-  const timeRemaining = currentSection.duration - (time % currentSection.duration);
+  
+  if (!currentSection) return <div>No current section found</div>;
+
+  const timeRemaining = calculateTimeRemaining(currentSection, time);
 
   return (
     <div>
@@ -27,6 +31,12 @@ export const CountdownDisplay: React.FC = () => {
       </div>
     </div>
   );
+};
+
+const calculateTimeRemaining = (section: WorkoutSection, currentTime: number): number => {
+  if (section.duration === undefined) return 0;
+  const sectionProgress = currentTime % section.duration;
+  return Math.max(0, section.duration - sectionProgress);
 };
 
 const formatTime = (timeInSeconds: number): string => {

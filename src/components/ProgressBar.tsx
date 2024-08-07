@@ -1,6 +1,6 @@
 // ProgressBar.tsx
 import React from 'react';
-import { useWorkoutContext } from './WorkoutContext';
+import { useWorkoutContext } from '@/app/WorkoutContext';
 
 const formatTime = (timeInSeconds: number): string => {
   const minutes = Math.floor(timeInSeconds / 60);
