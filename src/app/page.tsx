@@ -75,6 +75,7 @@ function HomeContent() {
   const workoutViewRef = useRef<HTMLDivElement>(null);
   const [countdownState, setCountdownState] = useState<'ready' | 'countdown' | 'go' | null>('ready');
   const [countdown, setCountdown] = useState<number>(3);
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Add this line
 
   const getWorkoutForDate = useCallback((targetDate: string): [WorkoutData, string] | null => {
     const dates = Object.keys(typedWorkoutsData).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
@@ -114,7 +115,7 @@ function HomeContent() {
       month: '2-digit',
       day: '2-digit'
     };
-    
+
     const nyDate = new Date().toLocaleString('en-US', options);
     const [month, day, year] = nyDate.split('/');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
@@ -123,6 +124,7 @@ function HomeContent() {
   useEffect(() => {
     const dateParam = searchParams.get('date');
     const targetDate = dateParam || getNewYorkDate();
+    setIsLoading(true); // Set loading to true before fetching data
     const workoutResult = getWorkoutForDate(targetDate);
     if (workoutResult) {
       const [workoutData, workoutDate] = workoutResult;
@@ -139,7 +141,9 @@ function HomeContent() {
       setWorkout([]);
       setCountdownState(null);
     }
+    setIsLoading(false); // Set loading to false after data is processed
   }, [getWorkoutForDate, parseWorkout, searchParams]);
+
 
   const getWorkoutProgression = useCallback(() => {
     let progression: { section: WorkoutSection; isCircuit: boolean; repetition: number; startTime: number }[] = [];
@@ -418,8 +422,13 @@ function HomeContent() {
     <div className="workout-timer">
       <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold mb-4 text-center">{workoutTitle}</h1>
 
-      {workout.length > 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        </div>
+      ) : workout.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6 h-full flex flex-col justify-between">
               <div>
