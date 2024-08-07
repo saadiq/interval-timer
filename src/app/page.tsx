@@ -107,9 +107,22 @@ function HomeContent() {
     return [...warmUp, ...circuit, ...coolDown];
   }, []);
 
+  const getNewYorkDate = (): string => {
+    const options: Intl.DateTimeFormatOptions = {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    };
+    
+    const nyDate = new Date().toLocaleString('en-US', options);
+    const [month, day, year] = nyDate.split('/');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
+
   useEffect(() => {
     const dateParam = searchParams.get('date');
-    const targetDate = dateParam || new Date().toISOString().split('T')[0];
+    const targetDate = dateParam || getNewYorkDate();
     const workoutResult = getWorkoutForDate(targetDate);
     if (workoutResult) {
       const [workoutData, workoutDate] = workoutResult;
