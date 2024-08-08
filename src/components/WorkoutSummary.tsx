@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { WorkoutData, BaseSection, BaseExercise } from '@/app/types';
@@ -17,7 +17,21 @@ export const WorkoutSummary: React.FC = () => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const renderSectionGroup = (sections: BaseSection[] | BaseExercise[], title: string, repetitions?: number) => {
+  const colorAssignments = useMemo(() => {
+    const warmUpColors = workoutData.warmUp.map(() => 'bg-yellow-300');
+    const mainWorkoutColors = workoutData.workout.exercises.map((_, index) => 
+      index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
+    );
+    const coolDownColors = workoutData.coolDown.map(() => 'bg-yellow-300');
+
+    return {
+      warmUp: warmUpColors,
+      mainWorkout: mainWorkoutColors,
+      coolDown: coolDownColors
+    };
+  }, [workoutData]);
+
+  const renderSectionGroup = (sections: BaseSection[] | BaseExercise[], title: string, repetitions?: number, sectionType: 'warmUp' | 'mainWorkout' | 'coolDown' = 'mainWorkout') => {
     if (sections.length === 0) return null;
 
     const groupDuration = sections.reduce((total, section) => total + (section.duration || 0), 0) * (repetitions || 1);
@@ -27,28 +41,21 @@ export const WorkoutSummary: React.FC = () => {
         <h3 className="font-bold mb-2">
           {title}{repetitions && repetitions > 1 ? ` (x${repetitions})` : ''}: {formatTime(groupDuration)}
         </h3>
-        {sections.map((section, index) => renderSection(section, index))}
+        {sections.map((section, index) => renderSection(section, index, sectionType))}
       </div>
     );
   };
 
-  const renderSection = (section: BaseSection | BaseExercise, index: number) => {
+  const renderSection = (section: BaseSection | BaseExercise, index: number, sectionType: 'warmUp' | 'mainWorkout' | 'coolDown') => {
     return (
       <div key={index} className="section-item">
         <div className="flex items-center">
-          <span className={`section-color-indicator ${getColorClass(section)}`}></span>
+          <span className={`section-color-indicator ${colorAssignments[sectionType][index]}`}></span>
           <span className="ml-2">{section.name}</span>
         </div>
         <span>{formatTime(section.duration || 0)}</span>
       </div>
     );
-  };
-
-  const getColorClass = (section: BaseSection | BaseExercise): string => {
-    if ('isWarmup' in section) return 'bg-yellow-300';
-    if ('isCircuit' in section) return 'bg-blue-300';
-    if ('isCooldown' in section) return 'bg-green-300';
-    return 'bg-gray-300';
   };
 
   const getRepetitions = (workoutData: WorkoutData): number => {
@@ -72,13 +79,14 @@ export const WorkoutSummary: React.FC = () => {
       </button>
       {isExpanded && (
         <div className="expanded-view">
-          {renderSectionGroup(workoutData.warmUp, 'Warm-up')}
+          {renderSectionGroup(workoutData.warmUp, 'Warm-up', 1, 'warmUp')}
           {renderSectionGroup(
             workoutData.workout.exercises, 
             workout.type.charAt(0).toUpperCase() + workout.type.slice(1),
-            getRepetitions(workoutData)
+            getRepetitions(workoutData),
+            'mainWorkout'
           )}
-          {renderSectionGroup(workoutData.coolDown, 'Cool-down')}
+          {renderSectionGroup(workoutData.coolDown, 'Cool-down', 1, 'coolDown')}
         </div>
       )}
     </div>
