@@ -1,4 +1,3 @@
-// AMRAPWorkout.ts
 import { AMRAPWorkout as AMRAPWorkoutData, BaseExercise, BaseSection, WorkoutSection, WorkoutData } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '../util/colorUtils';
@@ -18,17 +17,19 @@ export class AMRAPWorkout extends Workout {
     super(data, sectionsWithColor);
     
     this.validateWorkoutData(data);
-    const amrapSection: AMRAPSection = {
+    const amrapSection: AMRAPSection & SectionWithColor = {
       name: 'AMRAP',
       duration: data.workout.duration,
       exercises: data.workout.exercises,
-      description: this.generateAmrapDescription(data.workout.exercises)
+      description: this.generateAmrapDescription(data.workout.exercises),
+      color: 'bg-blue-300' // Assign a color to the AMRAP section
     };
-    this.sections = sectionsWithColor;
-    this.amrapSection = sectionsWithColor.find(s => s.name === 'AMRAP') as (AMRAPSection & SectionWithColor) | null;
-    if (this.amrapSection) {
-      this.amrapSection.exercises = data.workout.exercises;
-    }
+    this.sections = [
+      ...data.warmUp.map(s => ({ ...s, color: 'bg-yellow-300' })),
+      amrapSection,
+      ...data.coolDown.map(s => ({ ...s, color: 'bg-yellow-300' }))
+    ];
+    this.amrapSection = amrapSection;
     this.duration = this.calculateTotalDuration();
   }
 
@@ -39,33 +40,15 @@ export class AMRAPWorkout extends Workout {
     if (data.workout.exercises.length === 0) {
       throw new Error('AMRAP workout must include at least one exercise');
     }
-    data.warmUp.concat(data.coolDown).forEach((section, index) => {
-      if (section.duration === undefined) {
-        throw new Error(`Section duration must be defined. Undefined duration found in ${index < data.warmUp.length ? 'warm-up' : 'cool-down'} section at index ${index % data.warmUp.length}`);
-      }
-    });
   }
 
   protected calculateTotalDuration(): number {
-    return this.sections.reduce((total, section) => total + this.getSectionDuration(section), 0);
+    return this.sections.reduce((total, section) => total + (section.duration || 0), 0);
   }
 
   private generateAmrapDescription(exercises: BaseExercise[]): string {
     const exerciseList = exercises.map(ex => `${ex.reps} ${ex.name}`).join(', ');
     return `Perform as many rounds as possible of: ${exerciseList}`;
-  }
-
-  protected getSectionAtTime(time: number): [SectionWithColor, number] {
-    let elapsedTime = 0;
-    for (const section of this.sections) {
-      const sectionDuration = this.getSectionDuration(section);
-      if (time < elapsedTime + sectionDuration) {
-        return [section, time - elapsedTime];
-      }
-      elapsedTime += sectionDuration;
-    }
-    const lastSection = this.sections[this.sections.length - 1];
-    return [lastSection, this.getSectionDuration(lastSection)];
   }
 
   getCurrentSection(time: number): SectionWithColor {
@@ -78,15 +61,17 @@ export class AMRAPWorkout extends Workout {
     return currentIndex < this.sections.length - 1 ? this.sections[currentIndex + 1] : null;
   }
 
-  getProgress(time: number): number {
-    return Math.min(time / this.duration, 1);
-  }
-
-  protected getSectionDuration(section: SectionWithColor): number {
-    if (section.duration === undefined) {
-      throw new Error(`Undefined duration found in section: ${section.name}`);
+  protected getSectionAtTime(time: number): [SectionWithColor, number] {
+    let elapsedTime = 0;
+    for (const section of this.sections) {
+      const sectionDuration = section.duration || 0;
+      if (time < elapsedTime + sectionDuration) {
+        return [section, time - elapsedTime];
+      }
+      elapsedTime += sectionDuration;
     }
-    return section.duration;
+    const lastSection = this.sections[this.sections.length - 1];
+    return [lastSection, this.duration - elapsedTime];
   }
 
   getAMRAPSection(): (AMRAPSection & SectionWithColor) | null {

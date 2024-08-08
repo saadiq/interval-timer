@@ -1,7 +1,9 @@
-// CountdownDisplay.tsx
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { WorkoutSection } from '@/app/types'; // Assuming you have this type defined
+import { WorkoutSection, BaseSection } from '@/app/types';
+import { AMRAPWorkout } from '@/app/AMRAPWorkout';
+import { Workout } from '@/app/Workout';
+import { SectionWithColor } from '@/util/colorUtils';
 
 export const CountdownDisplay: React.FC = () => {
   const { workout, time } = useWorkoutContext();
@@ -13,7 +15,7 @@ export const CountdownDisplay: React.FC = () => {
   
   if (!currentSection) return <div>No current section found</div>;
 
-  const timeRemaining = calculateTimeRemaining(currentSection, time);
+  const timeRemaining = calculateTimeRemaining(workout, currentSection, time);
 
   return (
     <div>
@@ -33,10 +35,30 @@ export const CountdownDisplay: React.FC = () => {
   );
 };
 
-const calculateTimeRemaining = (section: WorkoutSection, currentTime: number): number => {
-  if (section.duration === undefined) return 0;
-  const sectionProgress = currentTime % section.duration;
-  return Math.max(0, section.duration - sectionProgress);
+function isSectionWithColor(section: WorkoutSection): section is SectionWithColor {
+  return 'color' in section;
+}
+
+const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, currentTime: number): number => {
+  if (!isSectionWithColor(section)) {
+    console.warn('Section without color encountered:', section);
+    return section.duration || 0;
+  }
+
+  if (workout instanceof AMRAPWorkout && workout.isAMRAPSection(section)) {
+    const amrapSection = workout.getAMRAPSection();
+    if (amrapSection) {
+      const amrapStartTime = workout.sections
+        .slice(0, workout.sections.indexOf(section))
+        .reduce((total, s) => total + (s.duration || 0), 0);
+      return Math.max(0, amrapSection.duration - (currentTime - amrapStartTime));
+    }
+  }
+  
+  const sectionStart = workout.sections
+    .slice(0, workout.sections.indexOf(section))
+    .reduce((total, s) => total + (s.duration || 0), 0);
+  return Math.max(0, (section.duration || 0) - (currentTime - sectionStart));
 };
 
 const formatTime = (timeInSeconds: number): string => {
