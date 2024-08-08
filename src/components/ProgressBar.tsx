@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { SectionWithColor } from '@/util/colorUtils';
+import { TabataWorkout } from '@/app/TabataWorkout';
 
 export const ProgressBar: React.FC = () => {
   const { workout, time } = useWorkoutContext();
@@ -15,14 +16,38 @@ export const ProgressBar: React.FC = () => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const getAllSections = (): SectionWithColor[] => {
+    const warmUpSections = workout.data.warmUp.map(s => ({ ...s, color: 'bg-yellow-300' }));
+    const coolDownSections = workout.data.coolDown.map(s => ({ ...s, color: 'bg-yellow-300' }));
+
+    let mainWorkoutSections: SectionWithColor[];
+    if (workout instanceof TabataWorkout) {
+      const { exercises } = workout.getTabataInfo();
+      mainWorkoutSections = exercises.map((exercise, index) => ({
+        name: exercise.name,
+        duration: workout.getTabataSections().filter(s => s.exerciseIndex === index).reduce((total, s) => total + s.duration, 0),
+        color: workout.sections.find(s => s.name === exercise.name)?.color || ''
+      }));
+    } else {
+      mainWorkoutSections = workout.sections.filter(s => 
+        !workout.data.warmUp.some(w => w.name === s.name) && 
+        !workout.data.coolDown.some(c => c.name === s.name)
+      );
+    }
+
+    return [...warmUpSections, ...mainWorkoutSections, ...coolDownSections];
+  };
+
+  const sections = getAllSections();
+
   return (
     <div className="mb-4">
       <div className="font-bold mb-2">
         Progress: {formatTime(workout.duration - time)} left
       </div>
       <div className="progress-bar relative h-6 rounded-full overflow-hidden bg-gray-200">
-        {workout.sections.map((section: SectionWithColor, index: number) => {
-          const sectionStart = workout.sections.slice(0, index).reduce((total, s) => total + (s.duration || 0), 0);
+        {sections.map((section, index) => {
+          const sectionStart = sections.slice(0, index).reduce((total, s) => total + (s.duration || 0), 0);
           const sectionWidth = ((section.duration || 0) / workout.duration) * 100;
           return (
             <div

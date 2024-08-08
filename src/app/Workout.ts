@@ -1,28 +1,24 @@
 // Workout.ts
 
-import { WorkoutData, WorkoutSection, BaseSection, BaseExercise } from './types';
-import { SectionWithColor, assignColorsToWorkout } from '../util/colorUtils';
+import { WorkoutData, WorkoutSection } from './types';
+import { SectionWithColor } from '../util/colorUtils';
 
 export abstract class Workout {
   abstract readonly type: string;
   readonly duration: number;
   readonly sections: ReadonlyArray<SectionWithColor>;
 
-  constructor(public readonly data: WorkoutData) {
-    this.sections = assignColorsToWorkout(data);
+  constructor(public readonly data: WorkoutData, sections: SectionWithColor[]) {
+    this.sections = sections;
     this.duration = this.calculateTotalDuration();
   }
 
-  private calculateTotalDuration(): number {
+  protected calculateTotalDuration(): number {
     return this.sections.reduce((total, section) => total + (section.duration || 0), 0);
   }
 
   abstract getCurrentSection(time: number): WorkoutSection;
   abstract getNextSection(time: number): WorkoutSection | null;
-
-  protected getElapsedTime(time: number): number {
-    return Math.min(time, this.duration);
-  }
 
   getProgress(time: number): number {
     return Math.min(1, Math.max(0, time / this.duration));
@@ -39,27 +35,5 @@ export abstract class Workout {
     }
     const lastSection = this.sections[this.sections.length - 1];
     return [lastSection, (lastSection.duration || 0)];
-  }
-
-  protected isBaseSection(section: WorkoutSection): section is BaseSection {
-    return 'name' in section && 'duration' in section;
-  }
-
-  protected isBaseExercise(section: WorkoutSection): section is BaseExercise {
-    return 'name' in section && ('duration' in section || 'reps' in section);
-  }
-
-  protected getSectionDuration(section: WorkoutSection): number {
-    if (this.isBaseSection(section)) {
-      return section.duration;
-    } else if (this.isBaseExercise(section)) {
-      return section.duration ?? this.getDefaultExerciseDuration();
-    }
-    return 0;
-  }
-
-  protected getDefaultExerciseDuration(): number {
-    // You might want to adjust this value or make it configurable
-    return 30; // Default to 30 seconds if duration is not specified
   }
 }
