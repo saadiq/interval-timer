@@ -1,4 +1,4 @@
-// AMRAPWorkouts.ts
+// AMRAPWorkout.ts
 import { AMRAPWorkout as AMRAPWorkoutData, BaseExercise, BaseSection, WorkoutSection, WorkoutData } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '../util/colorUtils';
@@ -14,7 +14,9 @@ export class AMRAPWorkout extends Workout {
   private amrapSection: (AMRAPSection & SectionWithColor) | null = null;
 
   constructor(data: AMRAPWorkoutData) {
-    super(data);
+    const sectionsWithColor = assignColorsToWorkout(data);
+    super(data, sectionsWithColor);
+    
     this.validateWorkoutData(data);
     const amrapSection: AMRAPSection = {
       name: 'AMRAP',
@@ -22,12 +24,6 @@ export class AMRAPWorkout extends Workout {
       exercises: data.workout.exercises,
       description: this.generateAmrapDescription(data.workout.exercises)
     };
-    const sectionsWithoutColor = [
-      ...data.warmUp,
-      amrapSection,
-      ...data.coolDown
-    ];
-    const sectionsWithColor = assignColorsToWorkout(data);
     this.sections = sectionsWithColor;
     this.amrapSection = sectionsWithColor.find(s => s.name === 'AMRAP') as (AMRAPSection & SectionWithColor) | null;
     if (this.amrapSection) {
@@ -50,7 +46,7 @@ export class AMRAPWorkout extends Workout {
     });
   }
 
-  private calculateTotalDuration(): number {
+  protected calculateTotalDuration(): number {
     return this.sections.reduce((total, section) => total + this.getSectionDuration(section), 0);
   }
 

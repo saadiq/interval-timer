@@ -1,4 +1,5 @@
-import { CircuitWorkout as CircuitWorkoutData, BaseExercise, BaseSection, WorkoutSection, WorkoutData } from './types';
+// CircuitWorkout.ts
+import { CircuitWorkout as CircuitWorkoutData, BaseExercise, WorkoutSection, WorkoutData } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
 
@@ -6,16 +7,15 @@ export class CircuitWorkout extends Workout {
   readonly type = 'circuit';
   readonly duration: number;
   readonly sections: ReadonlyArray<SectionWithColor>;
+  readonly data: CircuitWorkoutData;  // Explicitly type the data property
 
   constructor(data: CircuitWorkoutData) {
-    super(data);
+    const sectionsWithColor = assignColorsToWorkout(data);
+    super(data, sectionsWithColor);
+    
+    this.data = data;  // Assign the data to the class property
     this.validateWorkoutData(data);
-    const sectionsWithoutColor = [
-      ...data.warmUp,
-      ...Array(data.workout.repetitions).fill(data.workout.exercises).flat(),
-      ...data.coolDown
-    ];
-    this.sections = assignColorsToWorkout(data);
+    this.sections = sectionsWithColor;
     this.duration = this.calculateTotalDuration();
   }
 
@@ -32,7 +32,7 @@ export class CircuitWorkout extends Workout {
     });
   }
 
-  private calculateTotalDuration(): number {
+  protected calculateTotalDuration(): number {
     return this.sections.reduce((total, section) => total + this.getSectionDuration(section), 0);
   }
 
