@@ -1,12 +1,16 @@
 // Workout.ts
+
 import { WorkoutSection, WorkoutData, BaseSection, BaseExercise } from './types';
+import { assignColorsToWorkout, SectionWithColor } from '@/util/colorUtils';
 
 export abstract class Workout {
   abstract readonly type: string;
   abstract readonly duration: number;
-  abstract readonly sections: ReadonlyArray<WorkoutSection>;
+  readonly sections: ReadonlyArray<SectionWithColor>;
 
-  constructor(public readonly data: WorkoutData) {}
+  constructor(public readonly data: WorkoutData) {
+    this.sections = assignColorsToWorkout(data);
+  }
 
   abstract getCurrentSection(time: number): WorkoutSection;
   abstract getNextSection(time: number): WorkoutSection | null;

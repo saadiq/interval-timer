@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { WorkoutData, BaseSection, BaseExercise } from '@/app/types';
+import { WorkoutData, BaseSection, BaseExercise, WorkoutSection } from '@/app/types';
+import { AMRAPWorkout } from '@/app/AMRAPWorkout';
+import { SectionWithColor } from '@/util/colorUtils';
 
 export const WorkoutSummary: React.FC = () => {
-  const { workout, workoutData } = useWorkoutContext();
+  const { workout } = useWorkoutContext();
   const [isExpanded, setIsExpanded] = useState(true);
 
-  if (!workout || !workoutData) return null;
+  if (!workout) return null;
 
   const toggleExpand = () => setIsExpanded(!isExpanded);
 
@@ -17,76 +19,74 @@ export const WorkoutSummary: React.FC = () => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const colorAssignments = useMemo(() => {
-    const warmUpColors = workoutData.warmUp.map(() => 'bg-yellow-300');
-    const mainWorkoutColors = workoutData.workout.exercises.map((_, index) => 
-      index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
-    );
-    const coolDownColors = workoutData.coolDown.map(() => 'bg-yellow-300');
-
-    return {
-      warmUp: warmUpColors,
-      mainWorkout: mainWorkoutColors,
-      coolDown: coolDownColors
-    };
-  }, [workoutData]);
-
-  const renderSectionGroup = (sections: BaseSection[] | BaseExercise[], title: string, repetitions?: number, sectionType: 'warmUp' | 'mainWorkout' | 'coolDown' = 'mainWorkout') => {
+  const renderSectionGroup = (sections: ReadonlyArray<SectionWithColor>, title: string) => {
     if (sections.length === 0) return null;
 
-    const groupDuration = sections.reduce((total, section) => total + (section.duration || 0), 0) * (repetitions || 1);
+    const groupDuration = sections.reduce((total, section) => total + (section.duration || 0), 0);
 
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold mb-2">
-          {title}{repetitions && repetitions > 1 ? ` (x${repetitions})` : ''}: {formatTime(groupDuration)}
+          {title}: {formatTime(groupDuration)}
         </h3>
-        {sections.map((section, index) => renderSection(section, index, sectionType))}
+        {sections.map((section, index) => renderSection(section, index))}
       </div>
     );
   };
 
-  const renderSection = (section: BaseSection | BaseExercise, index: number, sectionType: 'warmUp' | 'mainWorkout' | 'coolDown') => {
+  const renderSection = (section: SectionWithColor, index: number) => {
     return (
-      <div key={index} className="section-item">
+      <div key={index} className="section-item flex items-center justify-between">
         <div className="flex items-center">
-          <span className={`section-color-indicator ${colorAssignments[sectionType][index]}`}></span>
-          <span className="ml-2">{section.name}</span>
+          <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
+          <span>{section.name}</span>
         </div>
-        <span>{formatTime(section.duration || 0)}</span>
+        <div>
+          {section.duration !== undefined && <span>{formatTime(section.duration)}</span>}
+          {'reps' in section && section.reps !== undefined && <span>{section.reps} reps</span>}
+        </div>
       </div>
     );
   };
 
-  const getRepetitions = (workoutData: WorkoutData): number => {
-    switch (workoutData.type) {
-      case 'circuit':
-        return workoutData.workout.repetitions;
-      case 'tabata':
-        return workoutData.workout.rounds;
-      default:
-        return 1;
+  const renderAMRAPSection = (amrapWorkout: AMRAPWorkout) => {
+    const amrapSection = amrapWorkout.getAMRAPSection();
+    if (!amrapSection) {
+      return null; // or some fallback UI
     }
+    return (
+      <div className="workout-section mt-4">
+        <h3 className="font-bold mb-2">
+          AMRAP: {formatTime(amrapSection.duration)}
+        </h3>
+        <p className="mb-2">Perform as many rounds as possible of:</p>
+        {amrapSection.exercises && amrapSection.exercises.map((exercise, index) => 
+          renderSection({ ...exercise, color: amrapSection.color }, index)
+        )}
+      </div>
+    );
+  };
+
+  const isWarmUpOrCoolDown = (section: SectionWithColor): boolean => {
+    return workout.data.warmUp.some(s => s.name === section.name) || 
+           workout.data.coolDown.some(s => s.name === section.name);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
-      <button onClick={toggleExpand} className="expand-button">
+      <button onClick={toggleExpand} className="expand-button w-full flex justify-between items-center">
         <span className="font-bold">
           Full Workout ({workout.type}): {formatTime(workout.duration)}
         </span>
         {isExpanded ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
       </button>
       {isExpanded && (
-        <div className="expanded-view">
-          {renderSectionGroup(workoutData.warmUp, 'Warm-up', 1, 'warmUp')}
-          {renderSectionGroup(
-            workoutData.workout.exercises, 
-            workout.type.charAt(0).toUpperCase() + workout.type.slice(1),
-            getRepetitions(workoutData),
-            'mainWorkout'
-          )}
-          {renderSectionGroup(workoutData.coolDown, 'Cool-down', 1, 'coolDown')}
+        <div className="expanded-view mt-4">
+          {renderSectionGroup(workout.sections.filter(s => workout.data.warmUp.some(w => w.name === s.name)), 'Warm-up')}
+          {workout instanceof AMRAPWorkout 
+            ? renderAMRAPSection(workout) 
+            : renderSectionGroup(workout.sections.filter(s => !isWarmUpOrCoolDown(s)), 'Workout')}
+          {renderSectionGroup(workout.sections.filter(s => workout.data.coolDown.some(c => c.name === s.name)), 'Cool-down')}
         </div>
       )}
     </div>
