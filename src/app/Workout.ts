@@ -1,39 +1,44 @@
 // Workout.ts
 
-import { WorkoutSection, WorkoutData, BaseSection, BaseExercise } from './types';
-import { assignColorsToWorkout, SectionWithColor } from '@/util/colorUtils';
+import { WorkoutData, WorkoutSection, BaseSection, BaseExercise } from './types';
+import { SectionWithColor, assignColorsToWorkout } from '../util/colorUtils';
 
 export abstract class Workout {
   abstract readonly type: string;
-  abstract readonly duration: number;
+  readonly duration: number;
   readonly sections: ReadonlyArray<SectionWithColor>;
 
   constructor(public readonly data: WorkoutData) {
     this.sections = assignColorsToWorkout(data);
+    this.duration = this.calculateTotalDuration();
+  }
+
+  private calculateTotalDuration(): number {
+    return this.sections.reduce((total, section) => total + (section.duration || 0), 0);
   }
 
   abstract getCurrentSection(time: number): WorkoutSection;
   abstract getNextSection(time: number): WorkoutSection | null;
 
-  getProgress(time: number): number {
-    return Math.min(1, Math.max(0, time / this.duration));
-  }
-
   protected getElapsedTime(time: number): number {
     return Math.min(time, this.duration);
   }
 
-  protected getSectionAtTime(time: number): [WorkoutSection, number] {
+  getProgress(time: number): number {
+    return Math.min(1, Math.max(0, time / this.duration));
+  }
+
+  protected getSectionAtTime(time: number): [SectionWithColor, number] {
     let elapsedTime = 0;
     for (const section of this.sections) {
-      const sectionDuration = this.getSectionDuration(section);
+      const sectionDuration = section.duration || 0;
       if (time < elapsedTime + sectionDuration) {
         return [section, time - elapsedTime];
       }
       elapsedTime += sectionDuration;
     }
     const lastSection = this.sections[this.sections.length - 1];
-    return [lastSection, this.getSectionDuration(lastSection)];
+    return [lastSection, (lastSection.duration || 0)];
   }
 
   protected isBaseSection(section: WorkoutSection): section is BaseSection {

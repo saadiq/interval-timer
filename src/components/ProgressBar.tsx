@@ -1,46 +1,19 @@
-// ProgressBar.tsx
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { WorkoutSection, BaseSection } from '@/app/types';
-
-const formatTime = (timeInSeconds: number): string => {
-  const minutes = Math.floor(timeInSeconds / 60);
-  const seconds = Math.floor(timeInSeconds % 60);
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-};
+import { SectionWithColor } from '@/util/colorUtils';
 
 export const ProgressBar: React.FC = () => {
-  const { workout, workoutData, time } = useWorkoutContext();
+  const { workout, time } = useWorkoutContext();
 
-  if (!workout || !workoutData) return null;
+  if (!workout) return null;
 
   const progress = workout.getProgress(time);
 
-  const getSectionColor = useMemo(() => {
-    const warmUpColors = workoutData.warmUp.map(() => 'bg-yellow-300');
-    const coolDownColors = workoutData.coolDown.map(() => 'bg-yellow-300');
-    let mainWorkoutColors: string[];
-    
-    if (workoutData.type === 'amrap') {
-      mainWorkoutColors = workoutData.workout.exercises.map(() => 'bg-blue-300');
-    } else if (workoutData.type === 'circuit') {
-      mainWorkoutColors = workoutData.workout.exercises.map((_, index) => 
-        index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
-      );
-    } else { // tabata
-      mainWorkoutColors = workoutData.workout.exercises.flatMap(() => ['bg-blue-300', 'bg-red-300']);
-    }
-
-    return (section: WorkoutSection, index: number): string => {
-      if (workoutData.warmUp.includes(section as BaseSection)) {
-        return warmUpColors[workoutData.warmUp.indexOf(section as BaseSection)];
-      } else if (workoutData.coolDown.includes(section as BaseSection)) {
-        return coolDownColors[workoutData.coolDown.indexOf(section as BaseSection)];
-      } else {
-        return mainWorkoutColors[index % mainWorkoutColors.length];
-      }
-    };
-  }, [workoutData]);
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className="mb-4">
@@ -48,14 +21,13 @@ export const ProgressBar: React.FC = () => {
         Progress: {formatTime(workout.duration - time)} left
       </div>
       <div className="progress-bar relative h-6 rounded-full overflow-hidden bg-gray-200">
-        {workout.sections.map((section, index) => {
+        {workout.sections.map((section: SectionWithColor, index: number) => {
           const sectionStart = workout.sections.slice(0, index).reduce((total, s) => total + (s.duration || 0), 0);
-          const sectionWidth = (section.duration || 0) / workout.duration * 100;
-          const color = getSectionColor(section, index);
+          const sectionWidth = ((section.duration || 0) / workout.duration) * 100;
           return (
             <div
               key={index}
-              className={`absolute top-0 h-full ${color}`}
+              className={`absolute top-0 h-full ${section.color}`}
               style={{
                 left: `${(sectionStart / workout.duration) * 100}%`,
                 width: `${sectionWidth}%`
