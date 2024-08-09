@@ -48,7 +48,7 @@ export class AMRAPWorkout extends Workout {
 
   private generateAmrapDescription(exercises: BaseExercise[]): string {
     const exerciseList = exercises.map(ex => `${ex.reps} ${ex.name}`).join(', ');
-    return `Perform as many rounds as possible of: ${exerciseList}`;
+    return `${exerciseList}`;
   }
 
   getCurrentSection(time: number): SectionWithColor {

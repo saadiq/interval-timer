@@ -16,6 +16,8 @@ export const CountdownDisplay: React.FC = () => {
   if (!currentSection) return <div>No current section found</div>;
 
   const timeRemaining = calculateTimeRemaining(workout, currentSection, time);
+  const isLastSection = workout.sections[workout.sections.length - 1] === currentSection;
+  const isWorkoutComplete = isLastSection && timeRemaining <= 0;
 
   return (
     <div>
@@ -23,13 +25,13 @@ export const CountdownDisplay: React.FC = () => {
         {formatTime(timeRemaining)}
       </div>
       <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-center">
-        {currentSection.name}
+        {isWorkoutComplete ? 'Workout Complete' : currentSection.name}
       </div>
       <div className="text-base sm:text-lg mb-2 text-center">
-        {currentSection.description || '\u00A0'}
+        {isWorkoutComplete ? 'Great job! 🎉' : currentSection.description || '\u00A0'}
       </div>
       <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 text-center">
-        {nextSection ? `Next: ${nextSection.name}` : 'Workout Complete'}
+        {isWorkoutComplete ? '\u00A0' : nextSection ? `Next: ${nextSection.name}` : '\u00A0'}
       </div>
     </div>
   );

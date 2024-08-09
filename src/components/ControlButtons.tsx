@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
-import { SectionWithColor } from '@/util/colorUtils';
 
 export const ControlButtons: React.FC = () => {
   const { workout, time, setTime, isRunning, setIsRunning } = useWorkoutContext();
@@ -17,28 +16,31 @@ export const ControlButtons: React.FC = () => {
 
   const handlePrevious = useCallback(() => {
     if (!workout) return;
-    const currentSection = workout.getCurrentSection(time);
-    if (currentSection) {
-      const newTime = Math.max(0, time - (currentSection.duration ?? 0));
-      setTime(newTime);
-      setIsRunning(false);
+    let newTime = time;
+    for (let i = workout.sections.length - 1; i >= 0; i--) {
+      const section = workout.sections[i];
+      const sectionStartTime = workout.sections.slice(0, i).reduce((total, s) => total + (s.duration ?? 0), 0);
+      if (sectionStartTime < time) {
+        newTime = sectionStartTime;
+        break;
+      }
     }
+    setTime(Math.max(0, newTime));
+    setIsRunning(false);
   }, [workout, time, setTime, setIsRunning]);
 
   const handleNext = useCallback(() => {
     if (!workout) return;
-    const nextSection = workout.getNextSection(time);
-    if (nextSection) {
-      const newTime = workout.sections.reduce((total, section) => {
-        if (workout.sections.indexOf(nextSection as SectionWithColor) > workout.sections.indexOf(section)) {
-          return total + (section.duration ?? 0);
-        }
-        return total;
-      }, 0);
-      setTime(newTime);
-    } else {
-      setTime(workout.duration);
+    let newTime = time;
+    for (let i = 0; i < workout.sections.length; i++) {
+      const section = workout.sections[i];
+      const sectionEndTime = workout.sections.slice(0, i + 1).reduce((total, s) => total + (s.duration ?? 0), 0);
+      if (sectionEndTime > time) {
+        newTime = sectionEndTime;
+        break;
+      }
     }
+    setTime(Math.min(newTime, workout.duration));
     setIsRunning(false);
   }, [workout, time, setTime, setIsRunning]);
 
