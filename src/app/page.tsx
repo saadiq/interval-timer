@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { WorkoutTimer } from './WorkoutTimer';
 import { WorkoutData } from '../workouts/types';
@@ -28,7 +28,7 @@ async function fetchWorkoutData(date: string): Promise<WorkoutData> {
   return data as WorkoutData;
 }
 
-export default function WorkoutPage() {
+const WorkoutPageContent: React.FC = () => {
   const searchParams = useSearchParams();
   const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,4 +66,12 @@ export default function WorkoutPage() {
   }
 
   return <WorkoutTimer workoutData={workoutData} />;
+}
+
+export default function WorkoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WorkoutPageContent />
+    </Suspense>
+  );
 }
