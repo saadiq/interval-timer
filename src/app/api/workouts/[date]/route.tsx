@@ -1,7 +1,7 @@
 // app/api/workouts/[date]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import workoutsData from '@/data/workouts.json';
-import { WorkoutDataMap } from '@/app/types';
+import { WorkoutDataMap } from '@/workouts/types';
 
 // Type assertion to treat the imported JSON as WorkoutDataMap type
 const workouts = workoutsData as unknown as WorkoutDataMap;

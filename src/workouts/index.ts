@@ -7,4 +7,4 @@ export { TabataWorkout } from './TabataWorkout';
 export { WorkoutFactory } from './WorkoutFactory';
 
 // You can also export types if they're defined in these files
-export type { WorkoutData, WorkoutSection, BaseSection, BaseExercise } from './types';
+export type { WorkoutData, WorkoutDataMap, WorkoutSection, BaseSection, BaseExercise } from './types';

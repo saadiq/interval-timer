@@ -1,6 +1,6 @@
 // colorUtils.ts
 
-import { WorkoutData, WorkoutSection } from '@/app/types';
+import { WorkoutData, WorkoutSection } from '@/workouts/types';
 
 export type SectionWithColor = WorkoutSection & { color: string };
 
