@@ -6,13 +6,25 @@ import { ProgressBar } from '@/components/ProgressBar';
 import { ControlButtons } from '@/components/ControlButtons';
 import { WorkoutSummary } from '@/components/WorkoutSummary';
 import { WorkoutData } from './types';
+import { useWakeLock } from '@/hooks/useWakeLock';
 
 interface WorkoutTimerProps {
   workoutData: WorkoutData;
 }
 
 const WorkoutTimerContent: React.FC = () => {
-  const { workout } = useWorkoutContext();
+  const { workout, isRunning } = useWorkoutContext();
+  const { isSupported, request, release } = useWakeLock();
+
+  useEffect(() => {
+    if (isSupported) {
+      if (isRunning) {
+        request();
+      } else {
+        release();
+      }
+    }
+  }, [isRunning, isSupported, request, release]);
 
   if (!workout) {
     return <div>Loading workout...</div>;
