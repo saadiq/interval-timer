@@ -16,9 +16,8 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
       index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
     )).flat();
   } else { // tabata
-    mainWorkoutColors = Array(workoutData.workout.rounds).fill(
-      workoutData.workout.exercises.flatMap(() => ['bg-blue-300', 'bg-red-300']) // Work and rest periods
-    ).flat();
+    // Remove Tabata-specific logic here, as it will be handled in the TabataWorkout class
+    mainWorkoutColors = [];
   }
 
   const coloredSections: SectionWithColor[] = [
