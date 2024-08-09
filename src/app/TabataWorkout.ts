@@ -2,20 +2,10 @@ import { TabataWorkout as TabataWorkoutData, BaseExercise, WorkoutSection, BaseS
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
 
-const tabataColors: string[] = [
-  'bg-blue-500',
-  'bg-green-500',
-  // 'bg-yellow-500',
-  'bg-red-500',
-  'bg-purple-500',
-  'bg-pink-500',
-  'bg-indigo-500',
-  'bg-teal-500',
-];
-
 interface TabataSection extends BaseSection {
   isRest: boolean;
   exerciseIndex: number;
+  color: string;
 }
 
 export class TabataWorkout extends Workout {
@@ -33,7 +23,10 @@ export class TabataWorkout extends Workout {
     super(data, coloredSections);
     
     this.validateWorkoutData(data);
-    this.tabataSections = tabataSections;
+    this.tabataSections = tabataSections.map((section, index) => ({
+      ...section,
+      color: coloredSections[data.warmUp.length + index].color
+    }));
   }
 
   private validateWorkoutData(data: TabataWorkoutData): void {
@@ -61,13 +54,15 @@ export class TabataWorkout extends Workout {
           name: exercise.name,
           duration: workDuration,
           isRest: false,
-          exerciseIndex: index
+          exerciseIndex: index,
+          color: '' // This will be filled in later
         });
         sections.push({
           name: 'Rest',
           duration: restDuration,
           isRest: true,
-          exerciseIndex: index
+          exerciseIndex: index,
+          color: '' // This will be filled in later
         });
       });
     }
@@ -103,7 +98,10 @@ export class TabataWorkout extends Workout {
     const warmUpColors = data.warmUp.map(() => 'bg-yellow-300');
     const coolDownColors = data.coolDown.map(() => 'bg-yellow-300');
     
-    const exerciseColors: string[] = data.workout.exercises.map((_, index) => tabataColors[index % tabataColors.length]);
+    const exerciseColors: string[] = data.workout.exercises.map((_, index) => {
+      const colors = ['bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500'];
+      return colors[index % colors.length];
+    });
     
     return sections.map((section, index): SectionWithColor => {
       if (index < data.warmUp.length) {
@@ -115,5 +113,18 @@ export class TabataWorkout extends Workout {
         return { ...section, color: tabataSection.isRest ? 'bg-gray-300' : exerciseColors[tabataSection.exerciseIndex] };
       }
     });
+  }
+
+  protected getSectionAtTime(time: number): [SectionWithColor, number] {
+    let elapsedTime = 0;
+    for (const section of this.sections) {
+      const sectionDuration = section.duration || 0;
+      if (time < elapsedTime + sectionDuration) {
+        return [section, time - elapsedTime];
+      }
+      elapsedTime += sectionDuration;
+    }
+    const lastSection = this.sections[this.sections.length - 1];
+    return [lastSection, this.duration - elapsedTime];
   }
 }

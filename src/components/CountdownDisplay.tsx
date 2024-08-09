@@ -2,6 +2,7 @@ import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { WorkoutSection, BaseSection } from '@/app/types';
 import { AMRAPWorkout } from '@/app/AMRAPWorkout';
+import { TabataWorkout } from '@/app/TabataWorkout';
 import { Workout } from '@/app/Workout';
 import { SectionWithColor } from '@/util/colorUtils';
 
@@ -18,6 +19,10 @@ export const CountdownDisplay: React.FC = () => {
   const timeRemaining = calculateTimeRemaining(workout, currentSection, time);
   const isLastSection = workout.sections[workout.sections.length - 1] === currentSection;
   const isWorkoutComplete = isLastSection && timeRemaining <= 0;
+
+  const formatTime = (seconds: number): string => {
+    return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+  };
 
   return (
     <div>
@@ -61,10 +66,4 @@ const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, curre
     .slice(0, workout.sections.indexOf(section))
     .reduce((total, s) => total + (s.duration || 0), 0);
   return Math.max(0, (section.duration || 0) - (currentTime - sectionStart));
-};
-
-const formatTime = (timeInSeconds: number): string => {
-  const minutes = Math.floor(timeInSeconds / 60);
-  const seconds = Math.floor(timeInSeconds % 60);
-  return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };

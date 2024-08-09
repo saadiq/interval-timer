@@ -22,11 +22,10 @@ export const ProgressBar: React.FC = () => {
 
     let mainWorkoutSections: SectionWithColor[];
     if (workout instanceof TabataWorkout) {
-      const { exercises } = workout.getTabataInfo();
-      mainWorkoutSections = exercises.map((exercise, index) => ({
-        name: exercise.name,
-        duration: workout.getTabataSections().filter(s => s.exerciseIndex === index).reduce((total, s) => total + s.duration, 0),
-        color: workout.sections.find(s => s.name === exercise.name)?.color || ''
+      mainWorkoutSections = workout.getTabataSections().map(s => ({
+        name: s.name,
+        duration: s.duration,
+        color: s.color
       }));
     } else {
       mainWorkoutSections = workout.sections.filter(s => 

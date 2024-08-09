@@ -13,11 +13,6 @@ const formatTime = (seconds: number): string => {
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
-const tabataColors: string[] = [
-  'bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-purple-500',
-  'bg-pink-500', 'bg-indigo-500', 'bg-teal-500',
-];
-
 export const WorkoutSummary: React.FC = () => {
   const { workout, time } = useWorkoutContext();
 
@@ -55,22 +50,38 @@ export const WorkoutSummary: React.FC = () => {
   const renderTabataSummary = (tabataWorkout: TabataWorkout) => {
     const { workDuration, restDuration, rounds, exercises } = tabataWorkout.getTabataInfo();
     const totalTabataTime = (workDuration + restDuration) * rounds * exercises.length;
+    const tabataSections = tabataWorkout.getTabataSections();
+
+    const currentSectionIndex = tabataSections.findIndex(section => {
+      const sectionStart = tabataWorkout.sections.slice(0, tabataWorkout.sections.indexOf(section as SectionWithColor)).reduce((total, s) => total + (s.duration || 0), 0);
+      const sectionEnd = sectionStart + (section.duration || 0);
+      return time >= sectionStart && time < sectionEnd;
+    });
 
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
-          Tabata: {formatTime(totalTabataTime)}
+          Tabata (x{rounds}): {formatTime(totalTabataTime)}
         </h3>
         <div className="ml-4">
-          <p className="mb-2">
-            Work: {formatTime(workDuration)}, Rest: {formatTime(restDuration)}, Rounds: {rounds}
-          </p>
           <ul className="space-y-1">
-            {exercises.map((exercise, index) => (
-              <li key={index} className="flex items-center">
-                <span className={`section-color-indicator ${tabataColors[index % tabataColors.length]} w-4 h-4 rounded-full inline-block mr-2`}></span>
-                {exercise.name}
-              </li>
+            {exercises.map((exercise, exerciseIndex) => (
+              <React.Fragment key={exerciseIndex}>
+                <li className={`flex items-center justify-between ${currentSectionIndex === exerciseIndex * 2 ? 'bg-gray-200' : ''}`}>
+                  <div className="flex items-center">
+                    <span className={`section-color-indicator ${tabataSections[exerciseIndex * 2].color} w-4 h-4 rounded-full inline-block mr-2`}></span>
+                    <span>{exercise.name}</span>
+                  </div>
+                  <span>{formatTime(workDuration)}</span>
+                </li>
+                <li className={`flex items-center justify-between ${currentSectionIndex === exerciseIndex * 2 + 1 ? 'bg-gray-200' : ''}`}>
+                  <div className="flex items-center">
+                    <span className="section-color-indicator bg-gray-300 w-4 h-4 rounded-full inline-block mr-2"></span>
+                    <span>Rest</span>
+                  </div>
+                  <span>{formatTime(restDuration)}</span>
+                </li>
+              </React.Fragment>
             ))}
           </ul>
         </div>
