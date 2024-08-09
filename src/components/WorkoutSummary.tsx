@@ -1,9 +1,6 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { TabataWorkout } from '@/workouts/TabataWorkout';
-import { CircuitWorkout } from '@/workouts/CircuitWorkout';
-import { AMRAPWorkout } from '@/workouts/AMRAPWorkout';
-import { Workout } from '@/workouts/Workout';
+import { TabataWorkout, CircuitWorkout, AMRAPWorkout, Workout, BaseExercise } from '@/workouts';
 import { SectionWithColor } from '@/util/colorUtils';
 
 const formatTime = (seconds: number): string => {
@@ -91,7 +88,7 @@ export const WorkoutSummary: React.FC = () => {
   const renderAMRAPSummary = (amrapWorkout: AMRAPWorkout) => {
     const amrapSection = amrapWorkout.getAMRAPSection();
     if (!amrapSection) return null;
-
+  
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
@@ -100,7 +97,7 @@ export const WorkoutSummary: React.FC = () => {
         <div className="ml-4">
           <p className="mb-2">As many rounds as possible of:</p>
           <ul className="space-y-1">
-            {amrapSection.exercises.map((exercise, index) => (
+            {amrapSection.exercises.map((exercise: BaseExercise, index: number) => (
               <li key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className={`section-color-indicator bg-blue-300 w-4 h-4 rounded-full inline-block mr-2`}></span>

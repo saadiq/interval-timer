@@ -43,24 +43,28 @@ function isSectionWithColor(section: WorkoutSection): section is SectionWithColo
   return 'color' in section;
 }
 
+function isSectionWithDuration(section: WorkoutSection): section is WorkoutSection & { duration: number } {
+  return 'duration' in section && typeof section.duration === 'number';
+}
+
 const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, currentTime: number): number => {
-  if (!isSectionWithColor(section)) {
-    console.warn('Section without color encountered:', section);
-    return section.duration || 0;
+  if (!isSectionWithColor(section) || !isSectionWithDuration(section)) {
+    console.warn('Section without color or duration encountered:', section);
+    return 0;
   }
 
   if (workout instanceof AMRAPWorkout && workout.isAMRAPSection(section)) {
     const amrapSection = workout.getAMRAPSection();
-    if (amrapSection) {
+    if (amrapSection && isSectionWithDuration(amrapSection)) {
       const amrapStartTime = workout.sections
         .slice(0, workout.sections.indexOf(section))
-        .reduce((total, s) => total + (s.duration || 0), 0);
+        .reduce((total, s) => total + (isSectionWithDuration(s) ? s.duration : 0), 0);
       return Math.max(0, amrapSection.duration - (currentTime - amrapStartTime));
     }
   }
   
   const sectionStart = workout.sections
     .slice(0, workout.sections.indexOf(section))
-    .reduce((total, s) => total + (s.duration || 0), 0);
-  return Math.max(0, (section.duration || 0) - (currentTime - sectionStart));
+    .reduce((total, s) => total + (isSectionWithDuration(s) ? s.duration : 0), 0);
+  return Math.max(0, section.duration - (currentTime - sectionStart));
 };
