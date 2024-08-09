@@ -1,7 +1,7 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { SectionWithColor } from '@/util/colorUtils';
-import { TabataWorkout } from '@/app/TabataWorkout';
+import { TabataWorkout } from '@/workouts';
 
 export const ProgressBar: React.FC = () => {
   const { workout, time } = useWorkoutContext();

@@ -1,9 +1,6 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { WorkoutSection, BaseSection } from '@/app/types';
-import { AMRAPWorkout } from '@/app/AMRAPWorkout';
-import { TabataWorkout } from '@/app/TabataWorkout';
-import { Workout } from '@/app/Workout';
+import {AMRAPWorkout, Workout, WorkoutSection} from '@/workouts';
 import { SectionWithColor } from '@/util/colorUtils';
 
 export const CountdownDisplay: React.FC = () => {

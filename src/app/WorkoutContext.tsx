@@ -1,8 +1,7 @@
 // WorkoutContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Workout } from './Workout';
-import { WorkoutData } from './types';
-import { WorkoutFactory } from './WorkoutFactory';
+import { Workout, WorkoutData, WorkoutFactory } from '@/workouts';
+
 
 interface WorkoutContextType {
   workout: Workout | null;

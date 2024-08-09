@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { WorkoutTimer } from './WorkoutTimer';
-import { WorkoutData } from './types';
+import { WorkoutData } from '../workouts/types';
 
 const getNewYorkDate = (): string => {
   const options: Intl.DateTimeFormatOptions = {

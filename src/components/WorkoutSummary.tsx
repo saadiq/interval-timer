@@ -1,11 +1,10 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { TabataWorkout } from '@/app/TabataWorkout';
-import { CircuitWorkout } from '@/app/CircuitWorkout';
-import { AMRAPWorkout } from '@/app/AMRAPWorkout';
-import { Workout } from '@/app/Workout';
+import { TabataWorkout } from '@/workouts/TabataWorkout';
+import { CircuitWorkout } from '@/workouts/CircuitWorkout';
+import { AMRAPWorkout } from '@/workouts/AMRAPWorkout';
+import { Workout } from '@/workouts/Workout';
 import { SectionWithColor } from '@/util/colorUtils';
-import { BaseExercise } from '@/app/types';
 
 const formatTime = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);

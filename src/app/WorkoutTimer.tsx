@@ -5,7 +5,7 @@ import { CountdownDisplay } from '@/components/CountdownDisplay';
 import { ProgressBar } from '@/components/ProgressBar';
 import { ControlButtons } from '@/components/ControlButtons';
 import { WorkoutSummary } from '@/components/WorkoutSummary';
-import { WorkoutData } from './types';
+import { WorkoutData } from '@/workouts';
 import { useWakeLock } from '@/hooks/useWakeLock';
 
 interface WorkoutTimerProps {
