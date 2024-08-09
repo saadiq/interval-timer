@@ -273,11 +273,6 @@
       {
         "name": "Jumping Jacks",
         "duration": 60
-      },
-      {
-        "name": "Inchworms",
-        "duration": 60,
-        "description": "Stand up, reach down to the floor, walk hands forward into a plank, and then walk back up"
       }
     ],
     "circuit": {
@@ -285,28 +280,32 @@
       "exercises": [
         {
           "name": "Bodyweight Squats",
-          "duration": 40,
+          "duration": 45,
           "description": "Focus on controlled descent and explosive rise"
         },
         {
           "name": "Push-Ups",
-          "duration": 40,
+          "duration": 45,
           "description": "Adjust to knees if needed"
         },
         {
           "name": "Reverse Lunges",
-          "duration": 40,
+          "duration": 45,
           "description": "Alternating legs"
         },
         {
           "name": "Plank with Shoulder Taps",
-          "duration": 40,
+          "duration": 45,
           "description": "Maintain a strong plank position, tap each shoulder alternating hands"
         },
         {
           "name": "Mountain Climbers",
-          "duration": 40,
+          "duration": 45,
           "description": "Maintain a fast, controlled pace"
+        },
+        {
+          "name": "Burpees",
+          "duration": 45
         }
       ]
     },
@@ -319,11 +318,6 @@
         "name": "Hip Flexor Stretch",
         "duration": 60,
         "description": "30 seconds per side, kneeling lunge position"
-      },
-      {
-        "name": "Child’s Pose",
-        "duration": 60,
-        "description": "Kneel on the floor, sit back on heels, and stretch arms forward"
       }
     ]
   }
