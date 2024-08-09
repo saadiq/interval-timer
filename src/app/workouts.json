@@ -1,4 +1,61 @@
 {
+  "2024-08-05": {
+    "warmUp": [
+      {
+        "name": "Dynamic Stretches",
+        "duration": 60
+      },
+      {
+        "name": "Jumping Jacks",
+        "duration": 60
+      }
+    ],
+    "circuit": {
+      "repetitions": 3,
+      "exercises": [
+        {
+          "name": "High Knees",
+          "duration": 40
+        },
+        {
+          "name": "Push-Ups",
+          "duration": 30
+        },
+        {
+          "name": "Squats",
+          "duration": 40
+        },
+        {
+          "name": "Mountain Climbers",
+          "duration": 30
+        },
+        {
+          "name": "Burpees",
+          "duration": 40
+        },
+        {
+          "name": "Lunges",
+          "duration": 30,
+          "description": "Alternating legs"
+        },
+        {
+          "name": "Plank",
+          "duration": 40
+        },
+        {
+          "name": "Bicycle Crunches",
+          "duration": 30
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Cool Down",
+        "duration": 120,
+        "description": "Stretch: calves, hamstrings, shoulders, and arms"
+      }
+    ]
+  },
   "2024-08-06": {
     "warmUp": [
       {
@@ -196,60 +253,77 @@
       }
     ]
   },
-  "2024-08-05": {
+  "2024-08-09": {
     "warmUp": [
       {
-        "name": "Dynamic Stretches",
-        "duration": 60
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "30 seconds forward and 30 seconds backward"
+      },
+      {
+        "name": "Leg Swings",
+        "duration": 60,
+        "description": "30 seconds per leg, front to back"
+      },
+      {
+        "name": "Hip Circles",
+        "duration": 60,
+        "description": "30 seconds each direction"
       },
       {
         "name": "Jumping Jacks",
         "duration": 60
+      },
+      {
+        "name": "Inchworms",
+        "duration": 60,
+        "description": "Stand up, reach down to the floor, walk hands forward into a plank, and then walk back up"
       }
     ],
     "circuit": {
       "repetitions": 3,
       "exercises": [
         {
-          "name": "High Knees",
-          "duration": 40
+          "name": "Bodyweight Squats",
+          "duration": 40,
+          "description": "Focus on controlled descent and explosive rise"
         },
         {
           "name": "Push-Ups",
-          "duration": 30
+          "duration": 40,
+          "description": "Adjust to knees if needed"
         },
         {
-          "name": "Squats",
-          "duration": 40
-        },
-        {
-          "name": "Mountain Climbers",
-          "duration": 30
-        },
-        {
-          "name": "Burpees",
-          "duration": 40
-        },
-        {
-          "name": "Lunges",
-          "duration": 30,
+          "name": "Reverse Lunges",
+          "duration": 40,
           "description": "Alternating legs"
         },
         {
-          "name": "Plank",
-          "duration": 40
+          "name": "Plank with Shoulder Taps",
+          "duration": 40,
+          "description": "Maintain a strong plank position, tap each shoulder alternating hands"
         },
         {
-          "name": "Bicycle Crunches",
-          "duration": 30
+          "name": "Mountain Climbers",
+          "duration": 40,
+          "description": "Maintain a fast, controlled pace"
         }
       ]
     },
     "coolDown": [
       {
-        "name": "Cool Down",
-        "duration": 120,
-        "description": "Stretch: calves, hamstrings, shoulders, and arms"
+        "name": "Forward Fold",
+        "duration": 60
+      },
+      {
+        "name": "Hip Flexor Stretch",
+        "duration": 60,
+        "description": "30 seconds per side, kneeling lunge position"
+      },
+      {
+        "name": "Child’s Pose",
+        "duration": 60,
+        "description": "Kneel on the floor, sit back on heels, and stretch arms forward"
       }
     ]
   }
