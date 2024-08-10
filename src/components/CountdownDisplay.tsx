@@ -1,39 +1,49 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import {AMRAPWorkout, Workout, WorkoutSection} from '@/workouts';
+import { AMRAPWorkout, Workout, WorkoutSection } from '@/workouts';
 import { SectionWithColor } from '@/util/colorUtils';
 
 export const CountdownDisplay: React.FC = () => {
-  const { workout, time } = useWorkoutContext();
+  const { workout, time, isPreWorkout, preWorkoutCountdown } = useWorkoutContext();
 
   if (!workout) return null;
 
   const currentSection = workout.getCurrentSection(time);
   const nextSection = workout.getNextSection(time);
   
-  if (!currentSection) return <div>No current section found</div>;
+  if (!currentSection && !isPreWorkout) return <div>No current section found</div>;
 
-  const timeRemaining = calculateTimeRemaining(workout, currentSection, time);
+  const timeRemaining = isPreWorkout ? 0 : calculateTimeRemaining(workout, currentSection!, time);
   const isLastSection = workout.sections[workout.sections.length - 1] === currentSection;
-  const isWorkoutComplete = isLastSection && timeRemaining <= 0;
+  const isWorkoutComplete = !isPreWorkout && isLastSection && timeRemaining <= 0;
 
   const formatTime = (seconds: number): string => {
     return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
   };
 
+  const renderPreWorkoutDisplay = () => {
+    if (preWorkoutCountdown === null) {
+      return "Ready?";
+    } else if (preWorkoutCountdown === 0) {
+      return "Go!";
+    } else {
+      return preWorkoutCountdown.toString();
+    }
+  };
+
   return (
     <div>
       <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
-        {formatTime(timeRemaining)}
+        {isPreWorkout ? renderPreWorkoutDisplay() : formatTime(timeRemaining)}
       </div>
       <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-center">
-        {isWorkoutComplete ? 'Workout Complete' : currentSection.name}
+        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Workout Complete' : currentSection!.name)}
       </div>
       <div className="text-base sm:text-lg mb-2 text-center">
-        {isWorkoutComplete ? 'Great job! 🎉' : currentSection.description || '\u00A0'}
+        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Great job! 🎉' : currentSection!.description || '\u00A0')}
       </div>
       <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 text-center">
-        {isWorkoutComplete ? '\u00A0' : nextSection ? `Next: ${nextSection.name}` : '\u00A0'}
+        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : nextSection ? `Next: ${nextSection.name}` : '\u00A0')}
       </div>
     </div>
   );

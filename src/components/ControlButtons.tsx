@@ -3,16 +3,31 @@ import { useWorkoutContext } from '@/app/WorkoutContext';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export const ControlButtons: React.FC = () => {
-  const { workout, time, setTime, isRunning, setIsRunning } = useWorkoutContext();
+  const { 
+    workout, 
+    time, 
+    setTime, 
+    isRunning, 
+    setIsRunning, 
+    isPreWorkout,
+    setIsPreWorkout,
+    preWorkoutCountdown,
+    setPreWorkoutCountdown,
+    startPreWorkoutCountdown,
+    resetWorkout
+  } = useWorkoutContext();
 
   const handleStartStop = useCallback(() => {
-    setIsRunning(!isRunning);
-  }, [setIsRunning, isRunning]);
+    if (isPreWorkout && preWorkoutCountdown === null) {
+      startPreWorkoutCountdown();
+    } else {
+      setIsRunning(!isRunning);
+    }
+  }, [isPreWorkout, preWorkoutCountdown, isRunning, setIsRunning, startPreWorkoutCountdown]);
 
   const handleReset = useCallback(() => {
-    setTime(0);
-    setIsRunning(false);
-  }, [setTime, setIsRunning]);
+    resetWorkout();
+  }, [resetWorkout]);
 
   const handlePrevious = useCallback(() => {
     if (!workout) return;
@@ -27,7 +42,8 @@ export const ControlButtons: React.FC = () => {
     }
     setTime(Math.max(0, newTime));
     setIsRunning(false);
-  }, [workout, time, setTime, setIsRunning]);
+    setIsPreWorkout(false);
+  }, [workout, time, setTime, setIsRunning, setIsPreWorkout]);
 
   const handleNext = useCallback(() => {
     if (!workout) return;
@@ -42,24 +58,36 @@ export const ControlButtons: React.FC = () => {
     }
     setTime(Math.min(newTime, workout.duration));
     setIsRunning(false);
-  }, [workout, time, setTime, setIsRunning]);
+    setIsPreWorkout(false);
+  }, [workout, time, setTime, setIsRunning, setIsPreWorkout]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
-    if (isRunning && workout) {
-      intervalId = setInterval(() => {
-        const newTime = time + 1;
-        if (newTime >= workout.duration) {
-          clearInterval(intervalId);
-          setIsRunning(false);
-          setTime(workout.duration);
-        } else {
-          setTime(newTime);
-        }
-      }, 1000);
+    if (isRunning) {
+      if (preWorkoutCountdown !== null) {
+        intervalId = setInterval(() => {
+          if (preWorkoutCountdown > 0) {
+            setPreWorkoutCountdown(preWorkoutCountdown - 1);
+          } else {
+            setPreWorkoutCountdown(null);
+            setIsPreWorkout(false);
+          }
+        }, 1000);
+      } else if (workout && !isPreWorkout) {
+        intervalId = setInterval(() => {
+          const newTime = time + 1;
+          if (newTime >= workout.duration) {
+            clearInterval(intervalId);
+            setIsRunning(false);
+            setTime(workout.duration);
+          } else {
+            setTime(newTime);
+          }
+        }, 1000);
+      }
     }
     return () => clearInterval(intervalId);
-  }, [isRunning, setTime, workout, setIsRunning, time]);
+  }, [isRunning, setTime, workout, setIsRunning, time, preWorkoutCountdown, setPreWorkoutCountdown, setIsPreWorkout, isPreWorkout]);
 
   if (!workout) return null;
 

@@ -1,7 +1,5 @@
-// WorkoutContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Workout, WorkoutData, WorkoutFactory } from '@/workouts';
-
 
 interface WorkoutContextType {
   workout: Workout | null;
@@ -11,6 +9,12 @@ interface WorkoutContextType {
   setTime: (time: number) => void;
   isRunning: boolean;
   setIsRunning: (isRunning: boolean) => void;
+  isPreWorkout: boolean;
+  setIsPreWorkout: (isPreWorkout: boolean) => void;
+  preWorkoutCountdown: number | null;
+  setPreWorkoutCountdown: (countdown: number | null) => void;
+  startPreWorkoutCountdown: () => void;
+  resetWorkout: () => void;
 }
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
@@ -25,6 +29,8 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [isPreWorkout, setIsPreWorkout] = useState(true);
+  const [preWorkoutCountdown, setPreWorkoutCountdown] = useState<number | null>(null);
 
   useEffect(() => {
     if (workoutData) {
@@ -32,6 +38,18 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
       setWorkout(newWorkout);
     }
   }, [workoutData]);
+
+  const startPreWorkoutCountdown = () => {
+    setPreWorkoutCountdown(3);
+    setIsRunning(true);
+  };
+
+  const resetWorkout = () => {
+    setTime(0);
+    setIsRunning(false);
+    setIsPreWorkout(true);
+    setPreWorkoutCountdown(null);
+  };
 
   return (
     <WorkoutContext.Provider 
@@ -42,7 +60,13 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
         time, 
         setTime, 
         isRunning, 
-        setIsRunning 
+        setIsRunning,
+        isPreWorkout,
+        setIsPreWorkout,
+        preWorkoutCountdown,
+        setPreWorkoutCountdown,
+        startPreWorkoutCountdown,
+        resetWorkout
       }}
     >
       {children}
