@@ -1,3 +1,4 @@
+// src/workouts/AMRAPWorkout.ts
 import { AMRAPWorkout as AMRAPWorkoutData, BaseExercise, BaseSection, WorkoutSection, WorkoutData } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '../util/colorUtils';
@@ -49,16 +50,6 @@ export class AMRAPWorkout extends Workout {
   private generateAmrapDescription(exercises: BaseExercise[]): string {
     const exerciseList = exercises.map(ex => `${ex.reps} ${ex.name}`).join(', ');
     return `${exerciseList}`;
-  }
-
-  getCurrentSection(time: number): SectionWithColor {
-    return this.getSectionAtTime(time)[0];
-  }
-
-  getNextSection(time: number): SectionWithColor | null {
-    const [currentSection, sectionTime] = this.getSectionAtTime(time);
-    const currentIndex = this.sections.indexOf(currentSection);
-    return currentIndex < this.sections.length - 1 ? this.sections[currentIndex + 1] : null;
   }
 
   protected getSectionAtTime(time: number): [SectionWithColor, number] {

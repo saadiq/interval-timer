@@ -1,3 +1,4 @@
+// src/workouts/TabataWorkout.ts
 import { TabataWorkout as TabataWorkoutData, BaseExercise, WorkoutSection, BaseSection } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
@@ -68,16 +69,6 @@ export class TabataWorkout extends Workout {
     }
 
     return sections;
-  }
-
-  getCurrentSection(time: number): SectionWithColor {
-    return this.getSectionAtTime(time)[0];
-  }
-
-  getNextSection(time: number): SectionWithColor | null {
-    const [currentSection, sectionTime] = this.getSectionAtTime(time);
-    const currentIndex = this.sections.indexOf(currentSection);
-    return currentIndex < this.sections.length - 1 ? this.sections[currentIndex + 1] : null;
   }
 
   getTabataInfo(): { workDuration: number; restDuration: number; rounds: number; exercises: BaseExercise[] } {

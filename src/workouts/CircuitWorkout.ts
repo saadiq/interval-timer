@@ -1,4 +1,4 @@
-// CircuitWorkout.ts
+// src/workouts/CircuitWorkout.ts
 import { CircuitWorkout as CircuitWorkoutData, BaseExercise, WorkoutSection, WorkoutData } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
@@ -47,16 +47,6 @@ export class CircuitWorkout extends Workout {
     }
     const lastSection = this.sections[this.sections.length - 1];
     return [lastSection, this.getSectionDuration(lastSection)];
-  }
-
-  getCurrentSection(time: number): SectionWithColor {
-    return this.getSectionAtTime(time)[0];
-  }
-
-  getNextSection(time: number): SectionWithColor | null {
-    const [currentSection, sectionTime] = this.getSectionAtTime(time);
-    const currentIndex = this.sections.indexOf(currentSection);
-    return currentIndex < this.sections.length - 1 ? this.sections[currentIndex + 1] : null;
   }
 
   getProgress(time: number): number {

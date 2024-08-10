@@ -1,4 +1,4 @@
-// Workout.ts
+// src/workouts/Workout.ts
 
 import { WorkoutData, WorkoutSection } from './types';
 import { SectionWithColor } from '../util/colorUtils';
@@ -17,8 +17,15 @@ export abstract class Workout {
     return this.sections.reduce((total, section) => total + (section.duration || 0), 0);
   }
 
-  abstract getCurrentSection(time: number): WorkoutSection;
-  abstract getNextSection(time: number): WorkoutSection | null;
+  getCurrentSection(time: number): SectionWithColor {
+    return this.getSectionAtTime(time)[0];
+  }
+
+  getNextSection(time: number): SectionWithColor | null {
+    const [currentSection, sectionTime] = this.getSectionAtTime(time);
+    const currentIndex = this.sections.indexOf(currentSection);
+    return currentIndex < this.sections.length - 1 ? this.sections[currentIndex + 1] : null;
+  }
 
   getProgress(time: number): number {
     return Math.min(1, Math.max(0, time / this.duration));
