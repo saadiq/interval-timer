@@ -320,5 +320,76 @@
         "description": "30 seconds per side, kneeling lunge position"
       }
     ]
+  },
+  "2024-08-10": {
+    "warmUp": [
+      {
+        "name": "Torso Twists",
+        "duration": 60,
+        "description": "Standing, rotate upper body side to side"
+      },
+      {
+        "name": "Knee Hugs",
+        "duration": 60,
+        "description": "Alternate bringing each knee to chest while standing"
+      },
+      {
+        "name": "Lateral Leg Swings",
+        "duration": 60,
+        "description": "30 seconds per leg, side to side"
+      },
+      {
+        "name": "Butt Kicks",
+        "duration": 60,
+        "description": "Jog in place, bringing heels to glutes"
+      }
+    ],
+    "circuit": {
+      "repetitions": 3,
+      "exercises": [
+        {
+          "name": "Jump Squats",
+          "duration": 45,
+          "description": "Squat down and explode into a jump"
+        },
+        {
+          "name": "Diamond Push-Ups",
+          "duration": 45,
+          "description": "Hands close together under chest"
+        },
+        {
+          "name": "Curtsy Lunges",
+          "duration": 45,
+          "description": "Cross one leg behind the other as you lunge"
+        },
+        {
+          "name": "Side Plank with Reach-Through",
+          "duration": 45,
+          "description": "Alternate sides each round"
+        },
+        {
+          "name": "High Knees",
+          "duration": 45,
+          "description": "Run in place, bringing knees up to waist level"
+        },
+        {
+          "name": "Flutter Kicks",
+          "duration": 45,
+          "description": "Lie on your back, legs straight, and alternate kicking"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Standing Quad Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, pull ankle toward glute"
+      },
+      {
+        "name": "Seated Forward Fold",
+        "duration": 60,
+        "description": "Sit on the floor, legs straight, and reach for toes"
+      }
+    ]
   }
 }
