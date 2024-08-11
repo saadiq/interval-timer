@@ -3,9 +3,6 @@ import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import workoutsData from '@/data/workouts.json';
 import { WorkoutDataMap, WorkoutData } from '@/workouts/types';
-import { CircuitWorkout } from '@/workouts/CircuitWorkout';
-import { AMRAPWorkout } from '@/workouts/AMRAPWorkout';
-import { TabataWorkout } from '@/workouts/TabataWorkout';
 
 export const runtime = 'edge';
 
@@ -57,6 +54,8 @@ export async function GET(req: NextRequest) {
     mainWorkoutTime = workout.workout.duration;
   } else if (workout.type === 'tabata') {
     mainWorkoutTime = (workout.workout.workDuration + workout.workout.restDuration) * workout.workout.rounds * workout.workout.exercises.length;
+  } else if (workout.type === 'emom') {
+    mainWorkoutTime = workout.workout.rounds * workout.workout.exercises.length * 60; // 60 seconds per minute
   }
 
   const totalTime = warmUpTime + mainWorkoutTime + coolDownTime;
@@ -90,7 +89,7 @@ export async function GET(req: NextRequest) {
             <path d="M15 14a5 5 0 0 0-7.584 2" />
             <path d="M9.964 6.825C8.019 7.977 9.5 13 8 15" />
           </svg>
-          {workout.type.charAt(0).toUpperCase() + workout.type.slice(1)} Workout for {workoutDate}
+          {workout.type.toUpperCase()} Workout for {workoutDate}
         </span>
         <span style={{ fontSize: 36, marginBottom: '20px', textAlign: 'center', color: 'rgb(107, 114, 128)', display: 'flex', alignItems: 'center' }}>
           {/* Timer icon */}
@@ -101,44 +100,64 @@ export async function GET(req: NextRequest) {
           Total Time: {formatTime(totalTime)}
         </span>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '800px' }}>
           {workout.type === 'circuit' && (
             <>
-              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', textAlign: 'center', color: 'rgb(59, 130, 246)' }}>
+              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 Circuit ({workout.workout.repetitions}x):
               </span>
-              {workout.workout.exercises.map((exercise, index) => (
-                <span key={index} style={{ fontSize: 18, marginBottom: '5px', textAlign: 'center', color: 'rgb(31, 41, 55)' }}>
-                  {exercise.name} ({formatTime(exercise.duration || 0)})
-                </span>
-              ))}
+              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                {workout.workout.exercises.map((exercise, index) => (
+                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
+                    {exercise.name} ({formatTime(exercise.duration || 0)})
+                  </li>
+                ))}
+              </ul>
             </>
           )}
           {workout.type === 'amrap' && (
             <>
-              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', textAlign: 'center', color: 'rgb(59, 130, 246)' }}>
+              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 AMRAP ({formatTime(workout.workout.duration)}):
               </span>
-              {workout.workout.exercises.map((exercise, index) => (
-                <span key={index} style={{ fontSize: 18, marginBottom: '5px', textAlign: 'center', color: 'rgb(31, 41, 55)' }}>
-                  {exercise.name} ({exercise.reps} reps)
-                </span>
-              ))}
+              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                {workout.workout.exercises.map((exercise, index) => (
+                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
+                    {exercise.name} ({exercise.reps} reps)
+                  </li>
+                ))}
+              </ul>
             </>
           )}
           {workout.type === 'tabata' && (
             <>
-              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', textAlign: 'center', color: 'rgb(59, 130, 246)' }}>
+              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 Tabata ({workout.workout.rounds} rounds):
               </span>
-              <span style={{ fontSize: 18, marginBottom: '10px', textAlign: 'center', color: 'rgb(31, 41, 55)' }}>
+              <span style={{ fontSize: 18, marginBottom: '10px', color: 'rgb(31, 41, 55)' }}>
                 Work: {formatTime(workout.workout.workDuration)} / Rest: {formatTime(workout.workout.restDuration)}
               </span>
-              {workout.workout.exercises.map((exercise, index) => (
-                <span key={index} style={{ fontSize: 18, marginBottom: '5px', textAlign: 'center', color: 'rgb(31, 41, 55)' }}>
-                  {exercise.name}
-                </span>
-              ))}
+              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                {workout.workout.exercises.map((exercise, index) => (
+                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
+                    {exercise.name}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          {workout.type === 'emom' && (
+            <>
+              <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
+                EMOM ({workout.workout.rounds} rounds):
+              </span>
+              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
+                {workout.workout.exercises.map((exercise, index) => (
+                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
+                    {exercise.name}
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </div>
