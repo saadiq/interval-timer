@@ -1,9 +1,10 @@
-// workouts/index.ts
+// src/workouts/index.ts
 
 export { Workout } from './Workout';
 export { CircuitWorkout } from './CircuitWorkout';
 export { AMRAPWorkout } from './AMRAPWorkout';
 export { TabataWorkout } from './TabataWorkout';
+export { EMOMWorkout } from './EMOMWorkout';
 export { WorkoutFactory } from './WorkoutFactory';
 
 // You can also export types if they're defined in these files

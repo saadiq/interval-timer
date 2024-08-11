@@ -1,25 +1,32 @@
-// WorkoutFactory.ts
-import { Workout } from './Workout';
-import { CircuitWorkout } from './CircuitWorkout';
-import { AMRAPWorkout } from './AMRAPWorkout';
-import { TabataWorkout } from './TabataWorkout';
-import { WorkoutData } from './types';
+// src/workouts/WorkoutFactory.ts
+import {
+  Workout,
+  CircuitWorkout,
+  AMRAPWorkout,
+  TabataWorkout,
+  EMOMWorkout,
+  WorkoutData,
+} from "./";
 
 export class WorkoutFactory {
   static createWorkout(data: WorkoutData): Workout {
-    if (!data || typeof data !== 'object') {
+    if (!data || typeof data !== "object") {
       throw new Error(`Invalid workout data: ${JSON.stringify(data)}`);
     }
 
     switch (data.type) {
-      case 'circuit':
+      case "circuit":
         return new CircuitWorkout(data);
-      case 'amrap':
+      case "amrap":
         return new AMRAPWorkout(data);
-      case 'tabata':
+      case "tabata":
         return new TabataWorkout(data);
+      case "emom":
+        return new EMOMWorkout(data);
       default:
-        throw new Error(`Unsupported workout type: ${(data as WorkoutData).type}`);
+        throw new Error(
+          `Unsupported workout type: ${(data as WorkoutData).type}`
+        );
     }
   }
 }

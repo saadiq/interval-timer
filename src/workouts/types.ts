@@ -1,4 +1,4 @@
-// types.ts
+// src/workouts/types.ts
 
 export interface BaseSection {
   name: string;
@@ -47,7 +47,15 @@ export interface TabataWorkout extends BaseWorkout {
   };
 }
 
-export type WorkoutData = CircuitWorkout | AMRAPWorkout | TabataWorkout;
+export interface EMOMWorkout extends BaseWorkout {
+  type: 'emom';
+  workout: {
+    rounds: number;
+    exercises: BaseExercise[];
+  };
+}
+
+export type WorkoutData = CircuitWorkout | AMRAPWorkout | TabataWorkout | EMOMWorkout;
 
 export type WorkoutDataMap = {
   [date: string]: WorkoutData;

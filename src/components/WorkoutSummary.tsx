@@ -1,6 +1,7 @@
+// src/components/WorkoutSummary.tsx
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { TabataWorkout, CircuitWorkout, AMRAPWorkout, Workout, BaseExercise } from '@/workouts';
+import { TabataWorkout, CircuitWorkout, AMRAPWorkout, EMOMWorkout, Workout, BaseExercise } from '@/workouts';
 import { SectionWithColor } from '@/util/colorUtils';
 
 const formatTime = (seconds: number): string => {
@@ -103,7 +104,7 @@ export const WorkoutSummary: React.FC = () => {
   const renderAMRAPSummary = (amrapWorkout: AMRAPWorkout) => {
     const amrapSection = amrapWorkout.getAMRAPSection();
     if (!amrapSection) return null;
-  
+
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
@@ -120,6 +121,33 @@ export const WorkoutSummary: React.FC = () => {
                 </div>
                 <div>
                   {exercise.reps !== undefined && <span>{exercise.reps} reps</span>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  const renderEMOMSummary = (emomWorkout: EMOMWorkout) => {
+    const emomSections = emomWorkout.getEMOMSections();
+    const totalEMOMTime = emomWorkout.getEMOMDuration();
+    const rounds = emomWorkout.getRounds();
+  
+    return (
+      <div className="workout-section mt-4">
+        <h3 className="font-bold text-xl mb-2">
+          EMOM: {formatTime(totalEMOMTime)} ({rounds} round{rounds > 1 ? 's' : ''})
+        </h3>
+        <div className="ml-4">
+          <p className="mb-2">Every minute on the minute, perform:</p>
+          <ul className="space-y-1">
+            {emomSections.map((section, index) => (
+              <li key={index} className={`flex items-center justify-between ${isWorkoutStarted && currentSection?.name === section.name ? 'bg-yellow-100' : ''}`}>
+                <div className="flex items-center">
+                  <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
+                  <ClickableMovementName name={section.name} />
                 </div>
               </li>
             ))}
@@ -175,10 +203,12 @@ export const WorkoutSummary: React.FC = () => {
       {workout instanceof CircuitWorkout
         ? renderCircuitSummary(workout)
         : workout instanceof TabataWorkout
-        ? renderTabataSummary(workout)
-        : workout instanceof AMRAPWorkout
-        ? renderAMRAPSummary(workout)
-        : renderSectionGroup(workout.sections.filter(s => !isWarmUpOrCoolDown(s, workout)), 'Workout')}
+          ? renderTabataSummary(workout)
+          : workout instanceof AMRAPWorkout
+            ? renderAMRAPSummary(workout)
+            : workout instanceof EMOMWorkout
+              ? renderEMOMSummary(workout)
+              : renderSectionGroup(workout.sections.filter(s => !isWarmUpOrCoolDown(s, workout)), 'Workout')}
       {renderSectionGroup(workout.sections.filter(s => workout.data.coolDown.some(c => c.name === s.name)), 'Cool-down')}
     </div>
   );

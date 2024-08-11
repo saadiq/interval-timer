@@ -231,7 +231,7 @@
     ]
   },
   "2024-08-12": {
-    "type": "circuit",
+    "type": "emom",
     "warmUp": [
       {
         "name": "Jumping Jacks",
@@ -239,7 +239,7 @@
         "description": "Get the heart rate up"
       },
       {
-        "name": "World’s Greatest Stretch",
+        "name": "World's Greatest Stretch",
         "duration": 120,
         "description": "1 minute per side, deep lunge with a twist"
       },
@@ -250,84 +250,69 @@
       }
     ],
     "workout": {
-      "format": "EMOM",
-      "repetitions": 1,
+      "rounds": 1,
       "exercises": [
         {
           "name": "15 Burpees",
-          "duration": 60,
           "description": "After 15 reps, rest for remaining time."
         },
         {
           "name": "20 Air Squats",
-          "duration": 60,
           "description": "Then rest for remaining time."
         },
         {
           "name": "15 Push-Ups",
-          "duration": 60,
           "description": "Then rest for remaining time."
         },
         {
           "name": "20 Mountain Climbers",
-          "duration": 60,
           "description": "(each leg counts as one) Then rest."
         },
         {
           "name": "20 Reverse Lunges",
-          "duration": 60,
           "description": "(each leg counts as one) Then rest."
         },
         {
           "name": "15 Plank to Push-Up",
-          "duration": 60,
           "description": "Then rest for remaining time."
         },
         {
           "name": "20 Jump Squats",
-          "duration": 60,
           "description": "Then rest for remaining time."
         },
         {
           "name": "15 Bicycle Crunches",
-          "duration": 60,
           "description": "(each side counts as one) Then rest."
         },
         {
           "name": "20 Lateral Plank Walks",
-          "duration": 60,
           "description": "(10 steps in each direction) Then rest."
         },
         {
           "name": "15 Skater Jumps",
-          "duration": 60,
           "description": "(each side counts as one) Then rest."
         },
         {
           "name": "20 Leg Raises",
-          "duration": 60,
           "description": "Then rest for remaining time."
         },
         {
           "name": "15 Plank with Shoulder Taps",
-          "duration": 60,
           "description": "(each side counts as one) Then rest."
         },
         {
           "name": "20 High Knees",
-          "duration": 60,
           "description": "(each knee counts as one) Then rest."
         },
         {
           "name": "15 Jumping Lunges",
-          "duration": 60,
           "description": "(each leg counts as one) Then rest."
         }
       ]
     },
     "coolDown": [
       {
-        "name": "Child’s Pose",
+        "name": "Child's Pose",
         "duration": 60,
         "description": "Kneel on the floor, sit back on heels, and stretch arms forward"
       },

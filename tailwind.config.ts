@@ -24,6 +24,8 @@ const config: Config = {
   plugins: [],
   safelist: [
     'bg-blue-300',
+    'bg-blue-400',
+    'bg-blue-500',
     'bg-green-300',
     'bg-red-300',
     'bg-purple-300',
