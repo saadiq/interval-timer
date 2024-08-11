@@ -61,7 +61,7 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
   const speakSectionInfo = useCallback((currentSection: string, nextSection: string | null) => {
     const message = nextSection
       ? `${currentSection}. Next up, ${nextSection}.`
-      : `${currentSection}. This is the final section.`;
+      : `${currentSection}. This is the final movement.`;
     speak(message);
   }, [speak]);
 
