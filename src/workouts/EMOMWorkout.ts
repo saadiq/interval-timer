@@ -1,3 +1,4 @@
+// src/workouts/EMOMWorkout.ts
 import { EMOMWorkout as EMOMWorkoutData, BaseExercise, WorkoutSection } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
