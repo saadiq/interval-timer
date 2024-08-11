@@ -27,6 +27,7 @@ const config: Config = {
     'bg-blue-400',
     'bg-blue-500',
     'bg-green-300',
+    'bg-green-400',
     'bg-red-300',
     'bg-purple-300',
     'bg-pink-300',
