@@ -16,7 +16,8 @@ export const ControlButtons: React.FC = () => {
     setPreWorkoutCountdown,
     startPreWorkoutCountdown,
     resetWorkout,
-    playAudioCue
+    playAudioCue,
+    speakSectionInfo
   } = useWorkoutContext();
 
   const handleStartStop = useCallback(() => {
@@ -70,26 +71,34 @@ export const ControlButtons: React.FC = () => {
         intervalId = setInterval(() => {
           if (preWorkoutCountdown > 0) {
             if (preWorkoutCountdown === 3) {
-              // Start the 3-tone sequence when countdown is at 3
-              // This will make the first tone play when the display shows "2"
               playAudioCue();
             }
             setPreWorkoutCountdown(preWorkoutCountdown - 1);
           } else {
             setPreWorkoutCountdown(null);
             setIsPreWorkout(false);
+            // The first section will be announced by the main workout loop
           }
         }, 1000);
       } else if (workout && !isPreWorkout) {
         intervalId = setInterval(() => {
           const newTime = time + 1;
           const currentSection = workout.getCurrentSection(time);
-          const sectionEndTime = workout.sections
-            .slice(0, workout.sections.indexOf(currentSection) + 1)
+          const nextSection = workout.getNextSection(time);
+          const sectionStartTime = workout.sections
+            .slice(0, workout.sections.indexOf(currentSection))
             .reduce((total, s) => total + (s.duration ?? 0), 0);
+          const sectionEndTime = sectionStartTime + (currentSection.duration ?? 0);
 
+          // Play audio cue 2 seconds before the end of the section (reverted back)
           if (sectionEndTime - newTime === 2) {
-            playAudioCue(); // Start the 3-tone sequence 2 seconds before the end of the section
+            playAudioCue();
+          }
+
+          // Speak section info at the second second of each new section
+          if (newTime === sectionStartTime + 1) {
+            console.log('Speaking section info:', currentSection.name, nextSection?.name);
+            speakSectionInfo(currentSection.name, nextSection?.name ?? null);
           }
 
           if (newTime >= workout.duration) {
@@ -103,7 +112,7 @@ export const ControlButtons: React.FC = () => {
       }
     }
     return () => clearInterval(intervalId);
-  }, [isRunning, setTime, workout, setIsRunning, time, preWorkoutCountdown, setPreWorkoutCountdown, setIsPreWorkout, isPreWorkout, playAudioCue]);
+  }, [isRunning, setTime, workout, setIsRunning, time, preWorkoutCountdown, setPreWorkoutCountdown, setIsPreWorkout, isPreWorkout, playAudioCue, speakSectionInfo]);
 
   if (!workout) return null;
 

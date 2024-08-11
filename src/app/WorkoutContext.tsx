@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+// src/app/WorkoutContext.tsx
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Workout, WorkoutData, WorkoutFactory } from '@/workouts';
 import { useAudioCue } from '@/hooks/useAudioCue';
+import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 
 interface WorkoutContextType {
   workout: Workout | null;
@@ -17,6 +19,7 @@ interface WorkoutContextType {
   startPreWorkoutCountdown: () => void;
   resetWorkout: () => void;
   playAudioCue: (delay?: number) => void;
+  speakSectionInfo: (currentSection: string, nextSection: string | null) => void;
 }
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
@@ -34,6 +37,7 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
   const [isPreWorkout, setIsPreWorkout] = useState(true);
   const [preWorkoutCountdown, setPreWorkoutCountdown] = useState<number | null>(null);
   const playAudioCue = useAudioCue();
+  const { speak } = useSpeechSynthesis();
 
   useEffect(() => {
     if (workoutData) {
@@ -54,6 +58,23 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
     setPreWorkoutCountdown(null);
   };
 
+  const speakSectionInfo = useCallback((currentSection: string, nextSection: string | null) => {
+    const message = nextSection
+      ? `${currentSection}. Next up, ${nextSection}.`
+      : `${currentSection}. This is the final section.`;
+    console.log('Speaking message:', message);
+    speak(message);
+  }, [speak]);
+
+  // Add this useEffect to check if speech synthesis is supported
+  useEffect(() => {
+    if ('speechSynthesis' in window) {
+      console.log('Speech synthesis is supported');
+    } else {
+      console.warn('Speech synthesis is not supported in this browser');
+    }
+  }, []);
+
   return (
     <WorkoutContext.Provider 
       value={{ 
@@ -70,7 +91,8 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
         setPreWorkoutCountdown,
         startPreWorkoutCountdown,
         resetWorkout,
-        playAudioCue
+        playAudioCue,
+        speakSectionInfo
       }}
     >
       {children}
