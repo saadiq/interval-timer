@@ -1,4 +1,4 @@
-// app/api/og/route.tsx
+// src/app/api/og/route.tsx
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import workoutsData from '@/data/workouts.json';
@@ -11,22 +11,17 @@ export const runtime = 'edge';
 
 const typedWorkoutsData = workoutsData as WorkoutDataMap;
 
-const getNewYorkDate = (): string => {
-  const options: Intl.DateTimeFormatOptions = {
-    timeZone: 'America/New_York',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  };
-
-  const nyDate = new Date().toLocaleString('en-US', options);
-  const [month, day, year] = nyDate.split('/');
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+const getLocalDate = (): string => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const date = searchParams.get('date') || getNewYorkDate();
+  const date = searchParams.get('date') || getLocalDate();
 
   const workoutDates = Object.keys(typedWorkoutsData).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   const workoutDate = workoutDates.find(d => d <= date);

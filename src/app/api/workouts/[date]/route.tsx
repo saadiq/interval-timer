@@ -1,4 +1,4 @@
-// app/api/workouts/[date]/route.ts
+// src/app/api/workouts/[date]/route.tsx
 import { NextRequest, NextResponse } from 'next/server';
 import workoutsData from '@/data/workouts.json';
 import { WorkoutDataMap } from '@/workouts/types';
