@@ -66,6 +66,15 @@ export async function GET(req: NextRequest) {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  const renderExercises = (exercises: any[], format: (exercise: any) => string) => (
+    exercises.map((exercise, index) => (
+      <div key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)', display: 'flex', alignItems: 'center' }}>
+        <span style={{ marginRight: '10px', color: 'rgb(59, 130, 246)' }}>•</span>
+        {format(exercise)}
+      </div>
+    ))
+  );
+
   return new ImageResponse(
     (
       <div style={{
@@ -102,63 +111,39 @@ export async function GET(req: NextRequest) {
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '800px' }}>
           {workout.type === 'circuit' && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 Circuit ({workout.workout.repetitions}x):
               </span>
-              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                {workout.workout.exercises.map((exercise, index) => (
-                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
-                    {exercise.name} ({formatTime(exercise.duration || 0)})
-                  </li>
-                ))}
-              </ul>
-            </>
+              {renderExercises(workout.workout.exercises, exercise => `${exercise.name} (${formatTime(exercise.duration || 0)})`)}
+            </div>
           )}
           {workout.type === 'amrap' && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 AMRAP ({formatTime(workout.workout.duration)}):
               </span>
-              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                {workout.workout.exercises.map((exercise, index) => (
-                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
-                    {exercise.name} ({exercise.reps} reps)
-                  </li>
-                ))}
-              </ul>
-            </>
+              {renderExercises(workout.workout.exercises, exercise => `${exercise.name} (${exercise.reps} reps)`)}
+            </div>
           )}
           {workout.type === 'tabata' && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 Tabata ({workout.workout.rounds} rounds):
               </span>
               <span style={{ fontSize: 18, marginBottom: '10px', color: 'rgb(31, 41, 55)' }}>
                 Work: {formatTime(workout.workout.workDuration)} / Rest: {formatTime(workout.workout.restDuration)}
               </span>
-              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                {workout.workout.exercises.map((exercise, index) => (
-                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
-                    {exercise.name}
-                  </li>
-                ))}
-              </ul>
-            </>
+              {renderExercises(workout.workout.exercises, exercise => exercise.name)}
+            </div>
           )}
           {workout.type === 'emom' && (
-            <>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 EMOM ({workout.workout.rounds} rounds):
               </span>
-              <ul style={{ listStyleType: 'disc', paddingLeft: '20px' }}>
-                {workout.workout.exercises.map((exercise, index) => (
-                  <li key={index} style={{ fontSize: 18, marginBottom: '5px', color: 'rgb(31, 41, 55)' }}>
-                    {exercise.name}
-                  </li>
-                ))}
-              </ul>
-            </>
+              {renderExercises(workout.workout.exercises, exercise => exercise.name)}
+            </div>
           )}
         </div>
       </div>
