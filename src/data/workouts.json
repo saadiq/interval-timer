@@ -133,5 +133,209 @@
         "description": "Stretch: legs, back, and arms"
       }
     ]
+  },
+  "2024-08-11": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Arm Swings",
+        "duration": 60,
+        "description": "Swing arms forward and backward, alternating"
+      },
+      {
+        "name": "Leg Cradles",
+        "duration": 60,
+        "description": "Pull one leg up and across the body, alternating sides"
+      },
+      {
+        "name": "Hip Flexor Stretch",
+        "duration": 60,
+        "description": "30 seconds per side, lunge position with a reach up"
+      },
+      {
+        "name": "Side Shuffles",
+        "duration": 60,
+        "description": "Quick side-to-side shuffles, stay low"
+      }
+    ],
+    "workout": {
+      "repetitions": 3,
+      "exercises": [
+        {
+          "name": "Squat to Calf Raise",
+          "duration": 40,
+          "description": "Squat down, then rise up onto toes"
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Wide Push-Ups",
+          "duration": 40,
+          "description": "Hands wider than shoulder-width"
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Step-Back Lunges",
+          "duration": 40,
+          "description": "Step back into a lunge, alternating legs"
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Plank to Side Plank",
+          "duration": 40,
+          "description": "Start in a plank, rotate to a side plank, alternating sides"
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Skater Jumps",
+          "duration": 40,
+          "description": "Leap from side to side, landing softly"
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        },
+        {
+          "name": "Leg Raises",
+          "duration": 40,
+          "description": "Lie on your back, raise legs to 90 degrees and lower slowly"
+        },
+        {
+          "name": "Rest",
+          "duration": 10
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Figure-Four Stretch",
+        "duration": 60,
+        "description": "30 seconds per side, cross ankle over opposite knee and lean forward"
+      },
+      {
+        "name": "Cat-Cow Stretch",
+        "duration": 60,
+        "description": "On all fours, alternate arching and rounding the back"
+      }
+    ]
+  },
+  "2024-08-12": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Jumping Jacks",
+        "duration": 60,
+        "description": "Get the heart rate up"
+      },
+      {
+        "name": "World’s Greatest Stretch",
+        "duration": 120,
+        "description": "1 minute per side, deep lunge with a twist"
+      },
+      {
+        "name": "High Knees",
+        "duration": 60,
+        "description": "Focus on driving the knees up"
+      }
+    ],
+    "workout": {
+      "format": "EMOM",
+      "repetitions": 1,
+      "exercises": [
+        {
+          "name": "15 Burpees",
+          "duration": 60,
+          "description": "After 15 reps, rest for remaining time."
+        },
+        {
+          "name": "20 Air Squats",
+          "duration": 60,
+          "description": "Then rest for remaining time."
+        },
+        {
+          "name": "15 Push-Ups",
+          "duration": 60,
+          "description": "Then rest for remaining time."
+        },
+        {
+          "name": "20 Mountain Climbers",
+          "duration": 60,
+          "description": "(each leg counts as one) Then rest."
+        },
+        {
+          "name": "20 Reverse Lunges",
+          "duration": 60,
+          "description": "(each leg counts as one) Then rest."
+        },
+        {
+          "name": "15 Plank to Push-Up",
+          "duration": 60,
+          "description": "Then rest for remaining time."
+        },
+        {
+          "name": "20 Jump Squats",
+          "duration": 60,
+          "description": "Then rest for remaining time."
+        },
+        {
+          "name": "15 Bicycle Crunches",
+          "duration": 60,
+          "description": "(each side counts as one) Then rest."
+        },
+        {
+          "name": "20 Lateral Plank Walks",
+          "duration": 60,
+          "description": "(10 steps in each direction) Then rest."
+        },
+        {
+          "name": "15 Skater Jumps",
+          "duration": 60,
+          "description": "(each side counts as one) Then rest."
+        },
+        {
+          "name": "20 Leg Raises",
+          "duration": 60,
+          "description": "Then rest for remaining time."
+        },
+        {
+          "name": "15 Plank with Shoulder Taps",
+          "duration": 60,
+          "description": "(each side counts as one) Then rest."
+        },
+        {
+          "name": "20 High Knees",
+          "duration": 60,
+          "description": "(each knee counts as one) Then rest."
+        },
+        {
+          "name": "15 Jumping Lunges",
+          "duration": 60,
+          "description": "(each leg counts as one) Then rest."
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child’s Pose",
+        "duration": 60,
+        "description": "Kneel on the floor, sit back on heels, and stretch arms forward"
+      },
+      {
+        "name": "Seated Hamstring Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, reach towards toes"
+      }
+    ]
   }
 }
