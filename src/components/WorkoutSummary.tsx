@@ -36,6 +36,13 @@ export const WorkoutSummary: React.FC = () => {
   const isWorkoutStarted = !isPreWorkout;
   const currentSection = isWorkoutStarted ? workout.getCurrentSection(time) : null;
 
+  // Helper function to check if a section is active
+  const isSectionActive = (section: SectionWithColor | BaseExercise, index: number) => {
+    if (!isWorkoutStarted || !currentSection) return false;
+    return section.name === currentSection.name && 
+           workout.sections.indexOf(currentSection) === index;
+  };
+
   const renderCircuitSummary = (circuitWorkout: CircuitWorkout) => {
     const { repetitions, exercises } = circuitWorkout.data.workout;
     const totalCircuitTime = exercises.reduce((total, ex) => total + (ex.duration || 0), 0) * repetitions;
@@ -47,18 +54,22 @@ export const WorkoutSummary: React.FC = () => {
         </h3>
         <div className="ml-4">
           <ul className="space-y-1">
-            {exercises.map((exercise, index) => (
-              <li key={index} className={`flex items-center justify-between ${isWorkoutStarted && currentSection?.name === exercise.name ? 'bg-yellow-100' : ''}`}>
-                <div className="flex items-center">
-                  <span className={`section-color-indicator ${index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'} w-4 h-4 rounded-full inline-block mr-2`}></span>
-                  <ClickableMovementName name={exercise.name} />
-                </div>
-                <div>
-                  {exercise.duration !== undefined && <span>{formatTime(exercise.duration)}</span>}
-                  {exercise.reps !== undefined && <span>{exercise.reps} reps</span>}
-                </div>
-              </li>
-            ))}
+            {exercises.map((exercise, index) => {
+              const sectionIndex = workout.data.warmUp.length + index;
+              const sectionWithColor = workout.sections[sectionIndex] as SectionWithColor;
+              return (
+                <li key={index} className={`flex items-center justify-between ${isSectionActive(sectionWithColor, sectionIndex) ? 'bg-yellow-100' : ''}`}>
+                  <div className="flex items-center">
+                    <span className={`section-color-indicator ${sectionWithColor.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
+                    <ClickableMovementName name={exercise.name} />
+                  </div>
+                  <div>
+                    {exercise.duration !== undefined && <span>{formatTime(exercise.duration)}</span>}
+                    {exercise.reps !== undefined && <span>{exercise.reps} reps</span>}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>
@@ -79,14 +90,14 @@ export const WorkoutSummary: React.FC = () => {
           <ul className="space-y-1">
             {exercises.map((exercise, exerciseIndex) => (
               <React.Fragment key={exerciseIndex}>
-                <li className={`flex items-center justify-between ${isWorkoutStarted && currentSection?.name === exercise.name ? 'bg-yellow-100' : ''}`}>
+                <li className={`flex items-center justify-between ${isSectionActive(tabataSections[exerciseIndex * 2], workout.data.warmUp.length + exerciseIndex * 2) ? 'bg-yellow-100' : ''}`}>
                   <div className="flex items-center">
                     <span className={`section-color-indicator ${tabataSections[exerciseIndex * 2].color} w-4 h-4 rounded-full inline-block mr-2`}></span>
                     <ClickableMovementName name={exercise.name} />
                   </div>
                   <span>{formatTime(workDuration)}</span>
                 </li>
-                <li className={`flex items-center justify-between ${isWorkoutStarted && currentSection?.name === 'Rest' ? 'bg-yellow-100' : ''}`}>
+                <li className={`flex items-center justify-between ${isSectionActive(tabataSections[exerciseIndex * 2 + 1], workout.data.warmUp.length + exerciseIndex * 2 + 1) ? 'bg-yellow-100' : ''}`}>
                   <div className="flex items-center">
                     <span className="section-color-indicator bg-gray-300 w-4 h-4 rounded-full inline-block mr-2"></span>
                     <span>Rest</span>
@@ -144,7 +155,7 @@ export const WorkoutSummary: React.FC = () => {
           <p className="mb-2">Every minute on the minute, perform:</p>
           <ul className="space-y-1">
             {emomSections.map((section, index) => (
-              <li key={index} className={`flex items-center justify-between ${isWorkoutStarted && currentSection?.name === section.name ? 'bg-yellow-100' : ''}`}>
+              <li key={index} className={`flex items-center justify-between ${isSectionActive(section, workout.data.warmUp.length + index) ? 'bg-yellow-100' : ''}`}>
                 <div className="flex items-center">
                   <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
                   <ClickableMovementName name={section.name} />
@@ -157,7 +168,7 @@ export const WorkoutSummary: React.FC = () => {
     );
   };
 
-  const renderSectionGroup = (sections: ReadonlyArray<SectionWithColor>, title: string) => {
+  const renderSectionGroup = (sections: ReadonlyArray<SectionWithColor>, title: string, startIndex: number) => {
     if (sections.length === 0) return null;
 
     const groupDuration = sections.reduce((total, section) => total + (section.duration || 0), 0);
@@ -169,7 +180,7 @@ export const WorkoutSummary: React.FC = () => {
         </h3>
         <div className="ml-4">
           <ul className="space-y-1">
-            {sections.map((section, index) => renderSection(section, index, isWorkoutStarted && section.name === currentSection?.name))}
+            {sections.map((section, index) => renderSection(section, startIndex + index, isSectionActive(section, startIndex + index)))}
           </ul>
         </div>
       </div>
@@ -199,7 +210,7 @@ export const WorkoutSummary: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       <h2 className="font-bold text-2xl mb-4">Workout Summary</h2>
-      {renderSectionGroup(workout.sections.filter(s => workout.data.warmUp.some(w => w.name === s.name)), 'Warm-up')}
+      {renderSectionGroup(workout.sections.filter(s => workout.data.warmUp.some(w => w.name === s.name)), 'Warm-up', 0)}
       {workout instanceof CircuitWorkout
         ? renderCircuitSummary(workout)
         : workout instanceof TabataWorkout
@@ -208,8 +219,8 @@ export const WorkoutSummary: React.FC = () => {
             ? renderAMRAPSummary(workout)
             : workout instanceof EMOMWorkout
               ? renderEMOMSummary(workout)
-              : renderSectionGroup(workout.sections.filter(s => !isWarmUpOrCoolDown(s, workout)), 'Workout')}
-      {renderSectionGroup(workout.sections.filter(s => workout.data.coolDown.some(c => c.name === s.name)), 'Cool-down')}
+              : renderSectionGroup(workout.sections.filter(s => !isWarmUpOrCoolDown(s, workout)), 'Workout', workout.data.warmUp.length)}
+      {renderSectionGroup(workout.sections.filter(s => workout.data.coolDown.some(c => c.name === s.name)), 'Cool-down', workout.sections.length - workout.data.coolDown.length)}
     </div>
   );
 };
