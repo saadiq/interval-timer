@@ -9,6 +9,24 @@ const formatTime = (seconds: number): string => {
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
+const ClickableMovementName: React.FC<{ name: string }> = ({ name }) => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const searchQuery = encodeURIComponent(`"In a workout, what is a ${name}"`);
+    window.open(`https://www.perplexity.ai?q=${searchQuery}`, '_blank');
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="text-inherit hover:bg-gray-100 rounded px-1 py-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      title={`Click to learn more about ${name}`}
+    >
+      {name}
+    </button>
+  );
+};
+
 export const WorkoutSummary: React.FC = () => {
   const { workout, time } = useWorkoutContext();
 
@@ -29,7 +47,7 @@ export const WorkoutSummary: React.FC = () => {
               <li key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className={`section-color-indicator ${index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'} w-4 h-4 rounded-full inline-block mr-2`}></span>
-                  <span>{exercise.name}</span>
+                  <ClickableMovementName name={exercise.name} />
                 </div>
                 <div>
                   {exercise.duration !== undefined && <span>{formatTime(exercise.duration)}</span>}
@@ -66,7 +84,7 @@ export const WorkoutSummary: React.FC = () => {
                 <li className={`flex items-center justify-between ${currentSectionIndex === exerciseIndex * 2 ? 'bg-gray-200' : ''}`}>
                   <div className="flex items-center">
                     <span className={`section-color-indicator ${tabataSections[exerciseIndex * 2].color} w-4 h-4 rounded-full inline-block mr-2`}></span>
-                    <span>{exercise.name}</span>
+                    <ClickableMovementName name={exercise.name} />
                   </div>
                   <span>{formatTime(workDuration)}</span>
                 </li>
@@ -101,7 +119,7 @@ export const WorkoutSummary: React.FC = () => {
               <li key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <span className={`section-color-indicator bg-blue-300 w-4 h-4 rounded-full inline-block mr-2`}></span>
-                  <span>{exercise.name}</span>
+                  <ClickableMovementName name={exercise.name} />
                 </div>
                 <div>
                   {exercise.reps !== undefined && <span>{exercise.reps} reps</span>}
@@ -138,7 +156,7 @@ export const WorkoutSummary: React.FC = () => {
       <li key={index} className="flex items-center justify-between">
         <div className="flex items-center">
           <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
-          <span>{section.name}</span>
+          <ClickableMovementName name={section.name} />
         </div>
         <div>
           {section.duration !== undefined && <span>{formatTime(section.duration)}</span>}
