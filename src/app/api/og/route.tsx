@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
           {workout.type === 'circuit' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                Circuit ({workout.workout.repetitions}x):
+                Circuit{workout.workout.repetitions > 1 ? ` (${workout.workout.repetitions}x)` : ''}:
               </span>
               {renderExercises(workout.workout.exercises, exercise => `${exercise.name} (${formatTime(exercise.duration || 0)})`)}
             </div>
@@ -129,7 +129,7 @@ export async function GET(req: NextRequest) {
           {workout.type === 'tabata' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                Tabata ({workout.workout.rounds} rounds):
+                Tabata{workout.workout.rounds > 1 ? ` (${workout.workout.rounds} rounds)` : ''}:
               </span>
               <span style={{ fontSize: 18, marginBottom: '10px', color: 'rgb(31, 41, 55)' }}>
                 Work: {formatTime(workout.workout.workDuration)} / Rest: {formatTime(workout.workout.restDuration)}
@@ -140,7 +140,7 @@ export async function GET(req: NextRequest) {
           {workout.type === 'emom' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                EMOM ({workout.workout.rounds} rounds):
+                EMOM{workout.workout.rounds > 1 ? ` (${workout.workout.rounds} rounds)` : ''}:
               </span>
               {renderExercises(workout.workout.exercises, exercise => exercise.name)}
             </div>
