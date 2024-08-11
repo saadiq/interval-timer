@@ -1,3 +1,4 @@
+// src/app/page.tsx
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
@@ -24,7 +25,6 @@ async function fetchWorkoutData(date: string): Promise<WorkoutData> {
     throw new Error('Failed to fetch workout data');
   }
   const data = await response.json();
-  console.log('Fetched workout data:', data); // Debugging log
   return data as WorkoutData;
 }
 

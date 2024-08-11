@@ -97,7 +97,6 @@ export const ControlButtons: React.FC = () => {
 
           // Speak section info at the second second of each new section
           if (newTime === sectionStartTime + 1) {
-            console.log('Speaking section info:', currentSection.name, nextSection?.name);
             speakSectionInfo(currentSection.name, nextSection?.name ?? null);
           }
 

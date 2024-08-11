@@ -62,18 +62,8 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
     const message = nextSection
       ? `${currentSection}. Next up, ${nextSection}.`
       : `${currentSection}. This is the final section.`;
-    console.log('Speaking message:', message);
     speak(message);
   }, [speak]);
-
-  // Add this useEffect to check if speech synthesis is supported
-  useEffect(() => {
-    if ('speechSynthesis' in window) {
-      console.log('Speech synthesis is supported');
-    } else {
-      console.warn('Speech synthesis is not supported in this browser');
-    }
-  }, []);
 
   return (
     <WorkoutContext.Provider 
