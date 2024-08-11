@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Workout, WorkoutData, WorkoutFactory } from '@/workouts';
+import { useAudioCue } from '@/hooks/useAudioCue';
 
 interface WorkoutContextType {
   workout: Workout | null;
@@ -15,6 +16,7 @@ interface WorkoutContextType {
   setPreWorkoutCountdown: (countdown: number | null) => void;
   startPreWorkoutCountdown: () => void;
   resetWorkout: () => void;
+  playAudioCue: (delay?: number) => void;
 }
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
@@ -31,6 +33,7 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
   const [isRunning, setIsRunning] = useState(false);
   const [isPreWorkout, setIsPreWorkout] = useState(true);
   const [preWorkoutCountdown, setPreWorkoutCountdown] = useState<number | null>(null);
+  const playAudioCue = useAudioCue();
 
   useEffect(() => {
     if (workoutData) {
@@ -66,7 +69,8 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
         preWorkoutCountdown,
         setPreWorkoutCountdown,
         startPreWorkoutCountdown,
-        resetWorkout
+        resetWorkout,
+        playAudioCue
       }}
     >
       {children}

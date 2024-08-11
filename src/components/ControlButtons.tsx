@@ -1,3 +1,4 @@
+// src/components/ControlButtons.tsx
 import React, { useEffect, useCallback } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -14,7 +15,8 @@ export const ControlButtons: React.FC = () => {
     preWorkoutCountdown,
     setPreWorkoutCountdown,
     startPreWorkoutCountdown,
-    resetWorkout
+    resetWorkout,
+    playAudioCue
   } = useWorkoutContext();
 
   const handleStartStop = useCallback(() => {
@@ -67,6 +69,11 @@ export const ControlButtons: React.FC = () => {
       if (preWorkoutCountdown !== null) {
         intervalId = setInterval(() => {
           if (preWorkoutCountdown > 0) {
+            if (preWorkoutCountdown === 3) {
+              // Start the 3-tone sequence when countdown is at 3
+              // This will make the first tone play when the display shows "2"
+              playAudioCue();
+            }
             setPreWorkoutCountdown(preWorkoutCountdown - 1);
           } else {
             setPreWorkoutCountdown(null);
@@ -76,6 +83,15 @@ export const ControlButtons: React.FC = () => {
       } else if (workout && !isPreWorkout) {
         intervalId = setInterval(() => {
           const newTime = time + 1;
+          const currentSection = workout.getCurrentSection(time);
+          const sectionEndTime = workout.sections
+            .slice(0, workout.sections.indexOf(currentSection) + 1)
+            .reduce((total, s) => total + (s.duration ?? 0), 0);
+
+          if (sectionEndTime - newTime === 2) {
+            playAudioCue(); // Start the 3-tone sequence 2 seconds before the end of the section
+          }
+
           if (newTime >= workout.duration) {
             clearInterval(intervalId);
             setIsRunning(false);
@@ -87,7 +103,7 @@ export const ControlButtons: React.FC = () => {
       }
     }
     return () => clearInterval(intervalId);
-  }, [isRunning, setTime, workout, setIsRunning, time, preWorkoutCountdown, setPreWorkoutCountdown, setIsPreWorkout, isPreWorkout]);
+  }, [isRunning, setTime, workout, setIsRunning, time, preWorkoutCountdown, setPreWorkoutCountdown, setIsPreWorkout, isPreWorkout, playAudioCue]);
 
   if (!workout) return null;
 

@@ -1,3 +1,4 @@
+// src/components/CountdownDisplay.tsx
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { AMRAPWorkout, Workout, WorkoutSection } from '@/workouts';
@@ -31,16 +32,27 @@ export const CountdownDisplay: React.FC = () => {
     }
   };
 
+  const renderTimeDisplay = () => {
+    if (isPreWorkout) {
+      return renderPreWorkoutDisplay();
+    } else if (isWorkoutComplete) {
+      return "Workout Complete";
+    } else {
+      // Always use formatTime for consistency during the workout
+      return formatTime(timeRemaining);
+    }
+  };
+
   return (
     <div>
       <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
-        {isPreWorkout ? renderPreWorkoutDisplay() : formatTime(timeRemaining)}
+        {renderTimeDisplay()}
       </div>
       <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-center">
-        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Workout Complete' : currentSection!.name)}
+        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Great job! 🎉' : currentSection!.name)}
       </div>
       <div className="text-base sm:text-lg mb-2 text-center">
-        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Great job! 🎉' : currentSection!.description || '\u00A0')}
+        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : currentSection!.description || '\u00A0')}
       </div>
       <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 text-center">
         {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : nextSection ? `Next: ${nextSection.name}` : '\u00A0')}
