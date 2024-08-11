@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
             <path d="M15 14a5 5 0 0 0-7.584 2" />
             <path d="M9.964 6.825C8.019 7.977 9.5 13 8 15" />
           </svg>
-          {workout.type.toUpperCase()} Workout for {workoutDate}
+          Workout for {workoutDate}
         </span>
         <span style={{ fontSize: 36, marginBottom: '20px', textAlign: 'center', color: 'rgb(107, 114, 128)', display: 'flex', alignItems: 'center' }}>
           {/* Timer icon */}
@@ -109,9 +109,9 @@ export async function GET(req: NextRequest) {
           Total Time: {formatTime(totalTime)}
         </span>
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%', maxWidth: '800px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px' }}>
           {workout.type === 'circuit' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 Circuit{workout.workout.repetitions > 1 ? ` (${workout.workout.repetitions}x)` : ''}:
               </span>
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
             </div>
           )}
           {workout.type === 'amrap' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 AMRAP ({formatTime(workout.workout.duration)}):
               </span>
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
             </div>
           )}
           {workout.type === 'tabata' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 Tabata{workout.workout.rounds > 1 ? ` (${workout.workout.rounds} rounds)` : ''}:
               </span>
@@ -138,7 +138,7 @@ export async function GET(req: NextRequest) {
             </div>
           )}
           {workout.type === 'emom' && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
                 EMOM{workout.workout.rounds > 1 ? ` (${workout.workout.rounds} rounds)` : ''}:
               </span>
