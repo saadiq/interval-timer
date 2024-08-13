@@ -1,9 +1,7 @@
+// src/app/WorkoutTimer.tsx
 import React from 'react';
 import { WorkoutProvider, useWorkoutContext } from './WorkoutContext';
-import { CountdownDisplay } from '@/components/CountdownDisplay';
-import { ProgressBar } from '@/components/ProgressBar';
-import { ControlButtons } from '@/components/ControlButtons';
-import { WorkoutSummary } from '@/components/WorkoutSummary';
+import { ControlButtons, CountdownDisplay, ProgressBar, WorkoutSummary } from '@/components';
 import { WorkoutData } from '@/workouts';
 import { useWakeLock } from '@/hooks/useWakeLock';
 
