@@ -1,13 +1,11 @@
 // src/app/WorkoutContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Workout, WorkoutData, WorkoutFactory } from '@/workouts';
+import { Workout } from '@/workouts';
 import { useAudioCue } from '@/hooks/useAudioCue';
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 
 interface WorkoutContextType {
   workout: Workout | null;
-  workoutData: WorkoutData | null;
-  setWorkoutData: (data: WorkoutData) => void;
   time: number;
   setTime: (time: number) => void;
   isRunning: boolean;
@@ -26,25 +24,17 @@ const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
 interface WorkoutProviderProps {
   children: ReactNode;
-  initialWorkoutData?: WorkoutData;
+  initialWorkout: Workout;
 }
 
-export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, initialWorkoutData }) => {
-  const [workoutData, setWorkoutData] = useState<WorkoutData | null>(initialWorkoutData || null);
-  const [workout, setWorkout] = useState<Workout | null>(null);
+export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, initialWorkout }) => {
+  const [workout, setWorkout] = useState<Workout | null>(initialWorkout);
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isPreWorkout, setIsPreWorkout] = useState(true);
   const [preWorkoutCountdown, setPreWorkoutCountdown] = useState<number | null>(null);
   const playAudioCue = useAudioCue();
   const { speak } = useSpeechSynthesis();
-
-  useEffect(() => {
-    if (workoutData) {
-      const newWorkout = WorkoutFactory.createWorkout(workoutData);
-      setWorkout(newWorkout);
-    }
-  }, [workoutData]);
 
   const startPreWorkoutCountdown = () => {
     setPreWorkoutCountdown(3);
@@ -69,8 +59,6 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
     <WorkoutContext.Provider 
       value={{ 
         workout, 
-        workoutData, 
-        setWorkoutData, 
         time, 
         setTime, 
         isRunning, 

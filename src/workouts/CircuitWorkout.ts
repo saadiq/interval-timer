@@ -9,9 +9,9 @@ export class CircuitWorkout extends Workout {
   readonly sections: ReadonlyArray<SectionWithColor>;
   readonly data: CircuitWorkoutData;  // Explicitly type the data property
 
-  constructor(data: CircuitWorkoutData) {
+  constructor(data: CircuitWorkoutData, date: string) {
     const sectionsWithColor = assignColorsToWorkout(data);
-    super(data, sectionsWithColor);
+    super(data, sectionsWithColor, date);
     
     this.data = data;  // Assign the data to the class property
     this.validateWorkoutData(data);

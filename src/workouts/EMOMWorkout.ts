@@ -9,9 +9,9 @@ export class EMOMWorkout extends Workout {
   readonly sections: ReadonlyArray<SectionWithColor>;
   private readonly rounds: number;
 
-  constructor(data: EMOMWorkoutData) {
+  constructor(data: EMOMWorkoutData, date: string) {
     const sectionsWithColor = EMOMWorkout.createEMOMSections(data);
-    super(data, sectionsWithColor);
+    super(data, sectionsWithColor, date);
     
     this.validateWorkoutData(data);
     this.sections = sectionsWithColor;

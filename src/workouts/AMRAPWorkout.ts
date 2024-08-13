@@ -13,9 +13,9 @@ export class AMRAPWorkout extends Workout {
   readonly sections: ReadonlyArray<SectionWithColor>;
   private amrapSection: (AMRAPSection & SectionWithColor) | null = null;
 
-  constructor(data: AMRAPWorkoutData) {
+  constructor(data: AMRAPWorkoutData, date: string) {
     const sectionsWithColor = assignColorsToWorkout(data);
-    super(data, sectionsWithColor);
+    super(data, sectionsWithColor, date);
     
     this.validateWorkoutData(data);
     const amrapSection: AMRAPSection & SectionWithColor = {

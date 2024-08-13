@@ -2,7 +2,8 @@
 import { ImageResponse } from '@vercel/og';
 import { NextRequest } from 'next/server';
 import workoutsData from '@/data/workouts.json';
-import { WorkoutDataMap, WorkoutData } from '@/workouts/types';
+import { WorkoutDataMap, WorkoutData, CircuitWorkout, AMRAPWorkout, TabataWorkout, EMOMWorkout } from '@/workouts/types';
+import { WorkoutFactory } from '@/workouts/WorkoutFactory';
 
 export const runtime = 'edge';
 
@@ -20,11 +21,17 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const date = searchParams.get('date') || getLocalDate();
 
-  const workoutDates = Object.keys(typedWorkoutsData).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
-  const workoutDate = workoutDates.find(d => d <= date);
-  const workout: WorkoutData | undefined = workoutDate ? typedWorkoutsData[workoutDate] : undefined;
+  console.log("search param:", searchParams.get('date'));
+  console.log("date:", date);
 
-  if (!workout) {
+  const workoutDates = Object.keys(typedWorkoutsData).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  const workoutDate = workoutDates.find(d => d <= date) || date;
+  const workoutData = typedWorkoutsData[workoutDate];
+
+  console.log("workout date:", workoutDate);
+  console.log("workout data:", workoutData);
+
+  if (!workoutData) {
     return new ImageResponse(
       (
         <div style={{
@@ -44,18 +51,25 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const warmUpTime = workout.warmUp.reduce((total, exercise) => total + exercise.duration, 0);
-  let mainWorkoutTime = 0;
-  let coolDownTime = workout.coolDown.reduce((total, exercise) => total + exercise.duration, 0);
+  const workout = WorkoutFactory.createWorkout(workoutData, workoutDate);
 
-  if (workout.type === 'circuit') {
-    mainWorkoutTime = workout.workout.exercises.reduce((total, exercise) => total + (exercise.duration || 0), 0) * workout.workout.repetitions;
-  } else if (workout.type === 'amrap') {
-    mainWorkoutTime = workout.workout.duration;
-  } else if (workout.type === 'tabata') {
-    mainWorkoutTime = (workout.workout.workDuration + workout.workout.restDuration) * workout.workout.rounds * workout.workout.exercises.length;
-  } else if (workout.type === 'emom') {
-    mainWorkoutTime = workout.workout.rounds * workout.workout.exercises.length * 60; // 60 seconds per minute
+  const warmUpTime = workout.data.warmUp.reduce((total, exercise) => total + exercise.duration, 0);
+  let mainWorkoutTime = 0;
+  let coolDownTime = workout.data.coolDown.reduce((total, exercise) => total + exercise.duration, 0);
+
+  switch (workout.data.type) {
+    case 'circuit':
+      mainWorkoutTime = (workout.data as CircuitWorkout).workout.exercises.reduce((total, exercise) => total + (exercise.duration || 0), 0) * (workout.data as CircuitWorkout).workout.repetitions;
+      break;
+    case 'amrap':
+      mainWorkoutTime = (workout.data as AMRAPWorkout).workout.duration;
+      break;
+    case 'tabata':
+      mainWorkoutTime = ((workout.data as TabataWorkout).workout.workDuration + (workout.data as TabataWorkout).workout.restDuration) * (workout.data as TabataWorkout).workout.rounds * (workout.data as TabataWorkout).workout.exercises.length;
+      break;
+    case 'emom':
+      mainWorkoutTime = (workout.data as EMOMWorkout).workout.rounds * (workout.data as EMOMWorkout).workout.exercises.length * 60; // 60 seconds per minute
+      break;
   }
 
   const totalTime = warmUpTime + mainWorkoutTime + coolDownTime;
@@ -98,7 +112,7 @@ export async function GET(req: NextRequest) {
             <path d="M15 14a5 5 0 0 0-7.584 2" />
             <path d="M9.964 6.825C8.019 7.977 9.5 13 8 15" />
           </svg>
-          Workout for {workoutDate}
+          Workout for {workout.date}
         </span>
         <span style={{ fontSize: 36, marginBottom: '20px', textAlign: 'center', color: 'rgb(107, 114, 128)', display: 'flex', alignItems: 'center' }}>
           {/* Timer icon */}
@@ -110,39 +124,39 @@ export async function GET(req: NextRequest) {
         </span>
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '800px' }}>
-          {workout.type === 'circuit' && (
+          {workout.data.type === 'circuit' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                Circuit{workout.workout.repetitions > 1 ? ` (${workout.workout.repetitions}x)` : ''}:
+                Circuit{(workout.data as CircuitWorkout).workout.repetitions > 1 ? ` (${(workout.data as CircuitWorkout).workout.repetitions}x)` : ''}:
               </span>
-              {renderExercises(workout.workout.exercises, exercise => `${exercise.name} (${formatTime(exercise.duration || 0)})`)}
+              {renderExercises((workout.data as CircuitWorkout).workout.exercises, exercise => `${exercise.name} (${formatTime(exercise.duration || 0)})`)}
             </div>
           )}
-          {workout.type === 'amrap' && (
+          {workout.data.type === 'amrap' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                AMRAP ({formatTime(workout.workout.duration)}):
+                AMRAP ({formatTime((workout.data as AMRAPWorkout).workout.duration)}):
               </span>
-              {renderExercises(workout.workout.exercises, exercise => `${exercise.name} (${exercise.reps} reps)`)}
+              {renderExercises((workout.data as AMRAPWorkout).workout.exercises, exercise => `${exercise.name} (${exercise.reps} reps)`)}
             </div>
           )}
-          {workout.type === 'tabata' && (
+          {workout.data.type === 'tabata' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                Tabata{workout.workout.rounds > 1 ? ` (${workout.workout.rounds} rounds)` : ''}:
+                Tabata{(workout.data as TabataWorkout).workout.rounds > 1 ? ` (${(workout.data as TabataWorkout).workout.rounds} rounds)` : ''}:
               </span>
               <span style={{ fontSize: 18, marginBottom: '10px', color: 'rgb(31, 41, 55)' }}>
-                Work: {formatTime(workout.workout.workDuration)} / Rest: {formatTime(workout.workout.restDuration)}
+                Work: {formatTime((workout.data as TabataWorkout).workout.workDuration)} / Rest: {formatTime((workout.data as TabataWorkout).workout.restDuration)}
               </span>
-              {renderExercises(workout.workout.exercises, exercise => exercise.name)}
+              {renderExercises((workout.data as TabataWorkout).workout.exercises, exercise => exercise.name)}
             </div>
           )}
-          {workout.type === 'emom' && (
+          {workout.data.type === 'emom' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                EMOM{workout.workout.rounds > 1 ? ` (${workout.workout.rounds} rounds)` : ''}:
+                EMOM{(workout.data as EMOMWorkout).workout.rounds > 1 ? ` (${(workout.data as EMOMWorkout).workout.rounds} rounds)` : ''}:
               </span>
-              {renderExercises(workout.workout.exercises, exercise => exercise.name)}
+              {renderExercises((workout.data as EMOMWorkout).workout.exercises, exercise => exercise.name)}
             </div>
           )}
         </div>

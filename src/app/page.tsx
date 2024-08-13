@@ -5,6 +5,8 @@ import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { WorkoutTimer } from './WorkoutTimer';
 import { WorkoutData } from '../workouts/types';
+import { WorkoutFactory } from '../workouts/WorkoutFactory';
+import { Workout } from '@/workouts';
 
 const getLocalDate = (): string => {
   const now = new Date();
@@ -14,18 +16,18 @@ const getLocalDate = (): string => {
   return `${year}-${month}-${day}`;
 };
 
-async function fetchWorkoutData(date: string): Promise<WorkoutData> {
+async function fetchWorkoutData(date: string): Promise<Workout> {
   const response = await fetch(`/api/workouts/${date}`);
   if (!response.ok) {
     throw new Error('Failed to fetch workout data');
   }
-  const data = await response.json();
-  return data as WorkoutData;
+  const data = await response.json() as WorkoutData;
+  return WorkoutFactory.createWorkout(data, date);
 }
 
 const WorkoutPageContent: React.FC = () => {
   const searchParams = useSearchParams();
-  const [workoutData, setWorkoutData] = useState<WorkoutData | null>(null);
+  const [workout, setWorkout] = useState<Workout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,8 +37,8 @@ const WorkoutPageContent: React.FC = () => {
       try {
         const dateParam = searchParams.get('date');
         const date = dateParam || getLocalDate();
-        const data = await fetchWorkoutData(date);
-        setWorkoutData(data);
+        const fetchedWorkout = await fetchWorkoutData(date);
+        setWorkout(fetchedWorkout);
       } catch (err) {
         setError('Failed to load workout. Please try again later.');
         console.error(err);
@@ -56,11 +58,11 @@ const WorkoutPageContent: React.FC = () => {
     return <div className="text-red-500">{error}</div>;
   }
 
-  if (!workoutData) {
+  if (!workout) {
     return <div>No workout available for the selected date.</div>;
   }
 
-  return <WorkoutTimer workoutData={workoutData} />;
+  return <WorkoutTimer workout={workout} />;
 }
 
 export default function WorkoutPage() {

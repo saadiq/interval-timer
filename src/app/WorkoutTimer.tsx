@@ -1,12 +1,15 @@
 // src/app/WorkoutTimer.tsx
 import React from 'react';
 import { WorkoutProvider, useWorkoutContext } from './WorkoutContext';
-import { ControlButtons, CountdownDisplay, ProgressBar, WorkoutSummary } from '@/components';
-import { WorkoutData } from '@/workouts';
+import { CountdownDisplay } from '@/components/CountdownDisplay';
+import { ProgressBar } from '@/components/ProgressBar';
+import { ControlButtons } from '@/components/ControlButtons';
+import { WorkoutSummary } from '@/components/WorkoutSummary';
+import { Workout } from '@/workouts';
 import { useWakeLock } from '@/hooks/useWakeLock';
 
 interface WorkoutTimerProps {
-  workoutData: WorkoutData;
+  workout: Workout;
 }
 
 const WorkoutTimerContent: React.FC = () => {
@@ -33,10 +36,8 @@ const WorkoutTimerContent: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6">
             <div className="flex flex-col min-h-[400px] justify-between">
-              <h1 className="text-xl sm:text-lg lg:text-3xl font-bold mb-4 text-center">
-                {workout.type === "amrap" || workout.type === "emom"
-                  ? `${workout.type.toUpperCase()} Workout`
-                  : `${workout.type.charAt(0).toUpperCase() + workout.type.slice(1)} Workout`}
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center">
+                {workout.date} Workout
               </h1>
               <CountdownDisplay />
               <ControlButtons />
@@ -52,9 +53,9 @@ const WorkoutTimerContent: React.FC = () => {
   );
 };
 
-export const WorkoutTimer: React.FC<WorkoutTimerProps> = ({ workoutData }) => {
+export const WorkoutTimer: React.FC<WorkoutTimerProps> = ({ workout }) => {
   return (
-    <WorkoutProvider initialWorkoutData={workoutData}>
+    <WorkoutProvider initialWorkout={workout}>
       <WorkoutTimerContent />
     </WorkoutProvider>
   );

@@ -13,7 +13,7 @@ export class TabataWorkout extends Workout {
   readonly type = 'tabata';
   private tabataSections: TabataSection[];
 
-  constructor(data: TabataWorkoutData) {
+  constructor(data: TabataWorkoutData, date: string) {
     const tabataSections = TabataWorkout.createTabataSections(data);
     const allSections = [
       ...data.warmUp,
@@ -21,7 +21,7 @@ export class TabataWorkout extends Workout {
       ...data.coolDown
     ];
     const coloredSections = TabataWorkout.assignTabataColors(allSections, data);
-    super(data, coloredSections);
+    super(data, coloredSections, date);
     
     this.validateWorkoutData(data);
     this.tabataSections = tabataSections.map((section, index) => ({

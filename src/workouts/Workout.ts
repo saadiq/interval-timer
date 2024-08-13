@@ -7,10 +7,12 @@ export abstract class Workout {
   abstract readonly type: string;
   readonly duration: number;
   readonly sections: ReadonlyArray<SectionWithColor>;
+  readonly date: string;
 
-  constructor(public readonly data: WorkoutData, sections: SectionWithColor[]) {
+  constructor(public readonly data: WorkoutData, sections: SectionWithColor[], date: string) {
     this.sections = sections;
     this.duration = this.calculateTotalDuration();
+    this.date = date;
   }
 
   protected calculateTotalDuration(): number {
