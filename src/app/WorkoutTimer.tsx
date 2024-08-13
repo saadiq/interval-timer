@@ -35,7 +35,7 @@ const WorkoutTimerContent: React.FC = () => {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6">
             <div className="flex flex-col min-h-[400px] justify-between">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center">
+              <h1 className="text-xl sm:text-lg lg:text-3xl font-bold mb-4 text-center">
                 {workout.type === "amrap" || workout.type === "emom"
                   ? `${workout.type.toUpperCase()} Workout`
                   : `${workout.type.charAt(0).toUpperCase() + workout.type.slice(1)} Workout`}
