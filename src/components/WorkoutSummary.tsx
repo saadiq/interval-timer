@@ -36,11 +36,34 @@ export const WorkoutSummary: React.FC = () => {
   const isWorkoutStarted = !isPreWorkout;
   const currentSection = isWorkoutStarted ? workout.getCurrentSection(time) : null;
 
-  // Helper function to check if a section is active
+  // Updated helper function to check if a section is active
   const isSectionActive = (section: SectionWithColor, index: number) => {
     if (!isWorkoutStarted || !currentSection) return false;
-    return section.name === currentSection.name &&
-      workout.sections.indexOf(currentSection) === index;
+    
+    const warmUpLength = workout.data.warmUp.length;
+    const coolDownLength = workout.data.coolDown.length;
+    
+    if (index < warmUpLength || index >= workout.sections.length - coolDownLength) {
+      // For warm-up and cool-down sections, check directly
+      return section.name === currentSection.name && workout.sections.indexOf(currentSection) === index;
+    } else {
+      // For main workout sections, we need to be more specific
+      if (workout instanceof TabataWorkout || workout instanceof CircuitWorkout) {
+        // For Tabata and Circuit workouts, check if it's the correct exercise within the current round
+        const currentIndex = workout.sections.indexOf(currentSection);
+        const cycleLength = workout instanceof TabataWorkout ? 
+          workout.getTabataInfo().exercises.length * 2 : // each exercise has a work and rest period
+          workout.data.workout.exercises.length;
+        
+        const indexWithinCycle = (currentIndex - warmUpLength) % cycleLength;
+        const expectedIndex = warmUpLength + indexWithinCycle;
+
+        return index === expectedIndex && section.name === currentSection.name;
+      } else {
+        // For other workout types, check if the names match
+        return section.name === currentSection.name;
+      }
+    }
   };
 
   const renderCircuitSummary = (circuitWorkout: CircuitWorkout) => {
