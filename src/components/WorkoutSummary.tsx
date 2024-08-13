@@ -152,7 +152,7 @@ export const WorkoutSummary: React.FC = () => {
           EMOM: {formatTime(totalEMOMTime)} ({rounds} round{rounds > 1 ? 's' : ''})
         </h3>
         <div className="ml-4">
-          <p className="mb-2">Every minute on the minute, perform:</p>
+          <p className="mb-2">On the minute, perform:</p>
           <ul className="space-y-1">
             {emomSections.map((section, index) => (
               <li key={index} className={`flex items-center justify-between ${isSectionActive(section, workout.data.warmUp.length + index) ? 'bg-yellow-100' : ''}`}>
