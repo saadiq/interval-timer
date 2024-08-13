@@ -322,5 +322,330 @@
         "description": "30 seconds per leg, reach towards toes"
       }
     ]
+  },
+  "2024-08-13": {
+    "type": "amrap",
+    "warmUp": [
+      {
+        "name": "Butt Kicks",
+        "duration": 60,
+        "description": "Get the heart rate up, loosen hamstrings"
+      },
+      {
+        "name": "Hip Circles",
+        "duration": 60,
+        "description": "30 seconds each direction, mobilize hips"
+      },
+      {
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "30 seconds forward, 30 seconds backward, warm up shoulders"
+      },
+      {
+        "name": "Lunges with Twist",
+        "duration": 60,
+        "description": "Lunge forward and twist towards the front leg, engage core"
+      }
+    ],
+    "workout": {
+      "duration": 840,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "description": "Upper body strength",
+          "reps": 10
+        },
+        {
+          "name": "Air Squats",
+          "description": "Lower body strength",
+          "reps": 15
+        },
+        {
+          "name": "Sit-Ups",
+          "description": "Core strength",
+          "reps": 10
+        },
+        {
+          "name": "Mountain Climbers",
+          "description": "Core and cardio",
+          "reps": 15
+        },
+        {
+          "name": "Jumping Jacks",
+          "description": "Cardio",
+          "reps": 10
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Standing Quad Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, stretch quads"
+      },
+      {
+        "name": "Seated Forward Fold",
+        "duration": 60,
+        "description": "Stretch hamstrings and lower back"
+      }
+    ]
+  },
+  "2024-08-14": {
+    "type": "tabata",
+    "warmUp": [
+      {
+        "name": "High Knees",
+        "duration": 60,
+        "description": "Increase heart rate, warm up legs"
+      },
+      {
+        "name": "Torso Twists",
+        "duration": 60,
+        "description": "Warm up the spine, activate the core"
+      },
+      {
+        "name": "World's Greatest Stretch",
+        "duration": 120,
+        "description": "1 minute per side, full-body stretch"
+      }
+    ],
+    "workout": {
+      "rounds": 2,
+      "workDuration": 40,
+      "restDuration": 20,
+      "exercises": [
+        {
+          "name": "Jump Squats",
+          "duration": 40,
+          "description": "Lower body power"
+        },
+        {
+          "name": "Plank to Push-Up",
+          "duration": 40,
+          "description": "Upper body and core strength"
+        },
+        {
+          "name": "Reverse Lunges",
+          "duration": 40,
+          "description": "Lower body stability"
+        },
+        {
+          "name": "Bicycle Crunches",
+          "duration": 40,
+          "description": "Core strength"
+        },
+        {
+          "name": "Inchworms",
+          "duration": 40,
+          "description": "Full body movement and mobility"
+        },
+        {
+          "name": "High Knees",
+          "duration": 40,
+          "description": "Cardio"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Figure-Four Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, stretch hips and glutes"
+      },
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Relax the back and shoulders"
+      }
+    ]
+  },
+  "2024-08-15": {
+    "type": "amrap",
+    "warmUp": [
+      {
+        "name": "Arm Swings",
+        "duration": 60,
+        "description": "Warm up shoulders"
+      },
+      {
+        "name": "Leg Swings",
+        "duration": 60,
+        "description": "30 seconds per leg, mobilize hips"
+      },
+      {
+        "name": "Hip Flexor Stretch",
+        "duration": 60,
+        "description": "30 seconds per side, stretch hip flexors"
+      },
+      {
+        "name": "Butt Kicks",
+        "duration": 60,
+        "description": "Warm up legs and get the heart rate up"
+      }
+    ],
+    "workout": {
+      "duration": 840,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "description": "Upper body strength",
+          "reps": 5
+        },
+        {
+          "name": "Squats",
+          "description": "Lower body strength",
+          "reps": 10
+        },
+        {
+          "name": "Plank with Shoulder Taps",
+          "description": "Core and shoulder stability",
+          "reps": 5
+        },
+        {
+          "name": "Burpees",
+          "description": "Full body, cardio",
+          "reps": 5
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Standing Hamstring Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, stretch hamstrings"
+      },
+      {
+        "name": "Cat-Cow Stretch",
+        "duration": 60,
+        "description": "Mobilize spine"
+      }
+    ]
+  },
+  "2024-08-16": {
+    "type": "tabata",
+    "warmUp": [
+      {
+        "name": "Jumping Jacks",
+        "duration": 60,
+        "description": "Get the heart rate up"
+      },
+      {
+        "name": "Lateral Lunges",
+        "duration": 60,
+        "description": "Mobilize hips and inner thighs"
+      },
+      {
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "30 seconds forward, 30 seconds backward, warm up shoulders"
+      },
+      {
+        "name": "Knee Hugs",
+        "duration": 60,
+        "description": "Stretch glutes and hamstrings"
+      }
+    ],
+    "workout": {
+      "rounds": 3,
+      "workDuration": 20,
+      "restDuration": 10,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "description": "Upper body strength"
+        },
+        {
+          "name": "Air Squats",
+          "description": "Lower body strength"
+        },
+        {
+          "name": "Mountain Climbers",
+          "description": "Core and cardio"
+        },
+        {
+          "name": "Plank Hold",
+          "description": "Core stability"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Stretch back and shoulders"
+      },
+      {
+        "name": "Seated Glute Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, stretch glutes"
+      }
+    ]
+  },
+  "2024-08-17": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Butt Kicks",
+        "duration": 60,
+        "description": "Get the heart rate up, loosen hamstrings"
+      },
+      {
+        "name": "Hip Circles",
+        "duration": 60,
+        "description": "30 seconds each direction, mobilize hips"
+      },
+      {
+        "name": "Torso Twists",
+        "duration": 60,
+        "description": "Mobilize spine and activate core"
+      },
+      {
+        "name": "Leg Swings",
+        "duration": 60,
+        "description": "30 seconds per leg, front to back"
+      }
+    ],
+    "workout": {
+      "repetitions": 3,
+      "exercises": [
+        {
+          "name": "Burpees",
+          "duration": 40,
+          "description": "Full body, cardio"
+        },
+        {
+          "name": "Push-Ups",
+          "duration": 40,
+          "description": "Upper body strength"
+        },
+        {
+          "name": "Jump Squats",
+          "duration": 40,
+          "description": "Lower body power"
+        },
+        {
+          "name": "Sit-Ups",
+          "duration": 40,
+          "description": "Core strength"
+        },
+        {
+          "name": "Rest",
+          "duration": 20,
+          "description": "Recovery between exercises"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Standing Quad Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, stretch quads"
+      },
+      {
+        "name": "Forward Fold",
+        "duration": 60,
+        "description": "Stretch hamstrings and lower back"
+      }
+    ]
   }
 }
