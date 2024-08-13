@@ -1,8 +1,6 @@
-// useWorkoutFactory.ts
+// src/hooks/useWorkoutFactory.ts
 import { useState, useEffect } from 'react';
-import { WorkoutFactory } from '@/workouts/WorkoutFactory';
-import { Workout } from '@/workouts/Workout';
-import { WorkoutData } from '@/workouts/types';
+import { Workout, WorkoutData, WorkoutFactory } from '@/workouts';
 
 export function useWorkoutFactory(workoutData: WorkoutData, date: string) {
   const [workout, setWorkout] = useState<Workout | null>(null);
