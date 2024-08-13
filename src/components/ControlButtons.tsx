@@ -95,6 +95,11 @@ export const ControlButtons: React.FC = () => {
             playAudioCue();
           }
 
+          // Play audio cue at the end of the workout
+          if (workout.duration - newTime === 2 && workout.duration - newTime > 0) {
+            playAudioCue();
+          }
+
           // Speak section info at the second second of each new section
           if (newTime === sectionStartTime + 1) {
             speakSectionInfo(currentSection.name, nextSection?.name ?? null);
