@@ -13,7 +13,7 @@ const formatTime = (seconds: number): string => {
 const ClickableMovementName: React.FC<{ name: string }> = ({ name }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    const searchQuery = encodeURIComponent(`"In a workout, what is a ${name}"`);
+    const searchQuery = encodeURIComponent(`${name}`);
     window.open(`https://www.perplexity.ai?q=${searchQuery}`, '_blank');
   };
 
@@ -37,7 +37,7 @@ export const WorkoutSummary: React.FC = () => {
   const currentSection = isWorkoutStarted ? workout.getCurrentSection(time) : null;
 
   // Helper function to check if a section is active
-  const isSectionActive = (section: SectionWithColor | BaseExercise, index: number) => {
+  const isSectionActive = (section: SectionWithColor, index: number) => {
     if (!isWorkoutStarted || !currentSection) return false;
     return section.name === currentSection.name && 
            workout.sections.indexOf(currentSection) === index;
@@ -202,15 +202,28 @@ export const WorkoutSummary: React.FC = () => {
     );
   };
 
-  const isWarmUpOrCoolDown = (section: SectionWithColor, workout: Workout): boolean => {
-    return workout.data.warmUp.some(s => s.name === section.name) ||
-      workout.data.coolDown.some(s => s.name === s.name);
+  // Function to get warm-up sections
+  const getWarmUpSections = (): ReadonlyArray<SectionWithColor> => {
+    return workout.sections.slice(0, workout.data.warmUp.length);
+  };
+
+  // Function to get cool-down sections
+  const getCoolDownSections = (): ReadonlyArray<SectionWithColor> => {
+    return workout.sections.slice(-workout.data.coolDown.length);
+  };
+
+  // Function to get main workout sections
+  const getMainWorkoutSections = (): ReadonlyArray<SectionWithColor> => {
+    return workout.sections.slice(
+      workout.data.warmUp.length,
+      workout.sections.length - workout.data.coolDown.length
+    );
   };
 
   return (
     <div className="bg-white rounded-lg shadow-xl p-6">
       <h2 className="font-bold text-2xl mb-4">Workout Summary</h2>
-      {renderSectionGroup(workout.sections.filter(s => workout.data.warmUp.some(w => w.name === s.name)), 'Warm-up', 0)}
+      {renderSectionGroup(getWarmUpSections(), 'Warm-up', 0)}
       {workout instanceof CircuitWorkout
         ? renderCircuitSummary(workout)
         : workout instanceof TabataWorkout
@@ -219,8 +232,8 @@ export const WorkoutSummary: React.FC = () => {
             ? renderAMRAPSummary(workout)
             : workout instanceof EMOMWorkout
               ? renderEMOMSummary(workout)
-              : renderSectionGroup(workout.sections.filter(s => !isWarmUpOrCoolDown(s, workout)), 'Workout', workout.data.warmUp.length)}
-      {renderSectionGroup(workout.sections.filter(s => workout.data.coolDown.some(c => c.name === s.name)), 'Cool-down', workout.sections.length - workout.data.coolDown.length)}
+              : renderSectionGroup(getMainWorkoutSections(), 'Workout', workout.data.warmUp.length)}
+      {renderSectionGroup(getCoolDownSections(), 'Cool-down', workout.sections.length - workout.data.coolDown.length)}
     </div>
   );
 };
