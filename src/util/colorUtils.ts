@@ -1,4 +1,4 @@
-// colorUtils.ts
+// src/util/colorUtils.ts
 
 import { WorkoutData, WorkoutSection } from '@/workouts/types';
 
@@ -12,7 +12,7 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
   if (workoutData.type === 'amrap') {
     mainWorkoutColors = workoutData.workout.exercises.map(() => 'bg-blue-300');
   } else if (workoutData.type === 'circuit') {
-    mainWorkoutColors = Array(workoutData.workout.repetitions).fill(workoutData.workout.exercises.map((_, index) => 
+    mainWorkoutColors = Array(workoutData.workout.rounds).fill(workoutData.workout.exercises.map((_, index) => 
       index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
     )).flat();
   } else { // tabata
@@ -34,7 +34,7 @@ function getMainWorkoutSections(workoutData: WorkoutData): WorkoutSection[] {
     case 'amrap':
       return [{ name: 'AMRAP', duration: workoutData.workout.duration }];
     case 'circuit':
-      return Array(workoutData.workout.repetitions).fill(workoutData.workout.exercises).flat();
+      return Array(workoutData.workout.rounds).fill(workoutData.workout.exercises).flat();
     case 'tabata':
       return Array(workoutData.workout.rounds).fill(
         workoutData.workout.exercises.flatMap(exercise => [

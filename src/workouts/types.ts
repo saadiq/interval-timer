@@ -24,7 +24,7 @@ export interface BaseWorkout {
 export interface CircuitWorkout extends BaseWorkout {
   type: 'circuit';
   workout: {
-    repetitions: number;
+    rounds: number;
     exercises: BaseExercise[];
   };
 }

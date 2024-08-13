@@ -39,18 +39,18 @@ export const WorkoutSummary: React.FC = () => {
   // Helper function to check if a section is active
   const isSectionActive = (section: SectionWithColor, index: number) => {
     if (!isWorkoutStarted || !currentSection) return false;
-    return section.name === currentSection.name && 
-           workout.sections.indexOf(currentSection) === index;
+    return section.name === currentSection.name &&
+      workout.sections.indexOf(currentSection) === index;
   };
 
   const renderCircuitSummary = (circuitWorkout: CircuitWorkout) => {
-    const { repetitions, exercises } = circuitWorkout.data.workout;
-    const totalCircuitTime = exercises.reduce((total, ex) => total + (ex.duration || 0), 0) * repetitions;
+    const { rounds, exercises } = circuitWorkout.data.workout;
+    const totalCircuitTime = exercises.reduce((total, ex) => total + (ex.duration || 0), 0) * rounds;
 
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
-          Circuit ({repetitions}x): {formatTime(totalCircuitTime)}
+          Circuit{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalCircuitTime)}
         </h3>
         <div className="ml-4">
           <ul className="space-y-1">
@@ -84,7 +84,7 @@ export const WorkoutSummary: React.FC = () => {
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
-          Tabata (x{rounds}): {formatTime(totalTabataTime)}
+          Tabata{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalTabataTime)}
         </h3>
         <div className="ml-4">
           <ul className="space-y-1">
@@ -145,11 +145,11 @@ export const WorkoutSummary: React.FC = () => {
     const emomSections = emomWorkout.getEMOMSections();
     const totalEMOMTime = emomWorkout.getEMOMDuration();
     const rounds = emomWorkout.getRounds();
-  
+
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
-          EMOM: {formatTime(totalEMOMTime)} ({rounds} round{rounds > 1 ? 's' : ''})
+          EMOM{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalEMOMTime)}
         </h3>
         <div className="ml-4">
           <p className="mb-2">On the minute, perform:</p>

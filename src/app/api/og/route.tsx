@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 
   switch (workout.data.type) {
     case 'circuit':
-      mainWorkoutTime = (workout.data as CircuitWorkout).workout.exercises.reduce((total, exercise) => total + (exercise.duration || 0), 0) * (workout.data as CircuitWorkout).workout.repetitions;
+      mainWorkoutTime = (workout.data as CircuitWorkout).workout.exercises.reduce((total, exercise) => total + (exercise.duration || 0), 0) * (workout.data as CircuitWorkout).workout.rounds;
       break;
     case 'amrap':
       mainWorkoutTime = (workout.data as AMRAPWorkout).workout.duration;
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
           {workout.data.type === 'circuit' && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <span style={{ fontSize: 24, marginTop: '10px', marginBottom: '10px', color: 'rgb(59, 130, 246)' }}>
-                Circuit{(workout.data as CircuitWorkout).workout.repetitions > 1 ? ` (${(workout.data as CircuitWorkout).workout.repetitions}x)` : ''}:
+                Circuit{(workout.data as CircuitWorkout).workout.rounds > 1 ? ` (${(workout.data as CircuitWorkout).workout.rounds}x)` : ''}:
               </span>
               {renderExercises((workout.data as CircuitWorkout).workout.exercises, exercise => `${exercise.name} (${formatTime(exercise.duration || 0)})`)}
             </div>

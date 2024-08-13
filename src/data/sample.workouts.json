@@ -12,7 +12,7 @@
       }
     ],
     "workout": {
-      "repetitions": 3,
+      "rounds": 3,
       "exercises": [
         {
           "name": "Jump Rope",

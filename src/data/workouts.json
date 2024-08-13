@@ -12,7 +12,7 @@
       }
     ],
     "workout": {
-      "repetitions": 3,
+      "rounds": 3,
       "exercises": [
         {
           "name": "Jump Rope",
@@ -159,7 +159,7 @@
       }
     ],
     "workout": {
-      "repetitions": 3,
+      "rounds": 3,
       "exercises": [
         {
           "name": "Squat to Calf Raise",
@@ -578,73 +578,6 @@
         "name": "Seated Glute Stretch",
         "duration": 60,
         "description": "30 seconds per leg, stretch glutes"
-      }
-    ]
-  },
-  "2024-08-17": {
-    "type": "circuit",
-    "warmUp": [
-      {
-        "name": "Butt Kicks",
-        "duration": 60,
-        "description": "Get the heart rate up, loosen hamstrings"
-      },
-      {
-        "name": "Hip Circles",
-        "duration": 60,
-        "description": "30 seconds each direction, mobilize hips"
-      },
-      {
-        "name": "Torso Twists",
-        "duration": 60,
-        "description": "Mobilize spine and activate core"
-      },
-      {
-        "name": "Leg Swings",
-        "duration": 60,
-        "description": "30 seconds per leg, front to back"
-      }
-    ],
-    "workout": {
-      "repetitions": 3,
-      "exercises": [
-        {
-          "name": "Burpees",
-          "duration": 40,
-          "description": "Full body, cardio"
-        },
-        {
-          "name": "Push-Ups",
-          "duration": 40,
-          "description": "Upper body strength"
-        },
-        {
-          "name": "Jump Squats",
-          "duration": 40,
-          "description": "Lower body power"
-        },
-        {
-          "name": "Sit-Ups",
-          "duration": 40,
-          "description": "Core strength"
-        },
-        {
-          "name": "Rest",
-          "duration": 20,
-          "description": "Recovery between exercises"
-        }
-      ]
-    },
-    "coolDown": [
-      {
-        "name": "Standing Quad Stretch",
-        "duration": 60,
-        "description": "30 seconds per leg, stretch quads"
-      },
-      {
-        "name": "Forward Fold",
-        "duration": 60,
-        "description": "Stretch hamstrings and lower back"
       }
     ]
   }
