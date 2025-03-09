@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
 
   const warmUpTime = workout.data.warmUp.reduce((total, exercise) => total + exercise.duration, 0);
   let mainWorkoutTime = 0;
-  let coolDownTime = workout.data.coolDown.reduce((total, exercise) => total + exercise.duration, 0);
+  const coolDownTime = workout.data.coolDown.reduce((total, exercise) => total + exercise.duration, 0);
 
   switch (workout.data.type) {
     case 'circuit':

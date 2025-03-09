@@ -27,12 +27,14 @@ This application helps you time and track different types of workouts with custo
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/interval-timer.git
    cd interval-timer
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    # or
@@ -42,6 +44,7 @@ This application helps you time and track different types of workouts with custo
    ```
 
 3. Run the development server:
+
    ```bash
    npm run dev
    # or
@@ -118,3 +121,28 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Built with [Next.js](https://nextjs.org/)
 - UI components with [Tailwind CSS](https://tailwindcss.com/)
+
+# Linting and Code Quality
+
+This project uses ESLint for code quality and TypeScript for type checking. There are two ESLint configurations:
+
+1. **Production Configuration** (`.eslintrc.json`): A lenient configuration that allows the build to pass even with some warnings or unused variables. This is used for deployment.
+
+2. **Development Configuration** (`.eslintrc.dev.json`): A stricter configuration that catches more issues during development, including unused variables and any types.
+
+## Linting Commands
+
+- `npm run lint`: Run the standard Next.js linting
+- `npm run lint:strict`: Run linting with no warnings allowed
+- `npm run lint:fix`: Automatically fix linting issues where possible
+- `npm run lint:dev`: Run linting with the stricter development configuration
+- `npm run typecheck`: Run TypeScript type checking
+- `npm run prebuild`: Run both linting and type checking (used before build)
+
+## VS Code Integration
+
+The VS Code settings are configured to use the development ESLint configuration and show linting errors in real-time. This helps catch issues early during development.
+
+## Deployment
+
+For deployment, the production ESLint configuration is used, which is more lenient to allow the build to pass. If you want to deploy with strict linting, you can run `npm run lint:strict` before deploying to catch any issues.
