@@ -580,5 +580,461 @@
         "description": "30 seconds per leg, stretch glutes"
       }
     ]
+  },
+  "2025-03-09": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "30 seconds forward, 30 seconds backward, warm up shoulders"
+      },
+      {
+        "name": "Hip Hinges",
+        "duration": 60,
+        "description": "Practice the hip hinge movement pattern for kettlebell swings"
+      },
+      {
+        "name": "Goblet Squat Mobility",
+        "duration": 60,
+        "description": "Light kettlebell, focus on depth and form"
+      }
+    ],
+    "workout": {
+      "rounds": 3,
+      "exercises": [
+        {
+          "name": "Kettlebell Swings",
+          "duration": 40,
+          "description": "Two-handed swings, focus on hip drive"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Goblet Squats",
+          "duration": 40,
+          "description": "Hold kettlebell at chest, squat with good form"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Single-Arm Rows",
+          "duration": 40,
+          "description": "20 seconds each side, support with opposite hand"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Kettlebell Halos",
+          "duration": 40,
+          "description": "Circle kettlebell around head, switch directions halfway"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Kettlebell Deadlifts",
+          "duration": 40,
+          "description": "Focus on hip hinge and flat back"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Shoulder Stretch",
+        "duration": 60,
+        "description": "30 seconds per side, cross arm across chest"
+      },
+      {
+        "name": "Forward Fold",
+        "duration": 60,
+        "description": "Gentle stretch for hamstrings and lower back"
+      }
+    ]
+  },
+  "2025-03-10": {
+    "type": "amrap",
+    "warmUp": [
+      {
+        "name": "Kettlebell Good Mornings",
+        "duration": 60,
+        "description": "Light kettlebell, practice hip hinge"
+      },
+      {
+        "name": "Kettlebell Arm Bar",
+        "duration": 60,
+        "description": "30 seconds per side, shoulder mobility"
+      },
+      {
+        "name": "Goblet Squat Prying",
+        "duration": 60,
+        "description": "Hold at bottom of squat, open hips"
+      }
+    ],
+    "workout": {
+      "duration": 720,
+      "exercises": [
+        {
+          "name": "Kettlebell Swings",
+          "description": "Two-handed swings",
+          "reps": 15
+        },
+        {
+          "name": "Kettlebell Clean and Press",
+          "description": "Alternate sides, one rep is both sides",
+          "reps": 6
+        },
+        {
+          "name": "Goblet Squats",
+          "description": "Hold kettlebell at chest",
+          "reps": 10
+        },
+        {
+          "name": "Renegade Rows",
+          "description": "Alternate arms, one rep is both sides",
+          "reps": 6
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Stretch back and shoulders"
+      },
+      {
+        "name": "Kneeling Hip Flexor Stretch",
+        "duration": 60,
+        "description": "30 seconds per side, stretch hip flexors"
+      }
+    ]
+  },
+  "2025-03-11": {
+    "type": "tabata",
+    "warmUp": [
+      {
+        "name": "Kettlebell Around the Body",
+        "duration": 60,
+        "description": "Pass kettlebell around body, switch directions halfway"
+      },
+      {
+        "name": "Kettlebell Deadlift",
+        "duration": 60,
+        "description": "Light weight, practice form"
+      },
+      {
+        "name": "Kettlebell Halo",
+        "duration": 60,
+        "description": "Circle kettlebell around head, switch directions halfway"
+      }
+    ],
+    "workout": {
+      "rounds": 4,
+      "workDuration": 20,
+      "restDuration": 10,
+      "exercises": [
+        {
+          "name": "Kettlebell Swings",
+          "description": "Two-handed power swings"
+        },
+        {
+          "name": "Kettlebell Goblet Squats",
+          "description": "Hold at chest, full depth"
+        },
+        {
+          "name": "Kettlebell Push Press",
+          "description": "Alternate sides"
+        },
+        {
+          "name": "Kettlebell Russian Twists",
+          "description": "Seated, feet elevated if possible"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Thoracic Spine Stretch",
+        "duration": 60,
+        "description": "Foam roller or on floor, open chest"
+      },
+      {
+        "name": "Hamstring Stretch",
+        "duration": 60,
+        "description": "30 seconds per leg, seated or standing"
+      }
+    ]
+  },
+  "2025-03-12": {
+    "type": "emom",
+    "warmUp": [
+      {
+        "name": "Kettlebell Deadlift",
+        "duration": 60,
+        "description": "Light weight, practice form"
+      },
+      {
+        "name": "Kettlebell Windmill",
+        "duration": 60,
+        "description": "30 seconds each side, mobility focus"
+      },
+      {
+        "name": "Goblet Squat Hold",
+        "duration": 60,
+        "description": "Hold at bottom position, open hips"
+      }
+    ],
+    "workout": {
+      "rounds": 1,
+      "exercises": [
+        {
+          "name": "10 Kettlebell Swings",
+          "description": "Two-handed swings, then rest for remaining time."
+        },
+        {
+          "name": "8 Goblet Squats",
+          "description": "Hold kettlebell at chest, then rest for remaining time."
+        },
+        {
+          "name": "6 Single-Arm Rows (Right)",
+          "description": "Support with left hand, then rest for remaining time."
+        },
+        {
+          "name": "6 Single-Arm Rows (Left)",
+          "description": "Support with right hand, then rest for remaining time."
+        },
+        {
+          "name": "10 Kettlebell Swings",
+          "description": "Two-handed swings, then rest for remaining time."
+        },
+        {
+          "name": "5 Clean and Press (Right)",
+          "description": "Clean and press on right side, then rest for remaining time."
+        },
+        {
+          "name": "5 Clean and Press (Left)",
+          "description": "Clean and press on left side, then rest for remaining time."
+        },
+        {
+          "name": "10 Kettlebell Deadlifts",
+          "description": "Focus on hip hinge, then rest for remaining time."
+        },
+        {
+          "name": "15 Russian Twists",
+          "description": "Seated with kettlebell, then rest for remaining time."
+        },
+        {
+          "name": "10 Kettlebell Swings",
+          "description": "Two-handed swings, then rest for remaining time."
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Stretch back and shoulders"
+      },
+      {
+        "name": "Seated Forward Fold",
+        "duration": 60,
+        "description": "Stretch hamstrings and lower back"
+      }
+    ]
+  },
+  "2025-03-13": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Kettlebell Deadlift",
+        "duration": 60,
+        "description": "Light weight, practice form"
+      },
+      {
+        "name": "Kettlebell Halo",
+        "duration": 60,
+        "description": "Circle kettlebell around head, switch directions halfway"
+      },
+      {
+        "name": "Goblet Squat",
+        "duration": 60,
+        "description": "Light weight, focus on depth"
+      }
+    ],
+    "workout": {
+      "rounds": 4,
+      "exercises": [
+        {
+          "name": "Kettlebell Swing to Clean",
+          "duration": 40,
+          "description": "Swing then clean at top, alternate sides"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Single-Leg Deadlift",
+          "duration": 40,
+          "description": "20 seconds each leg, hold kettlebell opposite hand"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Kettlebell Front Rack Lunge",
+          "duration": 40,
+          "description": "Hold kettlebell in rack position, alternate legs"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Kettlebell Floor Press",
+          "duration": 40,
+          "description": "Lie on back, press kettlebell up"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Spinal Twist",
+        "duration": 60,
+        "description": "30 seconds each side, lying on back"
+      },
+      {
+        "name": "Hip Flexor Stretch",
+        "duration": 60,
+        "description": "30 seconds each side, kneeling lunge position"
+      }
+    ]
+  },
+  "2025-03-14": {
+    "type": "amrap",
+    "warmUp": [
+      {
+        "name": "Kettlebell Around the Body",
+        "duration": 60,
+        "description": "Pass kettlebell around body, switch directions halfway"
+      },
+      {
+        "name": "Kettlebell Good Morning",
+        "duration": 60,
+        "description": "Light weight, practice hip hinge"
+      },
+      {
+        "name": "Kettlebell Goblet Squat",
+        "duration": 60,
+        "description": "Focus on depth and form"
+      }
+    ],
+    "workout": {
+      "duration": 900,
+      "exercises": [
+        {
+          "name": "Kettlebell Swings",
+          "description": "Two-handed swings",
+          "reps": 20
+        },
+        {
+          "name": "Kettlebell Goblet Lunges",
+          "description": "Alternating legs, one rep is both sides",
+          "reps": 10
+        },
+        {
+          "name": "Kettlebell Push Press",
+          "description": "Alternating arms, one rep is both sides",
+          "reps": 10
+        },
+        {
+          "name": "Kettlebell Sit-ups",
+          "description": "Hold kettlebell at chest",
+          "reps": 15
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Stretch back and shoulders"
+      },
+      {
+        "name": "Seated Forward Fold",
+        "duration": 60,
+        "description": "Stretch hamstrings and lower back"
+      }
+    ]
+  },
+  "2025-03-15": {
+    "type": "tabata",
+    "warmUp": [
+      {
+        "name": "Kettlebell Deadlift",
+        "duration": 60,
+        "description": "Light weight, practice form"
+      },
+      {
+        "name": "Kettlebell Halo",
+        "duration": 60,
+        "description": "Circle kettlebell around head, switch directions halfway"
+      },
+      {
+        "name": "Kettlebell Figure 8",
+        "duration": 60,
+        "description": "Pass kettlebell through legs in figure 8 pattern"
+      }
+    ],
+    "workout": {
+      "rounds": 4,
+      "workDuration": 20,
+      "restDuration": 10,
+      "exercises": [
+        {
+          "name": "Kettlebell Swings",
+          "description": "Two-handed power swings"
+        },
+        {
+          "name": "Kettlebell Snatch",
+          "description": "Alternate sides each round"
+        },
+        {
+          "name": "Kettlebell Goblet Squat",
+          "description": "Hold at chest, full depth"
+        },
+        {
+          "name": "Kettlebell Renegade Row",
+          "description": "Alternate arms, in plank position"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Downward Dog",
+        "duration": 60,
+        "description": "Stretch shoulders, hamstrings, and calves"
+      },
+      {
+        "name": "Pigeon Pose",
+        "duration": 60,
+        "description": "30 seconds per side, stretch hips and glutes"
+      }
+    ]
   }
 }
