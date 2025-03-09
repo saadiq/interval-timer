@@ -10,7 +10,8 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { date: string } }
 ) {
-  const date = params.date;
+  // Await the params object before accessing its properties
+  const { date } = await params;
 
   if (date in workouts) {
     return NextResponse.json(workouts[date]);
