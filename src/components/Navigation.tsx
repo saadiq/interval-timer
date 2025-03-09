@@ -21,7 +21,7 @@ export default function Navigation() {
               pathname === '/' ? 'text-white font-medium' : 'text-gray-300'
             }`}
           >
-            Today's Workout
+            Today&apos;s Workout
           </Link>
           <Link 
             href="/workouts" 

@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:strict": "next lint --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "prebuild": "npm run lint:strict && npm run typecheck"
   },
   "dependencies": {
     "@vercel/analytics": "^1.3.1",

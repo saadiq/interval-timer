@@ -8,7 +8,7 @@ const workouts = workoutsData as unknown as WorkoutDataMap;
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { date: string } }
+  { params }: { params: Promise<{ date: string }> }
 ) {
   // Await the params object before accessing its properties
   const { date } = await params;
