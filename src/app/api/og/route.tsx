@@ -13,6 +13,7 @@ import {
 import { WorkoutFactory } from "@/workouts/WorkoutFactory";
 import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
+import { getLocalDate, formatDateWithTimezone } from "@/utils/timezone";
 
 export const runtime = "edge";
 
@@ -20,13 +21,6 @@ export const runtime = "edge";
 export const revalidate = 3600; // Cache for 1 hour
 
 const typedWorkoutsData = workoutsData as WorkoutDataMap;
-
-const getLocalDate = (): string => {
-  const now = new Date();
-  const timezone = "America/New_York";
-  const zonedDate = toZonedTime(now, timezone);
-  return format(zonedDate, "yyyy-MM-dd");
-};
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -159,6 +153,14 @@ export async function GET(req: NextRequest) {
         </div>
       ));
 
+    // Format the date with timezone for display in OG image
+    // For OG images, we DO want to show the timezone since they might be viewed by people in different timezones
+    const formattedDate = formatDateWithTimezone(
+      workoutDate,
+      "MMMM d, yyyy",
+      true
+    );
+
     const imageResponse = new ImageResponse(
       (
         <div
@@ -204,7 +206,7 @@ export async function GET(req: NextRequest) {
               <path d="M15 14a5 5 0 0 0-7.584 2" />
               <path d="M9.964 6.825C8.019 7.977 9.5 13 8 15" />
             </svg>
-            Workout for {workout.date}
+            Workout for {formattedDate}
           </span>
           <span
             style={{
