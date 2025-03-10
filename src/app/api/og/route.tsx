@@ -300,7 +300,7 @@ export async function GET(req: NextRequest) {
     };
 
     const exercises = getExerciseDetails();
-    const maxExercisesToShow = 5; // Limit to 5 exercises to avoid layout issues
+    const maxExercisesToShow = 6; // Increased from 5 to 6 exercises
 
     // Create a super simple OG image
     const imageResponse = new ImageResponse(
@@ -435,19 +435,21 @@ export async function GET(req: NextRequest) {
                 display: "flex",
                 flexDirection: "row",
                 flexWrap: "wrap",
-                gap: "10px",
+                gap: "16px",
               }}
             >
-              {/* Exercise 1 */}
-              {exercises.length > 0 && (
+              {/* Exercise cards - 2 columns of 3 exercises each */}
+              {exercises.slice(0, maxExercisesToShow).map((exercise, index) => (
                 <div
+                  key={index}
                   style={{
                     display: "flex",
                     alignItems: "center",
                     width: "48%",
                     backgroundColor: "rgb(249, 250, 251)",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
+                    padding: "16px",
+                    borderRadius: "8px",
+                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
                   }}
                 >
                   <div
@@ -455,248 +457,40 @@ export async function GET(req: NextRequest) {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      width: "22px",
-                      height: "22px",
+                      width: "32px",
+                      height: "32px",
                       borderRadius: "50%",
                       backgroundColor: getWorkoutTypeColor(workoutData.type),
                       color: "white",
-                      marginRight: "8px",
-                      fontSize: "11px",
+                      marginRight: "12px",
+                      fontSize: "16px",
                       fontWeight: "bold",
                     }}
                   >
-                    {exercises[0].index}
+                    {exercise.index}
                   </div>
                   <div style={{ display: "flex", flexDirection: "column" }}>
                     <div
                       style={{
                         display: "flex",
-                        fontWeight: "500",
-                        fontSize: "14px",
+                        fontWeight: "600",
+                        fontSize: "18px",
                       }}
                     >
-                      {exercises[0].name}
+                      {exercise.name}
                     </div>
                     <div
                       style={{
                         display: "flex",
-                        fontSize: "11px",
+                        fontSize: "14px",
                         color: "rgb(107, 114, 128)",
                       }}
                     >
-                      {exercises[0].detail}
+                      {exercise.detail}
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Exercise 2 */}
-              {exercises.length > 1 && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                    backgroundColor: "rgb(249, 250, 251)",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      backgroundColor: getWorkoutTypeColor(workoutData.type),
-                      color: "white",
-                      marginRight: "8px",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {exercises[1].index}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontWeight: "500",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {exercises[1].name}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontSize: "11px",
-                        color: "rgb(107, 114, 128)",
-                      }}
-                    >
-                      {exercises[1].detail}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Exercise 3 */}
-              {exercises.length > 2 && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                    backgroundColor: "rgb(249, 250, 251)",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      backgroundColor: getWorkoutTypeColor(workoutData.type),
-                      color: "white",
-                      marginRight: "8px",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {exercises[2].index}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontWeight: "500",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {exercises[2].name}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontSize: "11px",
-                        color: "rgb(107, 114, 128)",
-                      }}
-                    >
-                      {exercises[2].detail}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Exercise 4 */}
-              {exercises.length > 3 && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                    backgroundColor: "rgb(249, 250, 251)",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      backgroundColor: getWorkoutTypeColor(workoutData.type),
-                      color: "white",
-                      marginRight: "8px",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {exercises[3].index}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontWeight: "500",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {exercises[3].name}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontSize: "11px",
-                        color: "rgb(107, 114, 128)",
-                      }}
-                    >
-                      {exercises[3].detail}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Exercise 5 */}
-              {exercises.length > 4 && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                    backgroundColor: "rgb(249, 250, 251)",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                  }}
-                >
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "22px",
-                      height: "22px",
-                      borderRadius: "50%",
-                      backgroundColor: getWorkoutTypeColor(workoutData.type),
-                      color: "white",
-                      marginRight: "8px",
-                      fontSize: "11px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    {exercises[4].index}
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontWeight: "500",
-                        fontSize: "14px",
-                      }}
-                    >
-                      {exercises[4].name}
-                    </div>
-                    <div
-                      style={{
-                        display: "flex",
-                        fontSize: "11px",
-                        color: "rgb(107, 114, 128)",
-                      }}
-                    >
-                      {exercises[4].detail}
-                    </div>
-                  </div>
-                </div>
-              )}
+              ))}
             </div>
 
             {/* More exercises indicator */}
@@ -704,9 +498,9 @@ export async function GET(req: NextRequest) {
               <div
                 style={{
                   display: "flex",
-                  fontSize: "12px",
+                  fontSize: "14px",
                   color: "rgb(107, 114, 128)",
-                  marginTop: "8px",
+                  marginTop: "12px",
                 }}
               >
                 +{exercises.length - maxExercisesToShow} more exercises
