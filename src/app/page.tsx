@@ -15,41 +15,6 @@ import {
 } from "@/utils/timezone";
 import { format } from "date-fns";
 
-// Debug component to show timezone information
-const TimezoneDebug: React.FC = () => {
-  const [debugInfo, setDebugInfo] = useState<string>("");
-
-  useEffect(() => {
-    try {
-      const now = new Date();
-      const localDate = getLocalDate();
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const offset = -now.getTimezoneOffset() / 60;
-      const offsetStr = offset >= 0 ? `+${offset}` : `${offset}`;
-
-      const info = `
-        Current time (UTC): ${now.toISOString()}
-        Browser timezone: ${timezone} (UTC${offsetStr})
-        Local date: ${localDate}
-        Formatted date: ${formatDateWithTimezone(localDate)}
-      `;
-
-      setDebugInfo(info);
-    } catch (err) {
-      setDebugInfo(`Error getting timezone info: ${err}`);
-    }
-  }, []);
-
-  if (!debugInfo) return null;
-
-  return (
-    <div className="bg-gray-100 p-4 mb-4 font-mono text-xs whitespace-pre-wrap">
-      <h3 className="font-bold mb-2">Debug Timezone Info:</h3>
-      {debugInfo}
-    </div>
-  );
-};
-
 // Extended interface for the API response
 interface WorkoutResponse {
   _note?: string;
@@ -63,19 +28,15 @@ interface WorkoutResponse {
 async function fetchWorkoutData(
   date: string
 ): Promise<{ workout: Workout | null; actualDate?: string; note?: string }> {
-  console.log("Fetching workout data for date:", date);
-
   const response = await fetch(`/api/workouts/${date}`);
   if (!response.ok) {
     if (response.status === 404) {
-      console.log("No workout found for date:", date);
       return { workout: null };
     }
     throw new Error("Failed to fetch workout data");
   }
 
   const data = (await response.json()) as WorkoutResponse;
-  console.log("Received workout data:", data);
 
   // Check if we got a different date's workout
   const actualDate = data._actualDate || date;
@@ -130,12 +91,6 @@ const WorkoutPageContent: React.FC = () => {
 
         // Get the date, ensuring consistent handling
         const date = dateParam || getLocalDate();
-        console.log(
-          "Loading workout for date:",
-          date,
-          "isExplicit:",
-          isDateExplicit
-        );
         setRequestedDate(date);
 
         const {
@@ -147,7 +102,6 @@ const WorkoutPageContent: React.FC = () => {
         if (fetchedWorkout === null) {
           setNotFound(true);
         } else {
-          console.log("Setting workout with date:", actualDate || date);
           setWorkout(fetchedWorkout);
           setCurrentDate(actualDate || date);
 
@@ -211,7 +165,6 @@ const WorkoutPageContent: React.FC = () => {
 
   return (
     <>
-      <TimezoneDebug />
       {dateNote && (
         <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
           <p>{dateNote}</p>

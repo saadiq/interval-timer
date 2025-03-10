@@ -12,7 +12,6 @@ export function getUserTimezone(): string {
   if (typeof window !== "undefined" && window.Intl) {
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      console.log("Detected user timezone:", timezone);
       return timezone;
     } catch (e) {
       console.warn("Could not determine user timezone:", e);
@@ -20,7 +19,6 @@ export function getUserTimezone(): string {
   }
 
   // Fall back to default timezone
-  console.log("Using default timezone:", DEFAULT_TIMEZONE);
   return DEFAULT_TIMEZONE;
 }
 
@@ -52,13 +50,6 @@ export function formatInTimezone(
   // Format the date according to the specified format
   const formattedDate = format(dateObj, formatStr);
 
-  console.log("formatInTimezone:", {
-    input: typeof date === "string" ? date : date.toISOString(),
-    timezone,
-    dateObj: dateObj.toISOString(),
-    formattedDate,
-  });
-
   return formattedDate;
 }
 
@@ -74,11 +65,9 @@ export function getLocalDate(): string {
 
   // Create a new date object for the current time
   const now = new Date();
-  console.log("getLocalDate - current time (UTC):", now.toISOString());
 
   // Get the current date components in the user's timezone
   const zonedDate = toZonedTime(now, timezone);
-  console.log("getLocalDate - zoned time:", zonedDate.toISOString());
 
   // Extract year, month, day in the user's timezone
   const year = zonedDate.getFullYear();
@@ -89,7 +78,6 @@ export function getLocalDate(): string {
   const localDate = `${year}-${month.toString().padStart(2, "0")}-${day
     .toString()
     .padStart(2, "0")}`;
-  console.log("getLocalDate - result:", localDate);
 
   return localDate;
 }
@@ -110,15 +98,6 @@ export function parseDate(dateString: string): Date {
   // Create a new date object with the local year, month, day at 12:00 noon
   // Using noon helps avoid any potential timezone-related date shifting
   const date = new Date(year, month - 1, day, 12, 0, 0);
-
-  console.log("parseDate:", {
-    input: dateString,
-    year,
-    month,
-    day,
-    date: date.toISOString(),
-    timezone,
-  });
 
   return date;
 }
@@ -151,14 +130,6 @@ export function formatDateWithTimezone(
 
   // Format the date according to the specified format
   const formattedDate = format(dateObj, formatStr);
-
-  console.log("formatDateWithTimezone:", {
-    input: typeof date === "string" ? date : date.toISOString(),
-    timezone,
-    dateObj: dateObj.toISOString(),
-    formattedDate,
-    showTimezone,
-  });
 
   // Add timezone indicator if requested
   if (showTimezone) {
