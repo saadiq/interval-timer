@@ -49,6 +49,7 @@ export async function GET(req: NextRequest) {
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               fontSize: 60,
               color: "black",
               background: "white",
@@ -57,9 +58,33 @@ export async function GET(req: NextRequest) {
               textAlign: "center",
               justifyContent: "center",
               alignItems: "center",
+              fontFamily: "Inter, sans-serif",
             }}
           >
-            No workout found
+            <div style={{ display: "flex", marginBottom: "20px" }}>
+              <svg
+                width="80"
+                height="80"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+            </div>
+            <div style={{ display: "flex", fontWeight: "bold" }}>
+              No Workout Found
+            </div>
+            <div
+              style={{ display: "flex", fontSize: "24px", marginTop: "10px" }}
+            >
+              Try another date
+            </div>
           </div>
         ),
         { width: 1200, height: 630 }
@@ -83,17 +108,14 @@ export async function GET(req: NextRequest) {
 
     const workout = WorkoutFactory.createWorkout(workoutData, workoutDate);
 
+    // Calculate total time
     const warmUpTime = workoutData.warmUp.reduce(
       (total: number, exercise: { duration: number }) =>
         total + exercise.duration,
       0
     );
+
     let mainWorkoutTime = 0;
-    const coolDownTime = workoutData.coolDown.reduce(
-      (total: number, exercise: { duration: number }) =>
-        total + exercise.duration,
-      0
-    );
 
     switch (workoutData.type) {
       case "circuit":
@@ -121,8 +143,15 @@ export async function GET(req: NextRequest) {
         break;
     }
 
+    const coolDownTime = workoutData.coolDown.reduce(
+      (total: number, exercise: { duration: number }) =>
+        total + exercise.duration,
+      0
+    );
+
     const totalTime = warmUpTime + mainWorkoutTime + coolDownTime;
 
+    // Format time helper
     const formatTime = (seconds: number) => {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
@@ -131,249 +160,546 @@ export async function GET(req: NextRequest) {
         .padStart(2, "0")}`;
     };
 
-    const renderExercises = (
-      exercises: any[],
-      format: (exercise: any) => string
-    ) =>
-      exercises.map((exercise, index) => (
-        <div
-          key={index}
-          style={{
-            fontSize: 18,
-            marginBottom: "5px",
-            color: "rgb(31, 41, 55)",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ marginRight: "10px", color: "rgb(59, 130, 246)" }}>
-            •
-          </span>
-          {format(exercise)}
-        </div>
-      ));
-
     // Format the date with timezone for display in OG image
-    // For OG images, we DO want to show the timezone since they might be viewed by people in different timezones
     const formattedDate = formatDateWithTimezone(
       workoutDate,
       "MMMM d, yyyy",
       true
     );
 
+    // Get workout type color
+    const getWorkoutTypeColor = (type: string) => {
+      switch (type) {
+        case "circuit":
+          return "rgb(59, 130, 246)"; // Blue
+        case "amrap":
+          return "rgb(16, 185, 129)"; // Green
+        case "tabata":
+          return "rgb(239, 68, 68)"; // Red
+        case "emom":
+          return "rgb(139, 92, 246)"; // Purple
+        default:
+          return "rgb(107, 114, 128)"; // Gray
+      }
+    };
+
+    // Get exercise count
+    const getExerciseCount = () => {
+      switch (workoutData.type) {
+        case "circuit":
+          return (workoutData as CircuitWorkout).workout.exercises.filter(
+            (ex) => ex.name !== "Rest"
+          ).length;
+        case "amrap":
+          return (workoutData as AMRAPWorkout).workout.exercises.length;
+        case "tabata":
+          return (workoutData as TabataWorkout).workout.exercises.length;
+        case "emom":
+          return (workoutData as EMOMWorkout).workout.exercises.length;
+        default:
+          return 0;
+      }
+    };
+
+    // Get rounds info
+    const getRoundsInfo = () => {
+      switch (workoutData.type) {
+        case "circuit":
+          return (workoutData as CircuitWorkout).workout.rounds > 1
+            ? `${(workoutData as CircuitWorkout).workout.rounds} Rounds`
+            : "1 Round";
+        case "tabata":
+          return (workoutData as TabataWorkout).workout.rounds > 1
+            ? `${(workoutData as TabataWorkout).workout.rounds} Rounds`
+            : "1 Round";
+        case "emom":
+          return (workoutData as EMOMWorkout).workout.rounds > 1
+            ? `${(workoutData as EMOMWorkout).workout.rounds} Minutes`
+            : "1 Minute";
+        case "amrap":
+          return `${formatTime(
+            (workoutData as AMRAPWorkout).workout.duration
+          )}`;
+        default:
+          return "";
+      }
+    };
+
+    // Get exercise list
+    const getExerciseDetails = () => {
+      let exercises = [];
+
+      switch (workoutData.type) {
+        case "circuit":
+          exercises = (workoutData as CircuitWorkout).workout.exercises
+            .filter((ex) => ex.name !== "Rest")
+            .map((ex, i) => ({
+              name: ex.name,
+              detail: `${ex.duration}s`,
+              index: i + 1,
+            }));
+          break;
+        case "amrap":
+          exercises = (workoutData as AMRAPWorkout).workout.exercises.map(
+            (ex, i) => ({
+              name: ex.name,
+              detail: `${ex.reps} reps`,
+              index: i + 1,
+            })
+          );
+          break;
+        case "tabata":
+          exercises = (workoutData as TabataWorkout).workout.exercises.map(
+            (ex, i) => ({
+              name: ex.name,
+              detail: `${
+                (workoutData as TabataWorkout).workout.workDuration
+              }s work / ${
+                (workoutData as TabataWorkout).workout.restDuration
+              }s rest`,
+              index: i + 1,
+            })
+          );
+          break;
+        case "emom":
+          exercises = (workoutData as EMOMWorkout).workout.exercises.map(
+            (ex, i) => ({
+              name: ex.name,
+              detail: "Every minute",
+              index: i + 1,
+            })
+          );
+          break;
+      }
+
+      return exercises;
+    };
+
+    const exercises = getExerciseDetails();
+    const maxExercisesToShow = 5; // Limit to 5 exercises to avoid layout issues
+
+    // Create a super simple OG image
     const imageResponse = new ImageResponse(
       (
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "flex-start",
             width: "100%",
             height: "100%",
-            backgroundColor: "rgb(255, 255, 255)",
-            color: "rgb(0, 0, 0)",
+            backgroundColor: "white",
+            padding: "30px",
             fontFamily: "Inter, sans-serif",
-            padding: "40px",
-            position: "relative",
-            overflow: "hidden",
           }}
         >
-          <span
-            style={{
-              fontSize: 48,
-              fontWeight: "bold",
-              marginBottom: "20px",
-              textAlign: "center",
-              color: "rgb(74, 144, 226)",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {/* Bicep icon */}
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ marginRight: "10px" }}
-            >
-              <path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1" />
-              <path d="M15 14a5 5 0 0 0-7.584 2" />
-              <path d="M9.964 6.825C8.019 7.977 9.5 13 8 15" />
-            </svg>
-            Workout for {formattedDate}
-          </span>
-          <span
-            style={{
-              fontSize: 36,
-              marginBottom: "20px",
-              textAlign: "center",
-              color: "rgb(107, 114, 128)",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {/* Timer icon */}
-            <svg
-              width="36"
-              height="36"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ marginRight: "10px" }}
-            >
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </svg>
-            Total Time: {formatTime(totalTime)}
-          </span>
-
+          {/* App title */}
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              width: "100%",
-              maxWidth: "800px",
+              fontSize: "20px",
+              color: "rgb(107, 114, 128)",
+              marginBottom: "10px",
             }}
           >
-            {workoutData.type === "circuit" && (
+            Interval Timer
+          </div>
+
+          {/* Workout title */}
+          <div
+            style={{
+              display: "flex",
+              fontSize: "42px",
+              fontWeight: "bold",
+              color: "rgb(17, 24, 39)",
+              marginBottom: "10px",
+            }}
+          >
+            Workout for {formattedDate}
+          </div>
+
+          {/* Workout type */}
+          <div
+            style={{
+              display: "flex",
+              fontSize: "28px",
+              fontWeight: "bold",
+              color: getWorkoutTypeColor(workoutData.type),
+              marginBottom: "15px",
+            }}
+          >
+            {workoutData.type.toUpperCase()} • {getRoundsInfo()}
+          </div>
+
+          {/* Stats row */}
+          <div style={{ display: "flex", marginBottom: "20px" }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "rgb(249, 250, 251)",
+                padding: "10px 20px",
+                borderRadius: "8px",
+                marginRight: "15px",
+              }}
+            >
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
+                  fontSize: "12px",
+                  color: "rgb(107, 114, 128)",
                 }}
               >
-                <span
-                  style={{
-                    fontSize: 24,
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                    color: "rgb(59, 130, 246)",
-                  }}
-                >
-                  Circuit
-                  {(workoutData as CircuitWorkout).workout.rounds > 1
-                    ? ` (${(workoutData as CircuitWorkout).workout.rounds}x)`
-                    : ""}
-                  :
-                </span>
-                {renderExercises(
-                  (workoutData as CircuitWorkout).workout.exercises,
-                  (exercise) =>
-                    `${exercise.name} (${formatTime(exercise.duration || 0)})`
-                )}
+                TOTAL TIME
               </div>
-            )}
-            {workoutData.type === "amrap" && (
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
+                  fontSize: "20px",
+                  fontWeight: "bold",
                 }}
               >
-                <span
-                  style={{
-                    fontSize: 24,
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                    color: "rgb(59, 130, 246)",
-                  }}
-                >
-                  AMRAP (
-                  {formatTime((workoutData as AMRAPWorkout).workout.duration)}
-                  ):
-                </span>
-                {renderExercises(
-                  (workoutData as AMRAPWorkout).workout.exercises,
-                  (exercise) => `${exercise.name} (${exercise.reps} reps)`
-                )}
+                {formatTime(totalTime)}
               </div>
-            )}
-            {workoutData.type === "tabata" && (
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                backgroundColor: "rgb(249, 250, 251)",
+                padding: "10px 20px",
+                borderRadius: "8px",
+              }}
+            >
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
+                  fontSize: "12px",
+                  color: "rgb(107, 114, 128)",
                 }}
               >
-                <span
-                  style={{
-                    fontSize: 24,
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                    color: "rgb(59, 130, 246)",
-                  }}
-                >
-                  Tabata
-                  {(workoutData as TabataWorkout).workout.rounds > 1
-                    ? ` (${
-                        (workoutData as TabataWorkout).workout.rounds
-                      } rounds)`
-                    : ""}
-                  :
-                </span>
-                <span
-                  style={{
-                    fontSize: 18,
-                    marginBottom: "10px",
-                    color: "rgb(31, 41, 55)",
-                  }}
-                >
-                  Work:{" "}
-                  {formatTime(
-                    (workoutData as TabataWorkout).workout.workDuration
-                  )}{" "}
-                  / Rest:{" "}
-                  {formatTime(
-                    (workoutData as TabataWorkout).workout.restDuration
-                  )}
-                </span>
-                {renderExercises(
-                  (workoutData as TabataWorkout).workout.exercises,
-                  (exercise) => exercise.name
-                )}
+                EXERCISES
               </div>
-            )}
-            {workoutData.type === "emom" && (
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
+                  fontSize: "20px",
+                  fontWeight: "bold",
                 }}
               >
-                <span
+                {getExerciseCount()}
+              </div>
+            </div>
+          </div>
+
+          {/* Exercise list */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{
+                display: "flex",
+                fontSize: "18px",
+                fontWeight: "bold",
+                marginBottom: "10px",
+                color: "rgb(17, 24, 39)",
+              }}
+            >
+              Exercises
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+                gap: "10px",
+              }}
+            >
+              {/* Exercise 1 */}
+              {exercises.length > 0 && (
+                <div
                   style={{
-                    fontSize: 24,
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                    color: "rgb(59, 130, 246)",
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                    backgroundColor: "rgb(249, 250, 251)",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
                   }}
                 >
-                  EMOM
-                  {(workoutData as EMOMWorkout).workout.rounds > 1
-                    ? ` (${(workoutData as EMOMWorkout).workout.rounds} rounds)`
-                    : ""}
-                  :
-                </span>
-                {renderExercises(
-                  (workoutData as EMOMWorkout).workout.exercises,
-                  (exercise) => exercise.name
-                )}
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      backgroundColor: getWorkoutTypeColor(workoutData.type),
+                      color: "white",
+                      marginRight: "8px",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {exercises[0].index}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {exercises[0].name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontSize: "11px",
+                        color: "rgb(107, 114, 128)",
+                      }}
+                    >
+                      {exercises[0].detail}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Exercise 2 */}
+              {exercises.length > 1 && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                    backgroundColor: "rgb(249, 250, 251)",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      backgroundColor: getWorkoutTypeColor(workoutData.type),
+                      color: "white",
+                      marginRight: "8px",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {exercises[1].index}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {exercises[1].name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontSize: "11px",
+                        color: "rgb(107, 114, 128)",
+                      }}
+                    >
+                      {exercises[1].detail}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Exercise 3 */}
+              {exercises.length > 2 && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                    backgroundColor: "rgb(249, 250, 251)",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      backgroundColor: getWorkoutTypeColor(workoutData.type),
+                      color: "white",
+                      marginRight: "8px",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {exercises[2].index}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {exercises[2].name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontSize: "11px",
+                        color: "rgb(107, 114, 128)",
+                      }}
+                    >
+                      {exercises[2].detail}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Exercise 4 */}
+              {exercises.length > 3 && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                    backgroundColor: "rgb(249, 250, 251)",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      backgroundColor: getWorkoutTypeColor(workoutData.type),
+                      color: "white",
+                      marginRight: "8px",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {exercises[3].index}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {exercises[3].name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontSize: "11px",
+                        color: "rgb(107, 114, 128)",
+                      }}
+                    >
+                      {exercises[3].detail}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Exercise 5 */}
+              {exercises.length > 4 && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "48%",
+                    backgroundColor: "rgb(249, 250, 251)",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      backgroundColor: getWorkoutTypeColor(workoutData.type),
+                      color: "white",
+                      marginRight: "8px",
+                      fontSize: "11px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {exercises[4].index}
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontWeight: "500",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {exercises[4].name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontSize: "11px",
+                        color: "rgb(107, 114, 128)",
+                      }}
+                    >
+                      {exercises[4].detail}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* More exercises indicator */}
+            {exercises.length > maxExercisesToShow && (
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "12px",
+                  color: "rgb(107, 114, 128)",
+                  marginTop: "8px",
+                }}
+              >
+                +{exercises.length - maxExercisesToShow} more exercises
               </div>
             )}
+          </div>
+
+          {/* Footer */}
+          <div
+            style={{
+              display: "flex",
+              fontSize: "12px",
+              color: "rgb(107, 114, 128)",
+              marginTop: "auto",
+            }}
+          >
+            Interval Timer • Get moving
           </div>
         </div>
       ),
@@ -400,6 +726,7 @@ export async function GET(req: NextRequest) {
         <div
           style={{
             display: "flex",
+            flexDirection: "column",
             fontSize: 60,
             color: "black",
             background: "white",
@@ -408,9 +735,22 @@ export async function GET(req: NextRequest) {
             textAlign: "center",
             justifyContent: "center",
             alignItems: "center",
+            fontFamily: "Inter, sans-serif",
           }}
         >
-          Interval Timer
+          <div
+            style={{
+              display: "flex",
+              fontSize: "24px",
+              color: "rgb(107, 114, 128)",
+              marginBottom: "10px",
+            }}
+          >
+            Interval Timer
+          </div>
+          <div style={{ display: "flex", fontWeight: "bold" }}>
+            Workout of the Day
+          </div>
         </div>
       ),
       { width: 1200, height: 630 }
@@ -420,7 +760,7 @@ export async function GET(req: NextRequest) {
     const headers = new Headers(fallbackResponse.headers);
     headers.set(
       "Cache-Control",
-      `public, max-age=300, s-maxage=300, stale-while-revalidate=60`
+      "public, max-age=300, s-maxage=300, stale-while-revalidate=60"
     ); // Shorter cache for errors
 
     return new Response(fallbackResponse.body, {
