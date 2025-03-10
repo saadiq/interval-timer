@@ -13,7 +13,11 @@ import {
 import { WorkoutFactory } from "@/workouts/WorkoutFactory";
 import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
-import { getLocalDate, formatDateWithTimezone } from "@/utils/timezone";
+import {
+  getLocalDate,
+  formatDateWithTimezone,
+  parseDate,
+} from "@/utils/timezone";
 
 export const runtime = "edge";
 
@@ -24,23 +28,36 @@ const typedWorkoutsData = workoutsData as WorkoutDataMap;
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  const isDateExplicitlyProvided = searchParams.has("date");
   const date = searchParams.get("date") || getLocalDate();
 
   console.log("search param:", searchParams.get("date"));
   console.log("date:", date);
 
+  // Get all available workout dates
   const workoutDates = Object.keys(typedWorkoutsData).sort(
     (a, b) => new Date(b).getTime() - new Date(a).getTime()
   );
-  const workoutDate = workoutDates.find((d) => d <= date) || date;
+
+  // If a date is explicitly provided, check if it exists in our workouts
+  // If not, we'll show a "not found" message
+  // If no date is provided (using current date), find the most recent workout
+  let workoutDate;
+  if (isDateExplicitlyProvided) {
+    // For explicitly provided dates, only use that exact date
+    workoutDate = date in typedWorkoutsData ? date : null;
+  } else {
+    // For current date (not explicitly provided), find the most recent workout
+    workoutDate = workoutDates.find((d) => d <= date) || null;
+  }
 
   // If a specific date was requested, we can cache longer
-  const cacheMaxAge = searchParams.get("date") ? 86400 : 3600; // 24 hours for specific dates, 1 hour for current date
+  const cacheMaxAge = isDateExplicitlyProvided ? 86400 : 3600; // 24 hours for specific dates, 1 hour for current date
 
   try {
-    const workoutData = typedWorkoutsData[workoutDate];
-    if (!workoutData) {
-      console.log("No workout found for date:", workoutDate);
+    // If no workout is found for the requested date
+    if (!workoutDate) {
+      console.log("No workout found for date:", date);
       console.log("Available dates:", workoutDates);
 
       // Return a basic image with cache headers for not found
@@ -83,7 +100,9 @@ export async function GET(req: NextRequest) {
             <div
               style={{ display: "flex", fontSize: "24px", marginTop: "10px" }}
             >
-              Try another date
+              {isDateExplicitlyProvided
+                ? `No workout for ${format(parseDate(date), "MMMM d, yyyy")}`
+                : "Try another date"}
             </div>
           </div>
         ),
@@ -103,6 +122,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
+    const workoutData = typedWorkoutsData[workoutDate];
     console.log("workout date:", workoutDate);
     console.log("workout data:", workoutData);
 
@@ -160,12 +180,16 @@ export async function GET(req: NextRequest) {
         .padStart(2, "0")}`;
     };
 
-    // Format the date with timezone for display in OG image
-    const formattedDate = formatDateWithTimezone(
-      workoutDate,
-      "MMMM d, yyyy",
-      true
-    );
+    // Format the date for display in OG image
+    // Only show timezone if the date was not explicitly provided
+    let formattedDate;
+    if (isDateExplicitlyProvided) {
+      // For explicitly provided dates, use simple formatting without timezone
+      formattedDate = format(parseDate(workoutDate), "MMMM d, yyyy");
+    } else {
+      // For derived dates (current date), show the timezone
+      formattedDate = formatDateWithTimezone(workoutDate, "MMMM d, yyyy", true);
+    }
 
     // Get workout type color
     const getWorkoutTypeColor = (type: string) => {

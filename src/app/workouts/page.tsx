@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { formatDateWithTimezone } from "@/utils/timezone";
+import { parseDate } from "@/utils/timezone";
+import { format } from "date-fns";
 
 interface WorkoutDetails {
   type: string;
@@ -59,16 +60,18 @@ export default function WorkoutListPage() {
     workoutsByMonth[monthKey].push(date);
   });
 
-  // Format date for display
+  // Format date for display - in the workout list, all dates are explicit
   const formatDate = (dateString: string) => {
-    return formatDateWithTimezone(dateString);
+    // Use parseDate to ensure consistent date handling
+    return format(parseDate(dateString), "MMMM d, yyyy");
   };
 
   // Format month for display
   const formatMonth = (monthKey: string) => {
     const [year, month] = monthKey.split("-");
-    const date = new Date(parseInt(year), parseInt(month) - 1, 1);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long" });
+    // Use UTC date to avoid timezone issues
+    const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
+    return format(date, "MMMM yyyy");
   };
 
   // Format duration in minutes and seconds
