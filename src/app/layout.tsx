@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description:
     "Track your workout of the day with our interval timer. Bodyweight workouts requiring no commitment. Get moving.",
   icons: {
-    icon: "/workout-day.svg",
+    icon: "/timer.svg",
   },
   openGraph: {
     title: "Interval Timer - Workout of the Day",
