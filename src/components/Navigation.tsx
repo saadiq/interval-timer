@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Dumbbell } from 'lucide-react';
+import { Timer } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
 export default function Navigation() {
@@ -19,7 +19,7 @@ export default function Navigation() {
             className="flex items-center space-x-2 text-primary-foreground hover:text-primary-foreground/90 transition-colors py-2 px-2 rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-transparent" 
             aria-label="Interval Timer Home"
           >
-            <Dumbbell size={24} className="text-primary-foreground" />
+            <Timer size={24} className="text-primary-foreground" />
             <span className="text-xl font-bold">Interval Timer</span>
           </Link>
           
