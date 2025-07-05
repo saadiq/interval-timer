@@ -1,21 +1,28 @@
 # Interval Timer
 
-A customizable workout interval timer application built with Next.js that supports various workout formats including circuits, AMRAP (As Many Rounds As Possible), Tabata, and EMOM (Every Minute On the Minute).
+A modern, responsive workout interval timer application built with Next.js that supports various workout formats including circuits, AMRAP (As Many Rounds As Possible), Tabata, and EMOM (Every Minute On the Minute).
 
-## Description
+🚀 **[Live Demo](https://interval-timer-rho.vercel.app)** | 💻 **[GitHub Repository](https://github.com/saadiq/interval-timer)**
 
-This application helps you time and track different types of workouts with customizable intervals. It includes:
+## Features
 
-- Support for multiple workout formats:
+This application helps you time and track different types of bodyweight and equipment-based workouts with customizable intervals. Key features include:
+
+- **Multiple Workout Formats**:
   - **Circuit workouts**: Perform exercises in sequence for a set number of rounds
   - **AMRAP workouts**: Complete as many rounds as possible in a set time
-  - **Tabata workouts**: High-intensity intervals with short rest periods
+  - **Tabata workouts**: High-intensity intervals with short rest periods (20s work / 10s rest)
   - **EMOM workouts**: Perform a specific exercise at the start of each minute
-- Pre-loaded workout plans
-- Kettlebell-specific workouts
-- Visual timers and progress tracking
-- Mobile-friendly design
-- Comprehensive workout calendar with detailed workout information
+- **Rich User Experience**:
+  - Visual progress bars with color-coded exercise tracking
+  - Audio cues and speech synthesis for hands-free timing
+  - Dark/light theme support with system preference detection
+  - Mobile-optimized responsive design
+- **Advanced Features**:
+  - Clean URL structure (`/2025/07/05`) with backwards compatibility
+  - Dynamic OpenGraph previews for social sharing
+  - Pre-loaded bodyweight workout calendar
+  - Comprehensive workout summaries and statistics
 
 ## Getting Started
 
@@ -29,7 +36,7 @@ This application helps you time and track different types of workouts with custo
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/interval-timer.git
+   git clone https://github.com/saadiq/interval-timer.git
    cd interval-timer
    ```
 
@@ -96,31 +103,74 @@ This application helps you time and track different types of workouts with custo
 
 ### Adding Custom Workouts
 
-Custom workouts can be added by modifying the `src/data/workouts.json` file. Follow the existing format for each workout type.
+Custom workouts can be added by creating JSON files in the `src/data/workouts/YYYY/MM/` directory structure. Each workout should follow the established format for the specific workout type:
+
+```json
+{
+  "type": "circuit",
+  "warmUp": [
+    { "name": "Jumping Jacks", "duration": 30 }
+  ],
+  "workout": {
+    "exercises": [
+      { "name": "Push-ups", "duration": 45 },
+      { "name": "Rest", "duration": 15 }
+    ],
+    "rounds": 3
+  },
+  "coolDown": [
+    { "name": "Stretching", "duration": 60 }
+  ]
+}
+```
 
 ## Development
 
 ### Project Structure
 
-- `src/app`: Next.js application pages and API routes
-- `src/components`: React components for the UI
-- `src/data`: Workout data in JSON format
-- `src/workouts`: TypeScript classes for different workout types
-- `src/styles`: CSS and styling
+- `src/app`: Next.js 15 App Router pages, layouts, and API routes
+- `src/components`: React components for UI (Navigation, WorkoutTimer, ProgressBar, etc.)
+- `src/data`: Workout data organized by date in JSON format (`YYYY/MM/DD.json`)
+- `src/workouts`: TypeScript classes implementing different workout types
+- `src/utils`: Utility functions for dates, colors, and URL management
+- `src/hooks`: Custom React hooks for audio, speech synthesis, and device features
 
 ### API Routes
 
 - `GET /api/workouts`: Returns all available workout dates with detailed information
-- `GET /api/workouts/[date]`: Returns workout details for a specific date
+- `GET /api/workouts/[date]`: Returns workout details for a specific date (YYYY-MM-DD format)
+- `GET /api/og`: Generates dynamic OpenGraph images for social sharing with optional date parameter
+
+### URL Structure
+
+The application supports both modern clean URLs and legacy query parameters:
+
+- **Clean URLs**: `/2025/07/05` (preferred)
+- **Legacy URLs**: `/?date=2025-07-05` (backwards compatible)
+- **Workout List**: `/workouts`
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## Technology Stack
+
+- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) with custom design system
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Language**: TypeScript
+- **Package Manager**: Bun (preferred) / npm
+- **Deployment**: [Vercel](https://vercel.com/)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
 ## Acknowledgments
 
-- Built with [Next.js](https://nextjs.org/)
-- UI components with [Tailwind CSS](https://tailwindcss.com/)
+- Workout programming inspired by bodyweight fitness principles
+- Audio cues and speech synthesis for accessibility
+- Responsive design for mobile-first workout experiences
 
 # Linting and Code Quality
 

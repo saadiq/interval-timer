@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Timer } from 'lucide-react';
+import { Timer, Github } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 
 export default function Navigation() {
@@ -76,8 +76,18 @@ export default function Navigation() {
               </Link>
             </div>
             
-            {/* Theme Toggle */}
-            <div className="ml-2 sm:ml-4 pl-2 sm:pl-4 border-l border-primary-foreground/20">
+            {/* GitHub Link and Theme Toggle */}
+            <div className="flex items-center space-x-2 ml-2 sm:ml-4 pl-2 sm:pl-4 border-l border-primary-foreground/20">
+              <a
+                href="https://github.com/saadiq/interval-timer"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-md bg-secondary hover:bg-accent text-secondary-foreground hover:text-accent-foreground transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+                aria-label="View source code on GitHub"
+                title="View on GitHub"
+              >
+                <Github size={20} />
+              </a>
               <ThemeToggle />
             </div>
           </div>
