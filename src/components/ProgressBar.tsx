@@ -4,7 +4,7 @@ import { SectionWithColor } from '@/utils/colorUtils';
 import { TabataWorkout } from '@/workouts';
 
 export const ProgressBar: React.FC = () => {
-  const { workout, time } = useWorkoutContext();
+  const { workout, time, isPreWorkout } = useWorkoutContext();
 
   if (!workout) return null;
 
@@ -94,7 +94,7 @@ export const ProgressBar: React.FC = () => {
         {sections.map((section, index) => {
           const sectionStart = sections.slice(0, index).reduce((total, s) => total + (s.duration || 0), 0);
           const sectionWidth = ((section.duration || 0) / workout.duration) * 100;
-          const isCurrentSection = index === currentSectionIndex;
+          const isCurrentSection = index === currentSectionIndex && !isPreWorkout;
           
           // Check if this is the start of a new round for visual indicators
           const isRoundStart = isNewRound(index);
