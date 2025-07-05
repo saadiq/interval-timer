@@ -10,7 +10,7 @@ export const ProgressBar: React.FC = () => {
 
   const progress = workout.getProgress(time);
 
-  const getAllSections = (): SectionWithColor[] => {
+  const getAllSections = (): ReadonlyArray<SectionWithColor> => {
     // Use the actual colors from workout.sections
     // These colors are already assigned by the centralized color system
     return workout.sections;
