@@ -1,21 +1,8 @@
 // src/app/page.tsx
-"use client";
-
-import React, { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { WorkoutTimer } from "./WorkoutTimer";
-import { WorkoutData } from "../workouts/types";
-import { WorkoutFactory } from "../workouts/WorkoutFactory";
-import { Workout } from "@/workouts";
-import {
-  getLocalDate,
-  formatDateWithTimezone,
-  parseDate,
-} from "@/utils/timezone";
-import { format } from "date-fns";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
+import { Metadata } from 'next';
+import { format } from 'date-fns';
+import { parseDate, getLocalDate } from '@/utils/timezone';
+import WorkoutPageContent from './WorkoutPageContent';
 
 // Extended interface for the API response
 interface WorkoutResponse {
@@ -33,179 +20,143 @@ interface WorkoutResponse {
   coolDown: Array<{ name: string; duration: number; description?: string }>;
 }
 
-async function fetchWorkoutData(
-  date: string
-): Promise<{ workout: Workout | null; actualDate?: string; note?: string }> {
-  const response = await fetch(`/api/workouts/${date}`);
-  if (!response.ok) {
-    if (response.status === 404) {
-      return { workout: null };
+async function fetchWorkoutForMetadata(date: string): Promise<WorkoutResponse | null> {
+  try {
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}`
+      : process.env.NODE_ENV === 'production'
+      ? 'https://interval-timer-rho.vercel.app'
+      : 'http://localhost:3000';
+    
+    const response = await fetch(`${baseUrl}/api/workouts/${date}`, {
+      next: { revalidate: 3600 } // Cache for 1 hour
+    });
+    
+    if (!response.ok) {
+      return null;
     }
-    throw new Error("Failed to fetch workout data");
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching workout for metadata:', error);
+    return null;
   }
+}
 
-  const data = (await response.json()) as WorkoutResponse;
+function formatTime(seconds: number): string {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
-  // Check if we got a different date's workout
-  const actualDate = data._actualDate || date;
-  const note = data._note;
+function calculateWorkoutTime(workoutData: WorkoutResponse): number {
+  // Calculate warm-up time
+  const warmUpTime = workoutData.warmUp.reduce((total, exercise) => total + exercise.duration, 0);
+  
+  // Calculate cool-down time
+  const coolDownTime = workoutData.coolDown.reduce((total, exercise) => total + exercise.duration, 0);
+  
+  // Calculate main workout time
+  let mainWorkoutTime = 0;
+  switch (workoutData.type) {
+    case 'circuit':
+      mainWorkoutTime = workoutData.workout.exercises.reduce((total, exercise) => total + (exercise.duration || 0), 0) * (workoutData.workout.rounds || 1);
+      break;
+    case 'amrap':
+      mainWorkoutTime = workoutData.workout.duration || 0;
+      break;
+    case 'tabata':
+      mainWorkoutTime = ((workoutData.workout.workDuration || 0) + (workoutData.workout.restDuration || 0)) * (workoutData.workout.rounds || 1) * workoutData.workout.exercises.length;
+      break;
+    case 'emom':
+      mainWorkoutTime = (workoutData.workout.rounds || 1) * workoutData.workout.exercises.length * 60;
+      break;
+  }
+  
+  return warmUpTime + mainWorkoutTime + coolDownTime;
+}
 
-  // Create a clean workout data object without metadata
-  const cleanWorkoutData: WorkoutData = {
-    type: data.type,
-    warmUp: data.warmUp,
-    workout: data.workout,
-    coolDown: data.coolDown
-  } as WorkoutData;
+function getExerciseCount(workoutData: WorkoutResponse): number {
+  switch (workoutData.type) {
+    case 'circuit':
+      return workoutData.workout.exercises.filter(ex => ex.name !== 'Rest').length;
+    default:
+      return workoutData.workout.exercises.length;
+  }
+}
 
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ date?: string }>;
+}): Promise<Metadata> {
+  const params = await searchParams;
+  const dateParam = params.date;
+  const date = dateParam || getLocalDate();
+  const isExplicitDate = !!dateParam;
+  
+  // Fetch workout data for metadata
+  const workoutData = await fetchWorkoutForMetadata(date);
+  
+  if (!workoutData) {
+    // No workout found
+    const formattedDate = isExplicitDate 
+      ? format(parseDate(date), 'MMMM d, yyyy')
+      : 'today';
+    
+    return {
+      title: `No Workout Found - Interval Timer`,
+      description: `No workout available for ${formattedDate}. Browse other available workouts in the Interval Timer app.`,
+      openGraph: {
+        title: `No Workout Found - Interval Timer`,
+        description: `No workout available for ${formattedDate}`,
+        images: [`/api/og${dateParam ? `?date=${dateParam}` : ''}`],
+        type: 'website',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `No Workout Found - Interval Timer`,
+        description: `No workout available for ${formattedDate}`,
+        images: [`/api/og${dateParam ? `?date=${dateParam}` : ''}`],
+      },
+    };
+  }
+  
+  // Format date for display
+  const formattedDate = isExplicitDate 
+    ? format(parseDate(date), 'MMMM d, yyyy')
+    : 'Today';
+  
+  // Calculate workout stats
+  const totalTime = calculateWorkoutTime(workoutData);
+  const exerciseCount = getExerciseCount(workoutData);
+  const workoutType = workoutData.type.toUpperCase();
+  
+  // Generate title and description
+  const title = `${workoutType} Workout - ${formattedDate} | Interval Timer`;
+  const description = `${workoutType} workout with ${exerciseCount} exercises, ${formatTime(totalTime)} total duration. Get moving with this ${workoutData.type} training session.`;
+  
+  // Generate OpenGraph image URL
+  const ogImageUrl = `/api/og${dateParam ? `?date=${dateParam}` : ''}`;
+  
   return {
-    workout: WorkoutFactory.createWorkout(cleanWorkoutData, actualDate),
-    actualDate,
-    note,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [ogImageUrl],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
-// Format date for display
-const formatDate = (dateString: string, isExplicitDate: boolean = false) => {
-  if (isExplicitDate) {
-    // For explicitly provided dates, use simple formatting without timezone
-    // Use parseDate to ensure consistent date handling
-    return format(parseDate(dateString), "MMMM d, yyyy");
-  } else {
-    // For derived dates (current date), show with timezone context
-    return formatDateWithTimezone(dateString);
-  }
-};
-
-const WorkoutPageContent: React.FC = () => {
-  const searchParams = useSearchParams();
-  const [workout, setWorkout] = useState<Workout | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [notFound, setNotFound] = useState(false);
-  const [isExplicitDate, setIsExplicitDate] = useState(false);
-  const [dateNote, setDateNote] = useState<string | null>(null);
-  const [requestedDate, setRequestedDate] = useState<string>("");
-
-  const loadWorkout = useCallback(async () => {
-    setIsLoading(true);
-    setNotFound(false);
-    setDateNote(null);
-    setError(null);
-    try {
-      const dateParam = searchParams.get("date");
-      const isDateExplicit = !!dateParam;
-      setIsExplicitDate(isDateExplicit);
-
-      // Get the date, ensuring consistent handling
-      const date = dateParam || getLocalDate();
-      setRequestedDate(date);
-
-      const {
-        workout: fetchedWorkout,
-        note,
-      } = await fetchWorkoutData(date);
-
-      if (fetchedWorkout === null) {
-        setNotFound(true);
-      } else {
-        setWorkout(fetchedWorkout);
-
-        // If we got a different date's workout, set the note
-        if (note) {
-          setDateNote(note);
-        }
-      }
-    } catch (err) {
-      setError("Failed to load workout. Please try again later.");
-      // Error loading workout
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    loadWorkout();
-  }, [loadWorkout]);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-background">
-        <LoadingSpinner message="Loading workout..." size="large" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-screen p-4 bg-background">
-        <ErrorDisplay 
-          message={error}
-          onRetry={loadWorkout}
-        />
-      </div>
-    );
-  }
-
-  if (notFound) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-screen p-4 bg-background">
-        <div className="text-center space-y-6 max-w-md">
-          <div className="text-6xl mb-4">🏃‍♂️</div>
-          <h1 className="text-3xl font-bold text-foreground">No Workout Found</h1>
-          <p className="text-lg text-muted-foreground">
-            There is no workout available for{" "}
-            <span className="font-semibold text-foreground">
-              {formatDate(requestedDate, isExplicitDate)}
-            </span>
-            .
-          </p>
-          <Link
-            href="/workouts"
-            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            View All Available Workouts
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (!workout) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-background">
-        <div className="text-center">
-          <div className="text-4xl mb-4">😔</div>
-          <p className="text-lg text-muted-foreground">
-            No workout available for the selected date.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {dateNote && (
-        <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
-          <p>{dateNote}</p>
-        </div>
-      )}
-      <WorkoutTimer workout={workout} isExplicitDate={isExplicitDate} />
-    </>
-  );
-};
-
 export default function WorkoutPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-screen">
-          <LoadingSpinner message="Loading..." size="large" />
-        </div>
-      }
-    >
-      <WorkoutPageContent />
-    </Suspense>
-  );
+  return <WorkoutPageContent />;
 }
