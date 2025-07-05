@@ -3,9 +3,9 @@
 
 export const WORKOUT_COLORS = {
   // Section type colors
-  warmUp: 'bg-yellow-300',
-  coolDown: 'bg-yellow-300',
-  rest: 'bg-gray-300',
+  warmUp: 'bg-amber-400',
+  coolDown: 'bg-amber-400',
+  rest: 'bg-slate-400',
   
   // Workout type colors with multiple shades for visual variety
   circuit: {

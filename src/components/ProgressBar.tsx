@@ -146,7 +146,7 @@ export const ProgressBar: React.FC = () => {
       {/* Section Labels */}
       <div className="flex justify-between items-center text-xs">
         <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded-full bg-yellow-300"></div>
+          <div className="w-3 h-3 rounded-full bg-amber-400"></div>
           <span className="text-muted-foreground">Warm-up</span>
         </div>
         <div className="flex items-center space-x-1">
@@ -160,11 +160,11 @@ export const ProgressBar: React.FC = () => {
           <span className="text-muted-foreground">Exercise</span>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+          <div className="w-3 h-3 rounded-full bg-slate-400"></div>
           <span className="text-muted-foreground">Rest</span>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="w-3 h-3 rounded-full bg-yellow-300"></div>
+          <div className="w-3 h-3 rounded-full bg-amber-400"></div>
           <span className="text-muted-foreground">Cool-down</span>
         </div>
       </div>

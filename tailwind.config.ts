@@ -96,9 +96,9 @@ const config: Config = {
   plugins: [],
   safelist: [
     // Warm-up and cool-down colors
-    'bg-yellow-300',
+    'bg-amber-400',
     // Rest period color
-    'bg-gray-300',
+    'bg-slate-400',
     // Circuit workout colors - multiple shades
     'bg-blue-500', 'bg-blue-400', 'bg-blue-600', 'bg-blue-300', 'bg-blue-700',
     // AMRAP workout colors - multiple shades

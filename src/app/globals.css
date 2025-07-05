@@ -123,24 +123,24 @@
 
 [data-theme="dark"] {
   /* Dark theme colors */
-  --background: 2 6 23;
+  --background: 8 12 28;
   --foreground: 248 250 252;
-  --card: 15 23 42;
+  --card: 20 28 46;
   --card-foreground: 248 250 252;
-  --popover: 15 23 42;
+  --popover: 20 28 46;
   --popover-foreground: 248 250 252;
   --primary: 129 140 248;
   --primary-foreground: 15 23 42;
-  --secondary: 30 41 59;
+  --secondary: 35 46 64;
   --secondary-foreground: 248 250 252;
-  --muted: 30 41 59;
+  --muted: 35 46 64;
   --muted-foreground: 148 163 184;
-  --accent: 30 41 59;
+  --accent: 35 46 64;
   --accent-foreground: 248 250 252;
   --destructive: 248 113 113;
   --destructive-foreground: 15 23 42;
-  --border: 30 41 59;
-  --input: 30 41 59;
+  --border: 40 51 69;
+  --input: 40 51 69;
   --ring: 129 140 248;
   --success: 74 222 128;
   --warning: 251 191 36;
