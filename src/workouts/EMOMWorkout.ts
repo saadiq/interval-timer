@@ -1,7 +1,7 @@
 // src/workouts/EMOMWorkout.ts
 import { EMOMWorkout as EMOMWorkoutData } from './types';
 import { Workout } from './Workout';
-import { SectionWithColor } from '@/utils/colorUtils';
+import { SectionWithColor, assignColorsToWorkout } from '@/utils/colorUtils';
 
 export class EMOMWorkout extends Workout {
   readonly type = 'emom';
@@ -29,16 +29,9 @@ export class EMOMWorkout extends Workout {
   }
 
   private static createEMOMSections(data: EMOMWorkoutData): SectionWithColor[] {
-    const warmUpSections = data.warmUp.map(s => ({ ...s, color: 'bg-yellow-300' }));
-    const coolDownSections = data.coolDown.map(s => ({ ...s, color: 'bg-yellow-300' }));
-
-    const emomSections = data.workout.exercises.map((exercise, index) => ({
-      ...exercise,
-      duration: 60, // Each EMOM exercise takes exactly one minute
-      color: `bg-blue-${300 + (index % 3) * 100}` // Alternating shades of blue
-    }));
-
-    return [...warmUpSections, ...emomSections, ...coolDownSections];
+    // Use the centralized color assignment system
+    const sectionsWithColors = assignColorsToWorkout(data);
+    return sectionsWithColors;
   }
 
   protected calculateTotalDuration(): number {

@@ -10,12 +10,6 @@ export const ProgressBar: React.FC = () => {
 
   const progress = workout.getProgress(time);
 
-  const formatTime = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-  };
-
   const getAllSections = (): SectionWithColor[] => {
     // Use the actual colors from workout.sections
     // These colors are already assigned by the centralized color system
@@ -23,6 +17,41 @@ export const ProgressBar: React.FC = () => {
   };
 
   const sections = getAllSections();
+
+  // Helper function to determine if a section starts a new round
+  const isNewRound = (sectionIndex: number): boolean => {
+    if (sectionIndex === 0) return false; // First section is never a new round
+    
+    const warmUpLength = workout.data.warmUp.length;
+    const coolDownLength = workout.data.coolDown.length;
+    
+    // Only apply round indicators to main workout sections
+    if (sectionIndex < warmUpLength || sectionIndex >= sections.length - coolDownLength) {
+      return false;
+    }
+    
+    const mainWorkoutIndex = sectionIndex - warmUpLength;
+    
+    if (workout.data.type === 'circuit') {
+      // For circuit workouts, new round starts every exercises.length sections
+      return mainWorkoutIndex % workout.data.workout.exercises.length === 0;
+    } else if (workout.data.type === 'tabata') {
+      // For tabata workouts, new round starts every (exercises.length * 2) sections
+      const sectionsPerRound = workout.data.workout.exercises.length * 2; // work + rest for each exercise
+      return mainWorkoutIndex % sectionsPerRound === 0;
+    } else if (workout.data.type === 'emom') {
+      // For EMOM workouts, new round starts every exercises.length sections
+      return mainWorkoutIndex % workout.data.workout.exercises.length === 0;
+    }
+    
+    return false;
+  };
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   const currentSectionIndex = sections.findIndex(section => {
     const sectionStart = sections.slice(0, sections.indexOf(section)).reduce((total, s) => total + (s.duration || 0), 0);
@@ -61,24 +90,38 @@ export const ProgressBar: React.FC = () => {
         aria-valuemax={100}
         aria-label={`Workout progress: ${Math.round(progress * 100)}% complete, ${formatTime(workout.duration - time)} remaining`}
       >
-        {/* Section Background */}
+        {/* Section Background with Labels */}
         {sections.map((section, index) => {
           const sectionStart = sections.slice(0, index).reduce((total, s) => total + (s.duration || 0), 0);
           const sectionWidth = ((section.duration || 0) / workout.duration) * 100;
           const isCurrentSection = index === currentSectionIndex;
+          
+          // Check if this is the start of a new round for visual indicators
+          const isRoundStart = isNewRound(index);
+          
+          // Show labels if section is wide enough (at least 8% of total width)
+          const showLabel = sectionWidth >= 8;
           
           return (
             <div
               key={index}
               className={`absolute top-0 h-full transition-all duration-300 ${
                 section.color
-              } ${isCurrentSection ? 'brightness-110 shadow-md' : 'opacity-80'}`}
+              } ${isCurrentSection ? 'brightness-110 shadow-md' : 'opacity-80'} ${
+                isRoundStart ? 'border-l-2 border-foreground/30' : ''
+              } flex items-center justify-center overflow-hidden`}
               style={{
                 left: `${(sectionStart / workout.duration) * 100}%`,
                 width: `${sectionWidth}%`
               }}
               aria-label={`${section.name} section`}
-            />
+            >
+              {showLabel && (
+                <span className="text-xs font-medium text-white/90 px-1 text-center truncate hidden md:block">
+                  {section.name}
+                </span>
+              )}
+            </div>
           );
         })}
 
