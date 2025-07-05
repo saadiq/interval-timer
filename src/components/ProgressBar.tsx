@@ -17,54 +17,9 @@ export const ProgressBar: React.FC = () => {
   };
 
   const getAllSections = (): SectionWithColor[] => {
-    // Use consistent colors for all sections - matching WorkoutSummary
-    const warmUpColor = 'bg-yellow-300';
-    const coolDownColor = 'bg-yellow-300';
-    const restColor = 'bg-gray-300'; // Consistent with WorkoutSummary
-    
-    const warmUpSections = workout.data.warmUp.map(s => ({ 
-      ...s, 
-      color: warmUpColor 
-    }));
-    
-    const coolDownSections = workout.data.coolDown.map(s => ({ 
-      ...s, 
-      color: coolDownColor 
-    }));
-
-    // Get the main workout color based on workout type
-    const getMainWorkoutColor = () => {
-      switch (workout.data.type.toLowerCase()) {
-        case 'circuit': return 'bg-workout-circuit';
-        case 'amrap': return 'bg-workout-amrap';
-        case 'tabata': return 'bg-workout-tabata';
-        case 'emom': return 'bg-workout-emom';
-        default: return 'bg-primary';
-      }
-    };
-
-    const mainWorkoutColor = getMainWorkoutColor();
-
-    let mainWorkoutSections: SectionWithColor[];
-    if (workout instanceof TabataWorkout) {
-      mainWorkoutSections = workout.getTabataSections().map(s => ({
-        name: s.name,
-        duration: s.duration,
-        color: s.name.toLowerCase().includes('rest') ? restColor : mainWorkoutColor
-      }));
-    } else {
-      mainWorkoutSections = workout.sections
-        .filter(s => 
-          !workout.data.warmUp.some(w => w.name === s.name) && 
-          !workout.data.coolDown.some(c => c.name === s.name)
-        )
-        .map(s => ({
-          ...s,
-          color: s.name.toLowerCase().includes('rest') ? restColor : mainWorkoutColor
-        }));
-    }
-
-    return [...warmUpSections, ...mainWorkoutSections, ...coolDownSections];
+    // Use the actual colors from workout.sections
+    // These colors are already assigned by the centralized color system
+    return workout.sections;
   };
 
   const sections = getAllSections();
@@ -153,10 +108,10 @@ export const ProgressBar: React.FC = () => {
         </div>
         <div className="flex items-center space-x-1">
           <div className={`w-3 h-3 rounded-full ${
-            workout.data.type.toLowerCase() === 'circuit' ? 'bg-workout-circuit' :
-            workout.data.type.toLowerCase() === 'amrap' ? 'bg-workout-amrap' :
-            workout.data.type.toLowerCase() === 'tabata' ? 'bg-workout-tabata' :
-            workout.data.type.toLowerCase() === 'emom' ? 'bg-workout-emom' :
+            workout.data.type.toLowerCase() === 'circuit' ? 'bg-blue-500' :
+            workout.data.type.toLowerCase() === 'amrap' ? 'bg-green-500' :
+            workout.data.type.toLowerCase() === 'tabata' ? 'bg-red-500' :
+            workout.data.type.toLowerCase() === 'emom' ? 'bg-purple-500' :
             'bg-primary'
           }`}></div>
           <span className="text-muted-foreground">Exercise</span>

@@ -1,7 +1,7 @@
 // src/workouts/TabataWorkout.ts
 import { TabataWorkout as TabataWorkoutData, BaseExercise, BaseSection } from './types';
 import { Workout } from './Workout';
-import { SectionWithColor } from '@/utils/colorUtils';
+import { SectionWithColor, assignColorsToWorkout } from '@/utils/colorUtils';
 
 interface TabataSection extends BaseSection {
   isRest: boolean;
@@ -86,23 +86,11 @@ export class TabataWorkout extends Workout {
   }
 
   private static assignTabataColors(sections: (BaseSection | TabataSection)[], data: TabataWorkoutData): SectionWithColor[] {
-    const warmUpColors = data.warmUp.map(() => 'bg-yellow-300');
-    const coolDownColors = data.coolDown.map(() => 'bg-yellow-300');
-    
-    const exerciseColors: string[] = data.workout.exercises.map((_, index) => {
-      const colors = ['bg-blue-300', 'bg-green-300', 'bg-red-300', 'bg-purple-300', 'bg-pink-300', 'bg-indigo-300', 'bg-teal-300'];
-      return colors[index % colors.length];
-    });
+    const colorsFromUtils = assignColorsToWorkout(data);
     
     return sections.map((section, index): SectionWithColor => {
-      if (index < data.warmUp.length) {
-        return { ...section, color: warmUpColors[index] };
-      } else if (index >= sections.length - data.coolDown.length) {
-        return { ...section, color: coolDownColors[index - (sections.length - data.coolDown.length)] };
-      } else {
-        const tabataSection = section as TabataSection;
-        return { ...section, color: tabataSection.isRest ? 'bg-gray-300' : exerciseColors[tabataSection.exerciseIndex] };
-      }
+      // Use colors from the centralized color system
+      return { ...section, color: colorsFromUtils[index].color };
     });
   }
 

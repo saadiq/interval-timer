@@ -1,28 +1,48 @@
 // src/utils/colorUtils.ts
 
 import { WorkoutData, WorkoutSection } from '@/workouts/types';
+import { getWarmUpColor, getCoolDownColor, getRestColor, getWorkoutColor } from './workoutColors';
 
 export type SectionWithColor = WorkoutSection & { color: string };
 
 export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColor[] {
-  const warmUpColors = workoutData.warmUp.map(() => 'bg-yellow-300');
-  const coolDownColors = workoutData.coolDown.map(() => 'bg-yellow-300');
+  const warmUpColors = workoutData.warmUp.map(() => getWarmUpColor());
+  const coolDownColors = workoutData.coolDown.map(() => getCoolDownColor());
   
   let mainWorkoutColors: string[];
   if (workoutData.type === 'amrap') {
-    mainWorkoutColors = workoutData.workout.exercises.map(() => 'bg-blue-300');
+    // AMRAP has a single section with all exercises
+    mainWorkoutColors = [getWorkoutColor('amrap')];
   } else if (workoutData.type === 'circuit') {
-    mainWorkoutColors = Array(workoutData.workout.rounds).fill(workoutData.workout.exercises.map((_, index) => 
-      index % 2 === 0 ? 'bg-blue-300' : 'bg-green-400'
-    )).flat();
-  } else { // tabata
-    // Remove Tabata-specific logic here, as it will be handled in the TabataWorkout class
+    // Circuit alternates between exercise colors, with rest periods
+    mainWorkoutColors = Array(workoutData.workout.rounds).fill(
+      workoutData.workout.exercises.map((exercise, index) => {
+        // Check if this is a rest period
+        if (exercise.name.toLowerCase().includes('rest')) {
+          return getRestColor();
+        }
+        return getWorkoutColor('circuit', index);
+      })
+    ).flat();
+  } else if (workoutData.type === 'tabata') {
+    // Tabata alternates between exercise and rest
+    mainWorkoutColors = Array(workoutData.workout.rounds).fill(
+      workoutData.workout.exercises.flatMap((_, index) => [
+        getWorkoutColor('tabata', index),
+        getRestColor()
+      ])
+    ).flat();
+  } else if (workoutData.type === 'emom') {
+    // EMOM uses consistent color for all exercises
+    const emomSections = workoutData.workout.exercises || [];
+    mainWorkoutColors = emomSections.map(() => getWorkoutColor('emom'));
+  } else {
     mainWorkoutColors = [];
   }
 
   const coloredSections: SectionWithColor[] = [
     ...workoutData.warmUp.map((section, index) => ({ ...section, color: warmUpColors[index] })),
-    ...getMainWorkoutSections(workoutData).map((section, index) => ({ ...section, color: mainWorkoutColors[index] })),
+    ...getMainWorkoutSections(workoutData).map((section, index) => ({ ...section, color: mainWorkoutColors[index] || 'bg-primary' })),
     ...workoutData.coolDown.map((section, index) => ({ ...section, color: coolDownColors[index] }))
   ];
 

@@ -18,18 +18,20 @@ export class AMRAPWorkout extends Workout {
     super(data, sectionsWithColor, date);
     
     this.validateWorkoutData(data);
+    
+    // Find the AMRAP section from the colored sections
+    const amrapSectionIndex = data.warmUp.length;
+    const amrapSectionWithColor = sectionsWithColor[amrapSectionIndex];
+    
     const amrapSection: AMRAPSection & SectionWithColor = {
       name: 'AMRAP',
       duration: data.workout.duration,
       exercises: data.workout.exercises,
       description: this.generateAmrapDescription(data.workout.exercises),
-      color: 'bg-blue-300' // Assign a color to the AMRAP section
+      color: amrapSectionWithColor.color // Use color from centralized system
     };
-    this.sections = [
-      ...data.warmUp.map(s => ({ ...s, color: 'bg-yellow-300' })),
-      amrapSection,
-      ...data.coolDown.map(s => ({ ...s, color: 'bg-yellow-300' }))
-    ];
+    
+    this.sections = sectionsWithColor;
     this.amrapSection = amrapSection;
     this.duration = this.calculateTotalDuration();
   }

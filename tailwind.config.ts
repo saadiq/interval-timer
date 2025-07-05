@@ -95,9 +95,21 @@ const config: Config = {
   },
   plugins: [],
   safelist: [
-    'bg-blue-300',
-    'bg-blue-400',
+    // Warm-up and cool-down colors
+    'bg-yellow-300',
+    // Rest period color
+    'bg-gray-300',
+    // Circuit workout colors
     'bg-blue-500',
+    'bg-blue-400',
+    // AMRAP workout color
+    'bg-green-500',
+    // Tabata workout color
+    'bg-red-500',
+    // EMOM workout color
+    'bg-purple-500',
+    // Legacy colors for backward compatibility
+    'bg-blue-300',
     'bg-green-300',
     'bg-green-400',
     'bg-red-300',

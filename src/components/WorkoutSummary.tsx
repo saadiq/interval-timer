@@ -141,6 +141,10 @@ export const WorkoutSummary: React.FC = () => {
     const amrapSection = amrapWorkout.getAMRAPSection();
     if (!amrapSection) return null;
 
+    // Get the AMRAP section color from the workout sections
+    const amrapSectionIndex = amrapWorkout.data.warmUp.length;
+    const amrapColor = amrapWorkout.sections[amrapSectionIndex]?.color || 'bg-green-500';
+
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2">
@@ -152,7 +156,7 @@ export const WorkoutSummary: React.FC = () => {
             {amrapSection.exercises.map((exercise: BaseExercise, index: number) => (
               <li key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <span className={`section-color-indicator bg-blue-300 w-4 h-4 rounded-full inline-block mr-2`}></span>
+                  <span className={`section-color-indicator ${amrapColor} w-4 h-4 rounded-full inline-block mr-2`}></span>
                   <ClickableMovementName name={exercise.name} />
                 </div>
                 <div>
