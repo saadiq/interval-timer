@@ -59,3 +59,8 @@ npm run prebuild      # Run both lint and typecheck (used before builds)
 - No test framework is currently configured
 - When adding tests, consider the workout state machine logic in the workout classes
 - Timer functionality and state transitions are critical paths
+
+## Development Preferences
+
+### Package Management
+- Use Bun over npm for faster package management and script execution

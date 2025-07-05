@@ -201,18 +201,6 @@ export default function WorkoutListPage() {
                           </div>
                         </div>
 
-                        {/* Footer */}
-                        <div className="flex items-center justify-between pt-2">
-                          <div className="text-xs text-muted-foreground">
-                            Click to start workout
-                          </div>
-                          <div className="flex items-center space-x-1 text-primary group-hover:translate-x-1 transition-transform">
-                            <span className="text-sm font-medium">Start</span>
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
-                        </div>
                       </div>
                     </Link>
                   );

@@ -52,7 +52,7 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
 
 function getMainWorkoutSections(workoutData: WorkoutData): WorkoutSection[] {
   switch (workoutData.type) {
-    case 'amrap':
+    case 'amrap': {
       // Create individual sections for each exercise for visual variety
       const exerciseDuration = Math.floor(workoutData.workout.duration / workoutData.workout.exercises.length);
       return workoutData.workout.exercises.map((exercise, index) => ({
@@ -61,6 +61,7 @@ function getMainWorkoutSections(workoutData: WorkoutData): WorkoutSection[] {
           ? workoutData.workout.duration - (exerciseDuration * index) // Last exercise gets remaining time
           : exerciseDuration
       }));
+    }
     case 'circuit':
       return Array(workoutData.workout.rounds).fill(workoutData.workout.exercises).flat();
     case 'tabata':

@@ -17,21 +17,31 @@ const THEME_STORAGE_KEY = 'interval-timer-theme';
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('system');
   const [actualTheme, setActualTheme] = useState<'light' | 'dark'>('light');
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // Initialize theme from localStorage on mount
   useEffect(() => {
-    // Load theme from localStorage on mount
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme;
-    if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
-      setTheme(savedTheme);
-    }
+    const initialTheme = savedTheme && ['light', 'dark', 'system'].includes(savedTheme) ? savedTheme : 'system';
+    setTheme(initialTheme);
+    setIsInitialized(true);
   }, []);
 
+  // Handle theme changes and system preference detection
   useEffect(() => {
+    if (!isInitialized) return;
+
     const updateActualTheme = () => {
       let newActualTheme: 'light' | 'dark';
 
       if (theme === 'system') {
-        newActualTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        try {
+          const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+          newActualTheme = mediaQuery.matches ? 'dark' : 'light';
+        } catch (error) {
+          console.error('ThemeProvider: Error detecting system theme:', error);
+          newActualTheme = 'light'; // fallback
+        }
       } else {
         newActualTheme = theme;
       }
@@ -52,16 +62,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     updateActualTheme();
 
     // Listen for system theme changes
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = () => {
-      if (theme === 'system') {
-        updateActualTheme();
-      }
-    };
+    if (theme === 'system') {
+      try {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+          if (theme === 'system') {
+            updateActualTheme();
+          }
+        };
 
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
-  }, [theme]);
+        mediaQuery.addEventListener('change', handleSystemThemeChange);
+        return () => {
+          mediaQuery.removeEventListener('change', handleSystemThemeChange);
+        };
+      } catch (error) {
+        console.error('ThemeProvider: Error setting up system theme listener:', error);
+      }
+    }
+  }, [theme, isInitialized]);
 
   const handleSetTheme = (newTheme: Theme) => {
     setTheme(newTheme);
