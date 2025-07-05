@@ -1,10 +1,9 @@
 // src/app/api/og/route.tsx
 import { ImageResponse } from "@vercel/og";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import workoutsData from "@/data/workouts.json";
 import {
   WorkoutDataMap,
-  WorkoutData,
   CircuitWorkout,
   AMRAPWorkout,
   TabataWorkout,
@@ -12,7 +11,6 @@ import {
 } from "@/workouts/types";
 import { WorkoutFactory } from "@/workouts/WorkoutFactory";
 import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 import {
   getLocalDate,
   formatDateWithTimezone,
@@ -31,8 +29,6 @@ export async function GET(req: NextRequest) {
   const isDateExplicitlyProvided = searchParams.has("date");
   const date = searchParams.get("date") || getLocalDate();
 
-  console.log("search param:", searchParams.get("date"));
-  console.log("date:", date);
 
   // Get all available workout dates
   const workoutDates = Object.keys(typedWorkoutsData).sort(
@@ -57,8 +53,6 @@ export async function GET(req: NextRequest) {
   try {
     // If no workout is found for the requested date
     if (!workoutDate) {
-      console.log("No workout found for date:", date);
-      console.log("Available dates:", workoutDates);
 
       // Return a basic image with cache headers for not found
       const notFoundResponse = new ImageResponse(
@@ -123,10 +117,8 @@ export async function GET(req: NextRequest) {
     }
 
     const workoutData = typedWorkoutsData[workoutDate];
-    console.log("workout date:", workoutDate);
-    console.log("workout data:", workoutData);
 
-    const workout = WorkoutFactory.createWorkout(workoutData, workoutDate);
+    WorkoutFactory.createWorkout(workoutData, workoutDate);
 
     // Calculate total time
     const warmUpTime = workoutData.warmUp.reduce(
@@ -536,7 +528,7 @@ export async function GET(req: NextRequest) {
       headers,
     });
   } catch (error) {
-    console.error("Error generating OG image:", error);
+    // Error generating OG image
 
     // Return a fallback image with cache headers
     const fallbackResponse = new ImageResponse(

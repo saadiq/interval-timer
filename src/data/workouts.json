@@ -1036,5 +1036,507 @@
         "description": "30 seconds per side, stretch hips and glutes"
       }
     ]
+  },
+  "2025-07-05": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "30 seconds forward, 30 seconds backward"
+      },
+      {
+        "name": "Leg Swings",
+        "duration": 60,
+        "description": "30 seconds each leg, front to back"
+      },
+      {
+        "name": "Torso Twists",
+        "duration": 60,
+        "description": "Gentle rotation to activate core"
+      }
+    ],
+    "workout": {
+      "rounds": 3,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "duration": 45,
+          "description": "Modify on knees if needed"
+        },
+        {
+          "name": "Rest",
+          "duration": 15
+        },
+        {
+          "name": "Bodyweight Squats",
+          "duration": 45,
+          "description": "Focus on full range of motion"
+        },
+        {
+          "name": "Rest",
+          "duration": 15
+        },
+        {
+          "name": "Plank",
+          "duration": 45,
+          "description": "Hold strong position"
+        },
+        {
+          "name": "Rest",
+          "duration": 15
+        },
+        {
+          "name": "Lunges",
+          "duration": 45,
+          "description": "Alternating legs"
+        },
+        {
+          "name": "Rest",
+          "duration": 15
+        },
+        {
+          "name": "Mountain Climbers",
+          "duration": 45,
+          "description": "Keep core engaged"
+        },
+        {
+          "name": "Rest",
+          "duration": 15
+        },
+        {
+          "name": "Glute Bridges",
+          "duration": 45,
+          "description": "Squeeze glutes at top"
+        },
+        {
+          "name": "Rest",
+          "duration": 75
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Stretch back and shoulders"
+      },
+      {
+        "name": "Seated Forward Fold",
+        "duration": 60,
+        "description": "Stretch hamstrings and lower back"
+      }
+    ]
+  },
+  "2025-07-06": {
+    "type": "amrap",
+    "warmUp": [
+      {
+        "name": "Light Jog in Place",
+        "duration": 60,
+        "description": "Get the heart rate up"
+      },
+      {
+        "name": "Dynamic Stretches",
+        "duration": 60,
+        "description": "Leg swings, arm circles, hip circles"
+      },
+      {
+        "name": "Jumping Jacks",
+        "duration": 60,
+        "description": "Activate full body"
+      }
+    ],
+    "workout": {
+      "duration": 720,
+      "exercises": [
+        {
+          "name": "Burpees",
+          "reps": 5,
+          "description": "Full body cardio movement"
+        },
+        {
+          "name": "Jump Squats",
+          "reps": 10,
+          "description": "Explosive lower body power"
+        },
+        {
+          "name": "Push-Ups",
+          "reps": 8,
+          "description": "Upper body strength"
+        },
+        {
+          "name": "High Knees",
+          "reps": 20,
+          "description": "10 each leg, cardio burst"
+        },
+        {
+          "name": "Plank Jacks",
+          "reps": 10,
+          "description": "Plank position with jumping feet"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Walking in Place",
+        "duration": 60,
+        "description": "Bring heart rate down"
+      },
+      {
+        "name": "Deep Breathing",
+        "duration": 60,
+        "description": "4 counts in, 4 counts out"
+      }
+    ]
+  },
+  "2025-07-07": {
+    "type": "tabata",
+    "warmUp": [
+      {
+        "name": "High Knees",
+        "duration": 60,
+        "description": "Activate legs and cardiovascular system"
+      },
+      {
+        "name": "Arm Swings",
+        "duration": 60,
+        "description": "Warm up shoulders and arms"
+      },
+      {
+        "name": "Bodyweight Squats",
+        "duration": 60,
+        "description": "Prepare legs for intense work"
+      }
+    ],
+    "workout": {
+      "rounds": 8,
+      "workDuration": 20,
+      "restDuration": 10,
+      "exercises": [
+        {
+          "name": "Squat Jumps",
+          "description": "Explosive lower body power"
+        },
+        {
+          "name": "Push-Up to T",
+          "description": "Push-up with rotation to side plank"
+        },
+        {
+          "name": "Mountain Climbers",
+          "description": "Fast feet, core stability"
+        },
+        {
+          "name": "Burpees",
+          "description": "Full body explosive movement"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Walking in Place",
+        "duration": 90,
+        "description": "Gradually lower heart rate"
+      },
+      {
+        "name": "Deep Stretches",
+        "duration": 90,
+        "description": "Focus on legs, chest, and shoulders"
+      }
+    ]
+  },
+  "2025-07-08": {
+    "type": "circuit",
+    "warmUp": [
+      {
+        "name": "Arm Circles",
+        "duration": 60,
+        "description": "Large circles forward and backward"
+      },
+      {
+        "name": "Shoulder Rolls",
+        "duration": 60,
+        "description": "Activate shoulder muscles"
+      },
+      {
+        "name": "Wall Push-Ups",
+        "duration": 60,
+        "description": "Light upper body activation"
+      }
+    ],
+    "workout": {
+      "rounds": 4,
+      "exercises": [
+        {
+          "name": "Push-Ups",
+          "duration": 40,
+          "description": "Standard or modified on knees"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Pike Push-Ups",
+          "duration": 40,
+          "description": "Target shoulders and upper chest"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Tricep Dips",
+          "duration": 40,
+          "description": "Use chair or floor variation"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Plank to Downward Dog",
+          "duration": 40,
+          "description": "Dynamic movement for shoulders"
+        },
+        {
+          "name": "Rest",
+          "duration": 20
+        },
+        {
+          "name": "Diamond Push-Ups",
+          "duration": 40,
+          "description": "Hands in diamond shape for triceps"
+        },
+        {
+          "name": "Rest",
+          "duration": 60
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Chest Stretch",
+        "duration": 60,
+        "description": "Doorway or wall stretch"
+      },
+      {
+        "name": "Shoulder Cross-Body Stretch",
+        "duration": 60,
+        "description": "30 seconds each arm"
+      }
+    ]
+  },
+  "2025-07-09": {
+    "type": "emom",
+    "warmUp": [
+      {
+        "name": "Jumping Jacks",
+        "duration": 60,
+        "description": "Get heart rate up"
+      },
+      {
+        "name": "Dynamic Lunges",
+        "duration": 60,
+        "description": "Activate legs and hips"
+      },
+      {
+        "name": "Arm Swings",
+        "duration": 60,
+        "description": "Prepare shoulders for explosive movements"
+      }
+    ],
+    "workout": {
+      "rounds": 1,
+      "exercises": [
+        {
+          "name": "10 Squat Jumps",
+          "description": "Explosive lower body power, then rest for remaining time."
+        },
+        {
+          "name": "8 Burpees",
+          "description": "Full body explosive movement, then rest for remaining time."
+        },
+        {
+          "name": "12 Lateral Jumps",
+          "description": "6 each direction, agility focus, then rest for remaining time."
+        },
+        {
+          "name": "10 Plyo Push-Ups",
+          "description": "Explosive push-ups (modify as needed), then rest for remaining time."
+        },
+        {
+          "name": "15 High Knees",
+          "description": "Each leg counts as one, then rest for remaining time."
+        },
+        {
+          "name": "8 Tuck Jumps",
+          "description": "Bring knees to chest, then rest for remaining time."
+        },
+        {
+          "name": "10 Split Lunges",
+          "description": "Jumping alternating lunges, then rest for remaining time."
+        },
+        {
+          "name": "12 Star Jumps",
+          "description": "Wide jumping jacks with arms overhead, then rest for remaining time."
+        },
+        {
+          "name": "8 Broad Jumps",
+          "description": "Jump forward for distance, then rest for remaining time."
+        },
+        {
+          "name": "10 Single-Leg Bounds",
+          "description": "5 each leg, hop for distance, then rest for remaining time."
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Walking in Place",
+        "duration": 90,
+        "description": "Lower heart rate gradually"
+      },
+      {
+        "name": "Calf Stretch",
+        "duration": 60,
+        "description": "30 seconds each leg"
+      }
+    ]
+  },
+  "2025-07-10": {
+    "type": "amrap",
+    "warmUp": [
+      {
+        "name": "Cat-Cow Stretch",
+        "duration": 60,
+        "description": "Warm up spine and core"
+      },
+      {
+        "name": "Dead Bug",
+        "duration": 60,
+        "description": "Activate deep core muscles"
+      },
+      {
+        "name": "Bird Dog",
+        "duration": 60,
+        "description": "Core stability and balance"
+      }
+    ],
+    "workout": {
+      "duration": 600,
+      "exercises": [
+        {
+          "name": "Plank Hold",
+          "reps": 1,
+          "description": "Hold for 30 seconds"
+        },
+        {
+          "name": "Side Plank",
+          "reps": 2,
+          "description": "15 seconds each side"
+        },
+        {
+          "name": "Dead Bug",
+          "reps": 10,
+          "description": "5 each side, core stability"
+        },
+        {
+          "name": "Single-Leg Glute Bridge",
+          "reps": 12,
+          "description": "6 each leg, stability and strength"
+        },
+        {
+          "name": "Bird Dog",
+          "reps": 10,
+          "description": "5 each side, balance challenge"
+        },
+        {
+          "name": "Wall Sit",
+          "reps": 1,
+          "description": "Hold for 30 seconds"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Child's Pose",
+        "duration": 60,
+        "description": "Relax the back"
+      },
+      {
+        "name": "Supine Spinal Twist",
+        "duration": 60,
+        "description": "30 seconds each side"
+      }
+    ]
+  },
+  "2025-07-11": {
+    "type": "tabata",
+    "warmUp": [
+      {
+        "name": "Leg Swings",
+        "duration": 60,
+        "description": "30 seconds each leg, front to back"
+      },
+      {
+        "name": "Hip Circles",
+        "duration": 60,
+        "description": "30 seconds each direction"
+      },
+      {
+        "name": "Bodyweight Squats",
+        "duration": 60,
+        "description": "Slow and controlled, prepare legs"
+      }
+    ],
+    "workout": {
+      "rounds": 8,
+      "workDuration": 20,
+      "restDuration": 10,
+      "exercises": [
+        {
+          "name": "Jump Squats",
+          "description": "Explosive squat jumps"
+        },
+        {
+          "name": "Reverse Lunges",
+          "description": "Alternating legs, controlled movement"
+        },
+        {
+          "name": "Single-Leg Calf Raises",
+          "description": "Alternate legs each round"
+        },
+        {
+          "name": "Wall Sit",
+          "description": "Hold position against wall"
+        },
+        {
+          "name": "Lateral Lunges",
+          "description": "Side-to-side lunges"
+        },
+        {
+          "name": "Glute Bridges",
+          "description": "Fast hip thrusts"
+        }
+      ]
+    },
+    "coolDown": [
+      {
+        "name": "Quad Stretch",
+        "duration": 60,
+        "description": "30 seconds each leg"
+      },
+      {
+        "name": "Hamstring Stretch",
+        "duration": 60,
+        "description": "30 seconds each leg"
+      },
+      {
+        "name": "Hip Flexor Stretch",
+        "duration": 60,
+        "description": "30 seconds each side"
+      }
+    ]
   }
 }

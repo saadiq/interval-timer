@@ -1,4 +1,4 @@
-// src/util/colorUtils.ts
+// src/utils/colorUtils.ts
 
 import { WorkoutData, WorkoutSection } from '@/workouts/types';
 

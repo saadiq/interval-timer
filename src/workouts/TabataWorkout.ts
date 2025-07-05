@@ -1,7 +1,7 @@
 // src/workouts/TabataWorkout.ts
-import { TabataWorkout as TabataWorkoutData, BaseExercise, WorkoutSection, BaseSection } from './types';
+import { TabataWorkout as TabataWorkoutData, BaseExercise, BaseSection } from './types';
 import { Workout } from './Workout';
-import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
+import { SectionWithColor } from '@/utils/colorUtils';
 
 interface TabataSection extends BaseSection {
   isRest: boolean;

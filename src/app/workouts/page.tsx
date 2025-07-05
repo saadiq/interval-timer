@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { parseDate } from "@/utils/timezone";
 import { format } from "date-fns";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { ErrorDisplay } from "@/components/ErrorDisplay";
 
 interface WorkoutDetails {
   type: string;
@@ -26,28 +27,29 @@ export default function WorkoutListPage() {
   >({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+
+  const fetchWorkoutDates = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/workouts");
+      if (!response.ok) {
+        throw new Error("Failed to fetch workout dates");
+      }
+      const data = (await response.json()) as WorkoutListResponse;
+      setWorkoutDates(data.dates);
+      setWorkoutDetails(data.workoutDetails);
+    } catch (err) {
+      setError("Failed to load workout dates. Please try again later.");
+      // Error fetching workout dates
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchWorkoutDates = async () => {
-      try {
-        const response = await fetch("/api/workouts");
-        if (!response.ok) {
-          throw new Error("Failed to fetch workout dates");
-        }
-        const data = (await response.json()) as WorkoutListResponse;
-        setWorkoutDates(data.dates);
-        setWorkoutDetails(data.workoutDetails);
-      } catch (err) {
-        setError("Failed to load workout dates. Please try again later.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchWorkoutDates();
-  }, []);
+  }, [fetchWorkoutDates]);
 
   // Group workouts by month
   const workoutsByMonth: Record<string, string[]> = {};
@@ -100,15 +102,18 @@ export default function WorkoutListPage() {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl">Loading available workouts...</div>
+        <LoadingSpinner message="Loading available workouts..." size="large" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl text-red-500">{error}</div>
+      <div className="flex justify-center items-center min-h-screen p-4">
+        <ErrorDisplay 
+          message={error}
+          onRetry={fetchWorkoutDates}
+        />
       </div>
     );
   }
@@ -145,7 +150,7 @@ export default function WorkoutListPage() {
                   <Link
                     href={`/?date=${date}`}
                     key={date}
-                    className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    className="workout-card block p-4 border rounded-lg hover:bg-gray-50 transition-colors min-h-[44px]"
                   >
                     <div className="flex flex-col space-y-3">
                       <div className="flex flex-wrap justify-between items-center">

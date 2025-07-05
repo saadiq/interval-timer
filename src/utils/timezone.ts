@@ -29,7 +29,6 @@ export function formatInTimezone(
   date: Date | string,
   formatStr: string
 ): string {
-  const timezone = getUserTimezone();
 
   let dateObj: Date;
 
@@ -93,7 +92,6 @@ export function parseDate(dateString: string): Date {
   const [year, month, day] = dateString.split("-").map(Number);
 
   // Create a date object for this date in the user's timezone
-  const timezone = getUserTimezone();
 
   // Create a new date object with the local year, month, day at 12:00 noon
   // Using noon helps avoid any potential timezone-related date shifting
@@ -110,7 +108,6 @@ export function formatDateWithTimezone(
   formatStr: string = "MMMM d, yyyy",
   showTimezone: boolean = false
 ): string {
-  const timezone = getUserTimezone();
 
   let dateObj: Date;
 

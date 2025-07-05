@@ -1,5 +1,5 @@
 // src/app/WorkoutContext.tsx
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { Workout } from '@/workouts';
 import { useAudioCue } from '@/hooks/useAudioCue';
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
@@ -28,7 +28,7 @@ interface WorkoutProviderProps {
 }
 
 export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, initialWorkout }) => {
-  const [workout, setWorkout] = useState<Workout | null>(initialWorkout);
+  const [workout] = useState<Workout | null>(initialWorkout);
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isPreWorkout, setIsPreWorkout] = useState(true);

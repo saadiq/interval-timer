@@ -1,7 +1,7 @@
 // src/workouts/CircuitWorkout.ts
-import { CircuitWorkout as CircuitWorkoutData, BaseExercise, WorkoutSection, WorkoutData } from './types';
+import { CircuitWorkout as CircuitWorkoutData } from './types';
 import { Workout } from './Workout';
-import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
+import { SectionWithColor, assignColorsToWorkout } from '@/utils/colorUtils';
 
 export class CircuitWorkout extends Workout {
   readonly type = 'circuit';

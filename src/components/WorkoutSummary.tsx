@@ -1,8 +1,8 @@
 // src/components/WorkoutSummary.tsx
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { TabataWorkout, CircuitWorkout, AMRAPWorkout, EMOMWorkout, Workout, BaseExercise } from '@/workouts';
-import { SectionWithColor } from '@/util/colorUtils';
+import { TabataWorkout, CircuitWorkout, AMRAPWorkout, EMOMWorkout, BaseExercise } from '@/workouts';
+import { SectionWithColor } from '@/utils/colorUtils';
 
 const formatTime = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
@@ -20,8 +20,10 @@ const ClickableMovementName: React.FC<{ name: string }> = ({ name }) => {
   return (
     <button
       onClick={handleClick}
-      className="text-inherit hover:bg-gray-100 rounded px-1 py-0.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+      className="exercise-button text-inherit hover:bg-gray-100 rounded px-2 py-2 transition-colors duration-200 min-h-[44px] flex items-center"
       title={`Click to learn more about ${name}`}
+      aria-label={`Learn more about ${name} exercise`}
+      type="button"
     >
       {name}
     </button>
@@ -244,8 +246,8 @@ export const WorkoutSummary: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-6">
-      <h2 className="font-bold text-2xl mb-4">Workout Summary</h2>
+    <div className="bg-white rounded-lg shadow-xl p-6" role="region" aria-labelledby="workout-summary-title">
+      <h2 id="workout-summary-title" className="font-bold text-2xl mb-4">Workout Summary</h2>
       {renderSectionGroup(getWarmUpSections(), 'Warm-up', 0)}
       {workout instanceof CircuitWorkout
         ? renderCircuitSummary(workout)

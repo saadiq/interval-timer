@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
+import "../styles/focus.css";
 import Navigation from "@/components/Navigation";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -47,8 +48,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <a href="#main-content" className="skip-to-content">
+          Skip to main content
+        </a>
         <Navigation />
-        <main className="min-h-screen pt-4">{children}</main>
+        <main id="main-content" className="min-h-screen pt-4">{children}</main>
         <Analytics />
       </body>
     </html>

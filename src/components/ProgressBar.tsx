@@ -1,6 +1,6 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { SectionWithColor } from '@/util/colorUtils';
+import { SectionWithColor } from '@/utils/colorUtils';
 import { TabataWorkout } from '@/workouts';
 
 export const ProgressBar: React.FC = () => {
@@ -40,11 +40,18 @@ export const ProgressBar: React.FC = () => {
   const sections = getAllSections();
 
   return (
-    <div className="mb-4">
-      <div className="font-bold mb-2">
+    <div className="mb-4" role="region" aria-labelledby="workout-progress">
+      <div id="workout-progress" className="font-bold mb-2">
         Progress: {formatTime(workout.duration - time)} left
       </div>
-      <div className="progress-bar relative h-6 rounded-full overflow-hidden bg-gray-200">
+      <div 
+        className="progress-bar relative h-6 rounded-full overflow-hidden bg-gray-200"
+        role="progressbar"
+        aria-valuenow={Math.round(progress * 100)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Workout progress: ${Math.round(progress * 100)}% complete, ${formatTime(workout.duration - time)} remaining`}
+      >
         {sections.map((section, index) => {
           const sectionStart = sections.slice(0, index).reduce((total, s) => total + (s.duration || 0), 0);
           const sectionWidth = ((section.duration || 0) / workout.duration) * 100;
@@ -56,12 +63,14 @@ export const ProgressBar: React.FC = () => {
                 left: `${(sectionStart / workout.duration) * 100}%`,
                 width: `${sectionWidth}%`
               }}
+              aria-label={`${section.name} section`}
             />
           );
         })}
         <div
           className="progress-indicator absolute top-0 h-full bg-black opacity-75 w-1"
           style={{ left: `${progress * 100}%` }}
+          aria-hidden="true"
         />
       </div>
     </div>

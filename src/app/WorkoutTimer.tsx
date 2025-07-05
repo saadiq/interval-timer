@@ -5,6 +5,7 @@ import { CountdownDisplay } from "@/components/CountdownDisplay";
 import { ProgressBar } from "@/components/ProgressBar";
 import { ControlButtons } from "@/components/ControlButtons";
 import { WorkoutSummary } from "@/components/WorkoutSummary";
+import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Workout } from "@/workouts";
 import { useWakeLock } from "@/hooks/useWakeLock";
 import { formatDateWithTimezone, parseDate } from "@/utils/timezone";
@@ -50,30 +51,31 @@ const WorkoutTimerContent: React.FC<WorkoutContextExtendedProps> = ({
       formattedDate = formatDateWithTimezone(workout.date);
     }
   } catch (err) {
-    console.error("Error formatting date:", err);
+    // Error formatting date
     formattedDate = workout.date; // Fallback to raw date
   }
 
   return (
-    <div className="workout-timer">
+    <main className="workout-timer" aria-label="Workout timer application">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg shadow-xl p-4 sm:p-6">
+          <section className="bg-white rounded-lg shadow-xl p-4 sm:p-6" aria-labelledby="workout-timer-title">
             <div className="flex flex-col min-h-[400px] justify-between">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center">
+              <h1 id="workout-timer-title" className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center">
                 {formattedDate} Workout
               </h1>
               <CountdownDisplay />
               <ControlButtons />
               <ProgressBar />
             </div>
-          </div>
+          </section>
         </div>
-        <div className="lg:col-span-1">
+        <aside className="lg:col-span-1" aria-label="Workout details">
           <WorkoutSummary />
-        </div>
+        </aside>
       </div>
-    </div>
+      <KeyboardShortcuts />
+    </main>
   );
 };
 

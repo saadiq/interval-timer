@@ -2,7 +2,7 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { AMRAPWorkout, Workout, WorkoutSection } from '@/workouts';
-import { SectionWithColor } from '@/util/colorUtils';
+import { SectionWithColor } from '@/utils/colorUtils';
 
 export const CountdownDisplay: React.FC = () => {
   const { workout, time, isPreWorkout, preWorkoutCountdown } = useWorkoutContext();
@@ -44,17 +44,17 @@ export const CountdownDisplay: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center">
+    <div role="timer" aria-live="polite" aria-label="Workout timer display">
+      <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center" aria-label={`Time remaining: ${renderTimeDisplay()}`}>
         {renderTimeDisplay()}
       </div>
-      <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-center">
+      <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-center" aria-label={isPreWorkout ? "Pre-workout phase" : isWorkoutComplete ? "Workout completed" : `Current exercise: ${currentSection!.name}`}>
         {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Great job! 🎉' : currentSection!.name)}
       </div>
-      <div className="text-base sm:text-lg mb-2 text-center">
+      <div className="text-base sm:text-lg mb-2 text-center" aria-label={isPreWorkout || isWorkoutComplete ? "" : `Exercise description: ${currentSection!.description || "No description"}`}>
         {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : currentSection!.description || '\u00A0')}
       </div>
-      <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 text-center">
+      <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 text-center" aria-label={isPreWorkout || isWorkoutComplete ? "" : nextSection ? `Next exercise: ${nextSection.name}` : "No next exercise"}>
         {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : nextSection ? `Next: ${nextSection.name}` : '\u00A0')}
       </div>
     </div>
@@ -71,7 +71,7 @@ function isSectionWithDuration(section: WorkoutSection): section is WorkoutSecti
 
 const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, currentTime: number): number => {
   if (!isSectionWithColor(section) || !isSectionWithDuration(section)) {
-    console.warn('Section without color or duration encountered:', section);
+    // Section without color or duration encountered
     return 0;
   }
 

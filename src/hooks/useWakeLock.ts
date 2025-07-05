@@ -12,10 +12,10 @@ export function useWakeLock() {
     if (!isSupported) return;
 
     try {
-      const wl = await (navigator as any).wakeLock.request('screen');
+      const wl = await (navigator as unknown as { wakeLock: { request: (type: string) => Promise<WakeLockSentinel> } }).wakeLock.request('screen');
       setWakeLock(wl);
     } catch (err) {
-      console.error(`Failed to request wake lock: ${err}`);
+      // Failed to request wake lock
     }
   }, [isSupported]);
 

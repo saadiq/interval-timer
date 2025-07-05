@@ -1,7 +1,7 @@
 // src/workouts/EMOMWorkout.ts
-import { EMOMWorkout as EMOMWorkoutData, BaseExercise, WorkoutSection } from './types';
+import { EMOMWorkout as EMOMWorkoutData } from './types';
 import { Workout } from './Workout';
-import { SectionWithColor, assignColorsToWorkout } from '@/util/colorUtils';
+import { SectionWithColor } from '@/utils/colorUtils';
 
 export class EMOMWorkout extends Workout {
   readonly type = 'emom';
@@ -60,7 +60,6 @@ export class EMOMWorkout extends Workout {
       // In EMOM
       const emomTime = time - warmUpDuration;
       const roundDuration = emomSections.length * 60;
-      const currentRound = Math.floor(emomTime / roundDuration);
       const timeInRound = emomTime % roundDuration;
       const sectionIndex = Math.floor(timeInRound / 60);
       return [emomSections[sectionIndex], timeInRound % 60];

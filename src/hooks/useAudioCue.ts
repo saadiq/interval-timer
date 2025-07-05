@@ -25,7 +25,7 @@ export function useAudioCue() {
 
   const playAudioCue = useCallback((delay: number = 0, count: number = 3) => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     }
 
     const now = audioContextRef.current.currentTime;

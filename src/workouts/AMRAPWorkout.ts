@@ -1,7 +1,7 @@
 // src/workouts/AMRAPWorkout.ts
-import { AMRAPWorkout as AMRAPWorkoutData, BaseExercise, BaseSection, WorkoutSection, WorkoutData } from './types';
+import { AMRAPWorkout as AMRAPWorkoutData, BaseExercise, BaseSection } from './types';
 import { Workout } from './Workout';
-import { SectionWithColor, assignColorsToWorkout } from '../util/colorUtils';
+import { SectionWithColor, assignColorsToWorkout } from '../utils/colorUtils';
 
 interface AMRAPSection extends BaseSection {
   exercises: BaseExercise[];

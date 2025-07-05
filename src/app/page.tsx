@@ -1,8 +1,8 @@
 // src/app/page.tsx
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import React, { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { WorkoutTimer } from "./WorkoutTimer";
 import { WorkoutData } from "../workouts/types";
@@ -14,6 +14,8 @@ import {
   parseDate,
 } from "@/utils/timezone";
 import { format } from "date-fns";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { ErrorDisplay } from "@/components/ErrorDisplay";
 
 // Extended interface for the API response
 interface WorkoutResponse {
@@ -21,7 +23,13 @@ interface WorkoutResponse {
   _actualDate?: string;
   type: string;
   warmUp: Array<{ name: string; duration: number; description?: string }>;
-  workout: any; // This will vary based on workout type
+  workout: {
+    exercises: Array<{ name: string; duration?: number; reps?: number; description?: string }>;
+    rounds?: number;
+    duration?: number;
+    workDuration?: number;
+    restDuration?: number;
+  };
   coolDown: Array<{ name: string; duration: number; description?: string }>;
 }
 
@@ -42,14 +50,16 @@ async function fetchWorkoutData(
   const actualDate = data._actualDate || date;
   const note = data._note;
 
-  // Remove the metadata before creating the workout
-  const { _note, _actualDate, ...workoutData } = data;
+  // Create a clean workout data object without metadata
+  const cleanWorkoutData: WorkoutData = {
+    type: data.type,
+    warmUp: data.warmUp,
+    workout: data.workout,
+    coolDown: data.coolDown
+  } as WorkoutData;
 
   return {
-    workout: WorkoutFactory.createWorkout(
-      workoutData as WorkoutData,
-      actualDate
-    ),
+    workout: WorkoutFactory.createWorkout(cleanWorkoutData, actualDate),
     actualDate,
     note,
   };
@@ -69,70 +79,70 @@ const formatDate = (dateString: string, isExplicitDate: boolean = false) => {
 
 const WorkoutPageContent: React.FC = () => {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [notFound, setNotFound] = useState(false);
-  const [currentDate, setCurrentDate] = useState<string>("");
   const [isExplicitDate, setIsExplicitDate] = useState(false);
   const [dateNote, setDateNote] = useState<string | null>(null);
   const [requestedDate, setRequestedDate] = useState<string>("");
 
-  useEffect(() => {
-    const loadWorkout = async () => {
-      setIsLoading(true);
-      setNotFound(false);
-      setDateNote(null);
-      try {
-        const dateParam = searchParams.get("date");
-        const isDateExplicit = !!dateParam;
-        setIsExplicitDate(isDateExplicit);
+  const loadWorkout = useCallback(async () => {
+    setIsLoading(true);
+    setNotFound(false);
+    setDateNote(null);
+    setError(null);
+    try {
+      const dateParam = searchParams.get("date");
+      const isDateExplicit = !!dateParam;
+      setIsExplicitDate(isDateExplicit);
 
-        // Get the date, ensuring consistent handling
-        const date = dateParam || getLocalDate();
-        setRequestedDate(date);
+      // Get the date, ensuring consistent handling
+      const date = dateParam || getLocalDate();
+      setRequestedDate(date);
 
-        const {
-          workout: fetchedWorkout,
-          actualDate,
-          note,
-        } = await fetchWorkoutData(date);
+      const {
+        workout: fetchedWorkout,
+        note,
+      } = await fetchWorkoutData(date);
 
-        if (fetchedWorkout === null) {
-          setNotFound(true);
-        } else {
-          setWorkout(fetchedWorkout);
-          setCurrentDate(actualDate || date);
+      if (fetchedWorkout === null) {
+        setNotFound(true);
+      } else {
+        setWorkout(fetchedWorkout);
 
-          // If we got a different date's workout, set the note
-          if (note) {
-            setDateNote(note);
-          }
+        // If we got a different date's workout, set the note
+        if (note) {
+          setDateNote(note);
         }
-      } catch (err) {
-        setError("Failed to load workout. Please try again later.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (err) {
+      setError("Failed to load workout. Please try again later.");
+      // Error loading workout
+    } finally {
+      setIsLoading(false);
+    }
+  }, [searchParams]);
 
+  useEffect(() => {
     loadWorkout();
-  }, [searchParams, router]);
+  }, [loadWorkout]);
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        Loading workout...
+        <LoadingSpinner message="Loading workout..." size="large" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-red-500">
-        {error}
+      <div className="flex justify-center items-center min-h-screen p-4">
+        <ErrorDisplay 
+          message={error}
+          onRetry={loadWorkout}
+        />
       </div>
     );
   }
@@ -180,7 +190,7 @@ export default function WorkoutPage() {
     <Suspense
       fallback={
         <div className="flex justify-center items-center min-h-screen">
-          Loading...
+          <LoadingSpinner message="Loading..." size="large" />
         </div>
       }
     >
