@@ -6,6 +6,7 @@ import { parseDate } from "@/utils/timezone";
 import { format } from "date-fns";
 import { LoadingSpinner, WorkoutListSkeleton } from "@/components/LoadingSpinner";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
+import { generateWorkoutUrl } from "@/utils/dateUrls";
 
 interface WorkoutDetails {
   type: string;
@@ -157,7 +158,7 @@ export default function WorkoutListPage() {
                   const details = workoutDetails[date];
                   return (
                     <Link
-                      href={`/?date=${date}`}
+                      href={generateWorkoutUrl(date)}
                       key={date}
                       className="group block p-6 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 hover:-translate-y-1"
                     >
