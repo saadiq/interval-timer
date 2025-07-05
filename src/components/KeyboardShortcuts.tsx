@@ -48,7 +48,7 @@ export const KeyboardShortcuts: React.FC = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-primary hover:bg-primary/90 text-primary-foreground p-3 sm:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background z-40 touch-target keyboard-shortcuts-button"
+        className="hidden md:block fixed bottom-6 right-6 bg-primary hover:bg-primary/90 text-primary-foreground p-3 sm:p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background z-40 touch-target keyboard-shortcuts-button"
         aria-label="Show keyboard shortcuts"
         title="Keyboard shortcuts"
         style={{ touchAction: 'manipulation' }}
