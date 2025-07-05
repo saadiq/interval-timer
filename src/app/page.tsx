@@ -130,7 +130,7 @@ const WorkoutPageContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-screen bg-background">
         <LoadingSpinner message="Loading workout..." size="large" />
       </div>
     );
@@ -138,7 +138,7 @@ const WorkoutPageContent: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen p-4">
+      <div className="flex justify-center items-center min-h-screen p-4 bg-background">
         <ErrorDisplay 
           message={error}
           onRetry={loadWorkout}
@@ -149,26 +149,37 @@ const WorkoutPageContent: React.FC = () => {
 
   if (notFound) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-screen p-4">
-        <h1 className="text-2xl font-bold mb-4">No Workout Found</h1>
-        <p className="text-lg mb-4">
-          There is no workout available for{" "}
-          {formatDate(requestedDate, isExplicitDate)}.
-        </p>
-        <Link
-          href="/workouts"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          View All Available Workouts
-        </Link>
+      <div className="flex flex-col justify-center items-center min-h-screen p-4 bg-background">
+        <div className="text-center space-y-6 max-w-md">
+          <div className="text-6xl mb-4">🏃‍♂️</div>
+          <h1 className="text-3xl font-bold text-foreground">No Workout Found</h1>
+          <p className="text-lg text-muted-foreground">
+            There is no workout available for{" "}
+            <span className="font-semibold text-foreground">
+              {formatDate(requestedDate, isExplicitDate)}
+            </span>
+            .
+          </p>
+          <Link
+            href="/workouts"
+            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            View All Available Workouts
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (!workout) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        No workout available for the selected date.
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <div className="text-center">
+          <div className="text-4xl mb-4">😔</div>
+          <p className="text-lg text-muted-foreground">
+            No workout available for the selected date.
+          </p>
+        </div>
       </div>
     );
   }

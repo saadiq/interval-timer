@@ -165,38 +165,53 @@ export const ControlButtons: React.FC = () => {
   if (!workout) return null;
 
   return (
-    <div className="control-buttons flex justify-center space-x-6 mb-6">
+    <div className="control-buttons flex justify-center items-center space-x-3 sm:space-x-4 mb-8 px-4">
       <button 
         onClick={handlePrevious} 
-        className="control-button bg-gray-200 p-4 rounded-full"
+        className="control-button group bg-secondary hover:bg-accent text-secondary-foreground hover:text-accent-foreground p-3 sm:p-3 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background shadow-lg hover:shadow-xl touch-target"
         aria-label="Previous section"
-        title="Previous section"
+        title="Previous section (J)"
+        style={{ touchAction: 'manipulation' }}
       >
-        <ChevronLeft size={32} />
+        <ChevronLeft size={28} className="transition-transform group-hover:-translate-x-0.5" />
       </button>
+      
       <button 
         onClick={handleStartStop} 
-        className="control-button start-stop-button p-4 rounded-full"
+        className={`control-button start-stop-button group p-4 sm:p-4 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background shadow-lg hover:shadow-xl touch-target ${
+          isRunning 
+            ? 'bg-warning hover:bg-warning/90 text-warning-foreground' 
+            : 'bg-gradient-primary hover:brightness-110 text-primary-foreground'
+        }`}
         aria-label={isRunning ? "Pause workout" : "Start workout"}
-        title={isRunning ? "Pause workout" : "Start workout"}
+        title={isRunning ? "Pause workout (Space/K)" : "Start workout (Space/K)"}
+        style={{ touchAction: 'manipulation' }}
       >
-        {isRunning ? <Pause size={32} /> : <Play size={32} />}
+        {isRunning ? (
+          <Pause size={36} className="transition-transform group-hover:scale-110" />
+        ) : (
+          <Play size={36} className="transition-transform group-hover:scale-110 translate-x-0.5" />
+        )}
       </button>
+      
       <button 
         onClick={handleNext} 
-        className="control-button bg-gray-200 p-4 rounded-full"
+        className="control-button group bg-secondary hover:bg-accent text-secondary-foreground hover:text-accent-foreground p-3 sm:p-3 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background shadow-lg hover:shadow-xl touch-target"
         aria-label="Next section"
-        title="Next section"
+        title="Next section (L)"
+        style={{ touchAction: 'manipulation' }}
       >
-        <ChevronRight size={32} />
+        <ChevronRight size={28} className="transition-transform group-hover:translate-x-0.5" />
       </button>
+      
       <button 
         onClick={handleReset} 
-        className="control-button reset-button p-4 rounded-full"
+        className="control-button group bg-destructive hover:bg-destructive/90 text-destructive-foreground p-3 sm:p-3 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background shadow-lg hover:shadow-xl touch-target"
         aria-label="Reset workout"
-        title="Reset workout"
+        title="Reset workout (R)"
+        style={{ touchAction: 'manipulation' }}
       >
-        <RotateCcw size={32} />
+        <RotateCcw size={28} className="transition-transform group-hover:rotate-12" />
       </button>
     </div>
   );

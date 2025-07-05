@@ -59,9 +59,9 @@ const WorkoutTimerContent: React.FC<WorkoutContextExtendedProps> = ({
     <main className="workout-timer" aria-label="Workout timer application">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <section className="bg-white rounded-lg shadow-xl p-4 sm:p-6" aria-labelledby="workout-timer-title">
+          <section className="bg-card border border-border rounded-lg shadow-xl p-4 sm:p-6" aria-labelledby="workout-timer-title">
             <div className="flex flex-col min-h-[400px] justify-between">
-              <h1 id="workout-timer-title" className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center">
+              <h1 id="workout-timer-title" className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 text-center text-card-foreground">
                 {formattedDate} Workout
               </h1>
               <CountdownDisplay />

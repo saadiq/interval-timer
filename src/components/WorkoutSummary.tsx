@@ -20,7 +20,7 @@ const ClickableMovementName: React.FC<{ name: string }> = ({ name }) => {
   return (
     <button
       onClick={handleClick}
-      className="exercise-button text-inherit hover:bg-gray-100 rounded px-2 py-2 transition-colors duration-200 min-h-[44px] flex items-center"
+      className="exercise-button text-inherit hover:bg-accent rounded px-2 py-2 transition-colors duration-200 min-h-[44px] flex items-center"
       title={`Click to learn more about ${name}`}
       aria-label={`Learn more about ${name} exercise`}
       type="button"
@@ -83,7 +83,7 @@ export const WorkoutSummary: React.FC = () => {
               const sectionIndex = workout.data.warmUp.length + index;
               const sectionWithColor = workout.sections[sectionIndex] as SectionWithColor;
               return (
-                <li key={index} className={`flex items-center justify-between ${isSectionActive(sectionWithColor, sectionIndex) ? 'bg-yellow-100' : ''}`}>
+                <li key={index} className={`flex items-center justify-between ${isSectionActive(sectionWithColor, sectionIndex) ? 'bg-warning/20' : ''}`}>
                   <div className="flex items-center">
                     <span className={`section-color-indicator ${sectionWithColor.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
                     <ClickableMovementName name={exercise.name} />
@@ -115,14 +115,14 @@ export const WorkoutSummary: React.FC = () => {
           <ul className="space-y-1">
             {exercises.map((exercise, exerciseIndex) => (
               <React.Fragment key={exerciseIndex}>
-                <li className={`flex items-center justify-between ${isSectionActive(tabataSections[exerciseIndex * 2], workout.data.warmUp.length + exerciseIndex * 2) ? 'bg-yellow-100' : ''}`}>
+                <li className={`flex items-center justify-between ${isSectionActive(tabataSections[exerciseIndex * 2], workout.data.warmUp.length + exerciseIndex * 2) ? 'bg-warning/20' : ''}`}>
                   <div className="flex items-center">
                     <span className={`section-color-indicator ${tabataSections[exerciseIndex * 2].color} w-4 h-4 rounded-full inline-block mr-2`}></span>
                     <ClickableMovementName name={exercise.name} />
                   </div>
                   <span>{formatTime(workDuration)}</span>
                 </li>
-                <li className={`flex items-center justify-between ${isSectionActive(tabataSections[exerciseIndex * 2 + 1], workout.data.warmUp.length + exerciseIndex * 2 + 1) ? 'bg-yellow-100' : ''}`}>
+                <li className={`flex items-center justify-between ${isSectionActive(tabataSections[exerciseIndex * 2 + 1], workout.data.warmUp.length + exerciseIndex * 2 + 1) ? 'bg-warning/20' : ''}`}>
                   <div className="flex items-center">
                     <span className="section-color-indicator bg-gray-300 w-4 h-4 rounded-full inline-block mr-2"></span>
                     <span>Rest</span>
@@ -180,7 +180,7 @@ export const WorkoutSummary: React.FC = () => {
           <p className="mb-2">On the minute, perform:</p>
           <ul className="space-y-1">
             {emomSections.map((section, index) => (
-              <li key={index} className={`flex items-center justify-between ${isSectionActive(section, workout.data.warmUp.length + index) ? 'bg-yellow-100' : ''}`}>
+              <li key={index} className={`flex items-center justify-between ${isSectionActive(section, workout.data.warmUp.length + index) ? 'bg-warning/20' : ''}`}>
                 <div className="flex items-center">
                   <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
                   <ClickableMovementName name={section.name} />
@@ -214,7 +214,7 @@ export const WorkoutSummary: React.FC = () => {
 
   const renderSection = (section: SectionWithColor, index: number, isActive: boolean) => {
     return (
-      <li key={index} className={`flex items-center justify-between ${isActive ? 'bg-yellow-100' : ''}`}>
+      <li key={index} className={`flex items-center justify-between ${isActive ? 'bg-warning/20' : ''}`}>
         <div className="flex items-center">
           <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
           <ClickableMovementName name={section.name} />
@@ -246,8 +246,8 @@ export const WorkoutSummary: React.FC = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl p-6" role="region" aria-labelledby="workout-summary-title">
-      <h2 id="workout-summary-title" className="font-bold text-2xl mb-4">Workout Summary</h2>
+    <div className="bg-card border border-border rounded-lg shadow-xl p-6" role="region" aria-labelledby="workout-summary-title">
+      <h2 id="workout-summary-title" className="font-bold text-2xl mb-4 text-card-foreground">Workout Summary</h2>
       {renderSectionGroup(getWarmUpSections(), 'Warm-up', 0)}
       {workout instanceof CircuitWorkout
         ? renderCircuitSummary(workout)

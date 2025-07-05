@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { parseDate } from "@/utils/timezone";
 import { format } from "date-fns";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner, WorkoutListSkeleton } from "@/components/LoadingSpinner";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 
 interface WorkoutDetails {
@@ -87,24 +87,20 @@ export default function WorkoutListPage() {
   const getWorkoutTypeColor = (type: string) => {
     switch (type) {
       case "CIRCUIT":
-        return "bg-blue-100 text-blue-800";
+        return "bg-workout-circuit/20 text-workout-circuit border-workout-circuit/30";
       case "AMRAP":
-        return "bg-green-100 text-green-800";
+        return "bg-workout-amrap/20 text-workout-amrap border-workout-amrap/30";
       case "TABATA":
-        return "bg-red-100 text-red-800";
+        return "bg-workout-tabata/20 text-workout-tabata border-workout-tabata/30";
       case "EMOM":
-        return "bg-purple-100 text-purple-800";
+        return "bg-workout-emom/20 text-workout-emom border-workout-emom/30";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-muted text-muted-foreground border-border";
     }
   };
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <LoadingSpinner message="Loading available workouts..." size="large" />
-      </div>
-    );
+    return <WorkoutListSkeleton />;
   }
 
   if (error) {
@@ -130,65 +126,101 @@ export default function WorkoutListPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        Available Workouts
-      </h1>
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="text-center mb-10">
+        <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
+          Available Workouts
+        </h1>
+        <p className="text-lg text-muted-foreground">
+          Browse and select from {workoutDates.length} available workout{workoutDates.length !== 1 ? 's' : ''}
+        </p>
+      </div>
 
-      {Object.keys(workoutsByMonth)
-        .sort()
-        .reverse()
-        .map((monthKey) => (
-          <div key={monthKey} className="mb-8">
-            <h2 className="text-2xl font-semibold mb-4 border-b pb-2">
-              {formatMonth(monthKey)}
-            </h2>
-            <div className="grid grid-cols-1 gap-4">
-              {workoutsByMonth[monthKey].map((date) => {
-                const details = workoutDetails[date];
-                return (
-                  <Link
-                    href={`/?date=${date}`}
-                    key={date}
-                    className="workout-card block p-4 border rounded-lg hover:bg-gray-50 transition-colors min-h-[44px]"
-                  >
-                    <div className="flex flex-col space-y-3">
-                      <div className="flex flex-wrap justify-between items-center">
-                        <div className="font-medium text-lg mb-1">
-                          {formatDate(date)}
+      <div className="space-y-10">
+        {Object.keys(workoutsByMonth)
+          .sort()
+          .reverse()
+          .map((monthKey) => (
+            <div key={monthKey} className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {formatMonth(monthKey)}
+                </h2>
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                  {workoutsByMonth[monthKey].length} workout{workoutsByMonth[monthKey].length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 gap-6">
+                {workoutsByMonth[monthKey].map((date) => {
+                  const details = workoutDetails[date];
+                  return (
+                    <Link
+                      href={`/?date=${date}`}
+                      key={date}
+                      className="group block p-6 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 hover:-translate-y-1"
+                    >
+                      <div className="space-y-4">
+                        {/* Header */}
+                        <div className="flex flex-wrap justify-between items-start gap-4">
+                          <div>
+                            <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors">
+                              {formatDate(date)}
+                            </h3>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {details.exerciseCount} exercises • {formatDuration(details.totalDuration)}
+                            </p>
+                          </div>
+                          
+                          <div className="flex flex-wrap gap-2">
+                            <span
+                              className={`text-xs font-semibold px-3 py-1.5 rounded-lg border ${getWorkoutTypeColor(
+                                details.type
+                              )}`}
+                            >
+                              {details.type}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span
-                            className={`text-xs font-medium px-2.5 py-0.5 rounded ${getWorkoutTypeColor(
-                              details.type
-                            )}`}
-                          >
-                            {details.type}
-                          </span>
-                          <span className="text-xs font-medium px-2.5 py-0.5 rounded bg-gray-100 text-gray-800">
-                            {formatDuration(details.totalDuration)}
-                          </span>
-                          <span className="text-xs font-medium px-2.5 py-0.5 rounded bg-gray-100 text-gray-800">
-                            {details.exerciseCount} exercises
-                          </span>
+
+                        {/* Exercise Preview */}
+                        <div className="bg-muted/30 rounded-lg p-4 border border-border/50">
+                          <div className="flex items-start space-x-2">
+                            <div className="text-sm font-medium text-muted-foreground min-w-0">
+                              Featured exercises:
+                            </div>
+                            <div className="text-sm text-card-foreground font-medium">
+                              {details.primaryExercises.slice(0, 3).join(", ")}
+                              {details.primaryExercises.length > 3 && (
+                                <span className="text-muted-foreground">
+                                  {" "}and {details.primaryExercises.length - 3} more
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between pt-2">
+                          <div className="text-xs text-muted-foreground">
+                            Click to start workout
+                          </div>
+                          <div className="flex items-center space-x-1 text-primary group-hover:translate-x-1 transition-transform">
+                            <span className="text-sm font-medium">Start</span>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
                         </div>
                       </div>
-
-                      <div className="border-t pt-2">
-                        <div className="text-sm">
-                          <span className="font-medium">Exercises:</span>{" "}
-                          <span className="text-gray-700">
-                            {details.primaryExercises.join(", ")}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+      </div>
     </div>
   );
 }

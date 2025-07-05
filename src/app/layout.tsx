@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import "../styles/focus.css";
 import Navigation from "@/components/Navigation";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -46,14 +47,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <a href="#main-content" className="skip-to-content">
-          Skip to main content
-        </a>
-        <Navigation />
-        <main id="main-content" className="min-h-screen pt-4">{children}</main>
-        <Analytics />
+        <ThemeProvider>
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
+          <Navigation />
+          <main id="main-content" className="min-h-screen pt-4 bg-background text-foreground">{children}</main>
+          <Analytics />
+        </ThemeProvider>
       </body>
     </html>
   );

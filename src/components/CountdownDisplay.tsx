@@ -43,20 +43,75 @@ export const CountdownDisplay: React.FC = () => {
     }
   };
 
+  const isLowTime = !isPreWorkout && !isWorkoutComplete && timeRemaining <= 10;
+  const isVeryLowTime = !isPreWorkout && !isWorkoutComplete && timeRemaining <= 3;
+
   return (
-    <div role="timer" aria-live="polite" aria-label="Workout timer display">
-      <div className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-4 text-center" aria-label={`Time remaining: ${renderTimeDisplay()}`}>
-        {renderTimeDisplay()}
+    <div role="timer" aria-live="polite" aria-label="Workout timer display" className="text-center space-y-4">
+      {/* Main Timer Display */}
+      <div className={`font-bold mb-6 transition-all duration-300 ${
+        isVeryLowTime 
+          ? 'text-8xl sm:text-9xl lg:text-10xl text-destructive animate-pulse-scale' 
+          : isLowTime 
+            ? 'text-7xl sm:text-8xl lg:text-9xl text-warning' 
+            : 'text-7xl sm:text-8xl lg:text-9xl text-foreground'
+      }`} 
+      aria-label={`Time remaining: ${renderTimeDisplay()}`}>
+        <div className={`${isPreWorkout || isWorkoutComplete ? 'bg-gradient-primary bg-clip-text text-transparent' : ''}`}>
+          {renderTimeDisplay()}
+        </div>
       </div>
-      <div className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 text-center" aria-label={isPreWorkout ? "Pre-workout phase" : isWorkoutComplete ? "Workout completed" : `Current exercise: ${currentSection!.name}`}>
-        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? 'Great job! 🎉' : currentSection!.name)}
+
+      {/* Current Exercise */}
+      <div className="space-y-2">
+        <div className={`font-bold transition-all duration-300 ${
+          isWorkoutComplete 
+            ? 'text-3xl sm:text-4xl lg:text-5xl text-success animate-fade-in-up' 
+            : 'text-2xl sm:text-3xl lg:text-4xl text-foreground'
+        }`} 
+        aria-label={isPreWorkout ? "Pre-workout phase" : isWorkoutComplete ? "Workout completed" : `Current exercise: ${currentSection!.name}`}>
+          {isPreWorkout ? (
+            <div className="text-transparent">&nbsp;</div>
+          ) : isWorkoutComplete ? (
+            <div className="flex items-center justify-center space-x-2">
+              <span>Great job!</span>
+              <span className="text-4xl">🎉</span>
+            </div>
+          ) : (
+            <div className="bg-gradient-primary bg-clip-text text-transparent">
+              {currentSection!.name}
+            </div>
+          )}
+        </div>
+
+        {/* Exercise Description */}
+        {!isPreWorkout && !isWorkoutComplete && currentSection?.description && (
+          <div className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed" 
+               aria-label={`Exercise description: ${currentSection.description}`}>
+            {currentSection.description}
+          </div>
+        )}
       </div>
-      <div className="text-base sm:text-lg mb-2 text-center" aria-label={isPreWorkout || isWorkoutComplete ? "" : `Exercise description: ${currentSection!.description || "No description"}`}>
-        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : currentSection!.description || '\u00A0')}
-      </div>
-      <div className="text-lg sm:text-xl lg:text-2xl text-gray-600 text-center" aria-label={isPreWorkout || isWorkoutComplete ? "" : nextSection ? `Next exercise: ${nextSection.name}` : "No next exercise"}>
-        {isPreWorkout ? '\u00A0' : (isWorkoutComplete ? '\u00A0' : nextSection ? `Next: ${nextSection.name}` : '\u00A0')}
-      </div>
+
+      {/* Next Exercise Preview */}
+      {!isPreWorkout && !isWorkoutComplete && nextSection && (
+        <div className="pt-4 border-t border-border/30">
+          <div className="text-sm text-muted-foreground mb-1">Up Next</div>
+          <div className="text-lg sm:text-xl lg:text-2xl font-medium text-muted-foreground/80" 
+               aria-label={`Next exercise: ${nextSection.name}`}>
+            {nextSection.name}
+          </div>
+        </div>
+      )}
+
+      {/* Completion Message */}
+      {isWorkoutComplete && (
+        <div className="pt-6 space-y-2 animate-fade-in-up">
+          <div className="text-lg text-muted-foreground">
+            Workout completed! Time to rest and recover.
+          </div>
+        </div>
+      )}
     </div>
   );
 };
