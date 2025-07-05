@@ -41,7 +41,7 @@
   }
 
   .workout-timer .workout-section h3 {
-    @apply text-lg font-bold mb-2 text-gray-700;
+    @apply text-lg font-bold mb-2 text-muted-foreground;
   }
 
   .workout-timer .section-item {
