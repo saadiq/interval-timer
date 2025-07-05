@@ -74,7 +74,7 @@ export const WorkoutSummary: React.FC = () => {
 
     return (
       <div className="workout-section mt-4">
-        <h3 className="font-bold text-xl mb-2">
+        <h3 className="font-bold text-xl mb-2 text-muted-foreground">
           Circuit{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalCircuitTime)}
         </h3>
         <div className="ml-4">
@@ -108,7 +108,7 @@ export const WorkoutSummary: React.FC = () => {
 
     return (
       <div className="workout-section mt-4">
-        <h3 className="font-bold text-xl mb-2">
+        <h3 className="font-bold text-xl mb-2 text-muted-foreground">
           Tabata{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalTabataTime)}
         </h3>
         <div className="ml-4">
@@ -147,7 +147,7 @@ export const WorkoutSummary: React.FC = () => {
 
     return (
       <div className="workout-section mt-4">
-        <h3 className="font-bold text-xl mb-2">
+        <h3 className="font-bold text-xl mb-2 text-muted-foreground">
           AMRAP: {formatTime(amrapSection.duration)}
         </h3>
         <div className="ml-4">
@@ -177,7 +177,7 @@ export const WorkoutSummary: React.FC = () => {
 
     return (
       <div className="workout-section mt-4">
-        <h3 className="font-bold text-xl mb-2">
+        <h3 className="font-bold text-xl mb-2 text-muted-foreground">
           EMOM{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalEMOMTime)}
         </h3>
         <div className="ml-4">
@@ -204,7 +204,7 @@ export const WorkoutSummary: React.FC = () => {
 
     return (
       <div className="workout-section mt-4">
-        <h3 className="font-bold text-xl mb-2">
+        <h3 className="font-bold text-xl mb-2 text-muted-foreground">
           {title}: {formatTime(groupDuration)}
         </h3>
         <div className="ml-4">
