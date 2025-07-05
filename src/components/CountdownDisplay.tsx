@@ -55,9 +55,9 @@ export const CountdownDisplay: React.FC = () => {
           : isLowTime 
             ? 'text-7xl sm:text-8xl lg:text-9xl text-warning' 
             : 'text-7xl sm:text-8xl lg:text-9xl text-foreground'
-      }`} 
+      } leading-normal`} 
       aria-label={`Time remaining: ${renderTimeDisplay()}`}>
-        <div className={`${isPreWorkout || isWorkoutComplete ? 'bg-gradient-primary bg-clip-text text-transparent' : ''}`}>
+        <div className={`${isPreWorkout || isWorkoutComplete ? 'bg-gradient-primary bg-clip-text text-transparent' : ''} py-4`}>
           {renderTimeDisplay()}
         </div>
       </div>
