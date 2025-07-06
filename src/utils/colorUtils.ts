@@ -11,8 +11,8 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
   
   let mainWorkoutColors: string[];
   if (workoutData.type === 'amrap') {
-    // AMRAP should create multiple sections for visual variety
-    mainWorkoutColors = workoutData.workout.exercises.map((_, index) => getWorkoutColor('amrap', index));
+    // AMRAP is a single section with one color
+    mainWorkoutColors = [getWorkoutColor('amrap', 0)];
   } else if (workoutData.type === 'circuit') {
     // Circuit alternates between exercise colors, with rest periods
     mainWorkoutColors = Array(workoutData.workout.rounds).fill(
@@ -53,14 +53,12 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
 function getMainWorkoutSections(workoutData: WorkoutData): WorkoutSection[] {
   switch (workoutData.type) {
     case 'amrap': {
-      // Create individual sections for each exercise for visual variety
-      const exerciseDuration = Math.floor(workoutData.workout.duration / workoutData.workout.exercises.length);
-      return workoutData.workout.exercises.map((exercise, index) => ({
-        ...exercise,
-        duration: index === workoutData.workout.exercises.length - 1 
-          ? workoutData.workout.duration - (exerciseDuration * index) // Last exercise gets remaining time
-          : exerciseDuration
-      }));
+      // AMRAP is a single continuous section where exercises are cycled through
+      return [{
+        name: 'AMRAP',
+        duration: workoutData.workout.duration,
+        description: workoutData.workout.exercises.map(ex => `${ex.reps} ${ex.name}`).join(', ')
+      }];
     }
     case 'circuit':
       return Array(workoutData.workout.rounds).fill(workoutData.workout.exercises).flat();
