@@ -1347,47 +1347,23 @@
       }
     ],
     "workout": {
-      "rounds": 1,
+      "rounds": 8,
       "exercises": [
         {
-          "name": "10 Squat Jumps",
-          "description": "Explosive lower body power, then rest for remaining time."
+          "name": "5 Burpees",
+          "description": "Full body explosive movement"
         },
         {
-          "name": "8 Burpees",
-          "description": "Full body explosive movement, then rest for remaining time."
+          "name": "10 Air Squats",
+          "description": "Focus on depth and speed"
         },
         {
-          "name": "12 Lateral Jumps",
-          "description": "6 each direction, agility focus, then rest for remaining time."
+          "name": "8 Push-Ups",
+          "description": "Modify as needed"
         },
         {
-          "name": "10 Plyo Push-Ups",
-          "description": "Explosive push-ups (modify as needed), then rest for remaining time."
-        },
-        {
-          "name": "15 High Knees",
-          "description": "Each leg counts as one, then rest for remaining time."
-        },
-        {
-          "name": "8 Tuck Jumps",
-          "description": "Bring knees to chest, then rest for remaining time."
-        },
-        {
-          "name": "10 Split Lunges",
-          "description": "Jumping alternating lunges, then rest for remaining time."
-        },
-        {
-          "name": "12 Star Jumps",
-          "description": "Wide jumping jacks with arms overhead, then rest for remaining time."
-        },
-        {
-          "name": "8 Broad Jumps",
-          "description": "Jump forward for distance, then rest for remaining time."
-        },
-        {
-          "name": "10 Single-Leg Bounds",
-          "description": "5 each leg, hop for distance, then rest for remaining time."
+          "name": "10 Mountain Climbers",
+          "description": "Total reps (5 per leg)"
         }
       ]
     },

@@ -33,10 +33,10 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
       ])
     ).flat();
   } else if (workoutData.type === 'emom') {
-    // EMOM uses different colors for each exercise across all rounds
-    mainWorkoutColors = Array(workoutData.workout.rounds).fill(
-      workoutData.workout.exercises.map((_, index) => getWorkoutColor('emom', index))
-    ).flat();
+    // EMOM uses different colors for each minute
+    mainWorkoutColors = Array.from({ length: workoutData.workout.rounds }, (_, index) => 
+      getWorkoutColor('emom', index)
+    );
   } else {
     mainWorkoutColors = [];
   }
@@ -69,14 +69,17 @@ function getMainWorkoutSections(workoutData: WorkoutData): WorkoutSection[] {
           { name: 'Rest', duration: workoutData.workout.restDuration }
         ])
       ).flat();
-    case 'emom':
-      // Create sections for each exercise with 60-second duration
-      return Array(workoutData.workout.rounds).fill(
-        workoutData.workout.exercises.map(exercise => ({
-          ...exercise,
-          duration: 60 // Each EMOM exercise takes exactly one minute
-        }))
-      ).flat();
+    case 'emom': {
+      // Create one section per minute, each containing all exercises
+      const exerciseList = workoutData.workout.exercises.map(ex => 
+        ex.name.replace(/^\d+\s+/, '') // Remove leading numbers from exercise names
+      ).join(', ');
+      return Array.from({ length: workoutData.workout.rounds }, (_, index) => ({
+        name: `Minute ${index + 1}`,
+        duration: 60,
+        description: exerciseList
+      }));
+    }
     default:
       return [];
   }

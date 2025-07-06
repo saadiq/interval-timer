@@ -70,7 +70,7 @@ export class EMOMWorkout extends Workout {
   }
 
   getEMOMDuration(): number {
-    return this.getEMOMSections().length * 60 * this.rounds;
+    return this.getEMOMSections().length * 60;
   }
 
   getRounds(): number {

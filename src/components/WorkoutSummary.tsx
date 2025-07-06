@@ -171,23 +171,27 @@ export const WorkoutSummary: React.FC = () => {
   };
 
   const renderEMOMSummary = (emomWorkout: EMOMWorkout) => {
-    const emomSections = emomWorkout.getEMOMSections();
     const totalEMOMTime = emomWorkout.getEMOMDuration();
     const rounds = emomWorkout.getRounds();
+    const exercises = emomWorkout.data.workout.exercises;
+    
+    // Get the EMOM section color from the first minute section
+    const emomSectionIndex = emomWorkout.data.warmUp.length;
+    const emomColor = emomWorkout.sections[emomSectionIndex]?.color || 'bg-purple-500';
 
     return (
       <div className="workout-section mt-4">
         <h3 className="font-bold text-xl mb-2 text-muted-foreground">
-          EMOM{rounds > 1 ? ` (${rounds}x)` : ''}: {formatTime(totalEMOMTime)}
+          EMOM{rounds > 1 ? ` (${rounds} minutes)` : ''}: {formatTime(totalEMOMTime)}
         </h3>
         <div className="ml-4">
-          <p className="mb-2">On the minute, perform:</p>
+          <p className="mb-2">Every minute on the minute, perform:</p>
           <ul className="space-y-1">
-            {emomSections.map((section, index) => (
-              <li key={index} className={`flex items-center justify-between ${isSectionActive(section, workout.data.warmUp.length + index) ? 'bg-warning/20' : ''}`}>
+            {exercises.map((exercise, index) => (
+              <li key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <span className={`section-color-indicator ${section.color} w-4 h-4 rounded-full inline-block mr-2`}></span>
-                  <ClickableMovementName name={section.name} />
+                  <span className={`section-color-indicator ${emomColor} w-4 h-4 rounded-full inline-block mr-2`}></span>
+                  <ClickableMovementName name={exercise.name} />
                 </div>
               </li>
             ))}
