@@ -60,6 +60,37 @@ npm run prebuild      # Run both lint and typecheck (used before builds)
 - When adding tests, consider the workout state machine logic in the workout classes
 - Timer functionality and state transitions are critical paths
 
+## Workout Types Reference
+
+### Circuit Workouts
+- **Structure**: Exercises performed in sequence with specified durations
+- **Rounds**: Multiple rounds repeat the entire circuit from start to finish
+- **Duration**: Each exercise has a specific duration (e.g., 40 seconds)
+- **Example**: 3 rounds of [Push-ups 40s, Rest 20s, Squats 40s, Rest 20s]
+- **Implementation**: Sequential execution, total duration = rounds × circuit duration
+
+### AMRAP (As Many Rounds As Possible)
+- **Structure**: Perform as many complete rounds of the exercise sequence as possible
+- **Duration**: Fixed time limit (e.g., 10 minutes)
+- **Rounds**: User completes as many rounds as they can within the time limit
+- **Example**: 10 minutes of [5 Push-ups, 10 Squats, 15 Sit-ups] - repeat until time runs out
+- **Implementation**: Single continuous section, no predefined rounds
+
+### Tabata
+- **Structure**: High-intensity interval training with work/rest cycles
+- **Format**: Work duration (e.g., 20s) followed by rest duration (e.g., 10s)
+- **Rounds**: Multiple rounds cycle through all exercises with work/rest intervals
+- **Example**: 8 rounds of [Squats 20s, Rest 10s, Push-ups 20s, Rest 10s]
+- **Implementation**: Creates alternating work/rest sections for each exercise per round
+
+### EMOM (Every Minute on the Minute)
+- **Structure**: Perform ALL exercises within each minute, then rest for remaining time
+- **Format**: Complete all exercises as fast as possible each minute
+- **Rounds**: Each round = 1 minute, repeat for specified number of rounds
+- **Example**: 8 rounds (8 minutes) of [5 Burpees, 10 Squats, 8 Push-ups, 10 Mountain Climbers] - do all 4 exercises in minute 1, rest, then all 4 in minute 2, etc.
+- **Implementation**: Each minute is one complete round containing all exercises
+- **Duration Calculation**: `rounds × 60` seconds (e.g., 8 rounds = 8 minutes = 480 seconds)
+
 ## Development Preferences
 
 ### Package Management

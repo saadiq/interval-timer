@@ -44,18 +44,26 @@ export class EMOMWorkout extends Workout {
   protected getSectionAtTime(time: number): [SectionWithColor, number] {
     const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
     const emomDuration = this.getEMOMDuration();
-    const emomSections = this.getEMOMSections();
 
     if (time < warmUpDuration) {
       // In warm-up
       return super.getSectionAtTime(time);
     } else if (time < warmUpDuration + emomDuration) {
-      // In EMOM
+      // In EMOM - create a combined section for the current minute
       const emomTime = time - warmUpDuration;
-      const roundDuration = emomSections.length * 60;
-      const timeInRound = emomTime % roundDuration;
-      const sectionIndex = Math.floor(timeInRound / 60);
-      return [emomSections[sectionIndex], timeInRound % 60];
+      const timeInCurrentMinute = emomTime % 60;
+      const currentRound = Math.floor(emomTime / 60) + 1;
+      
+      // Create a combined section with all exercises for this minute
+      const exerciseNames = this.data.workout.exercises.map(ex => ex.name).join(', ');
+      const combinedSection: SectionWithColor = {
+        name: `Round ${currentRound} of ${this.rounds}`,
+        duration: 60,
+        description: exerciseNames,
+        color: '#3B82F6' // Default blue color
+      };
+      
+      return [combinedSection, timeInCurrentMinute];
     } else {
       // In cool-down
       return super.getSectionAtTime(time);
@@ -70,10 +78,84 @@ export class EMOMWorkout extends Workout {
   }
 
   getEMOMDuration(): number {
-    return this.getEMOMSections().length * 60;
+    return this.rounds * 60;
   }
 
   getRounds(): number {
     return this.rounds;
+  }
+
+  getCurrentRound(time: number): number {
+    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
+    const emomDuration = this.getEMOMDuration();
+    
+    if (time < warmUpDuration) {
+      return 0; // In warm-up phase
+    } else if (time < warmUpDuration + emomDuration) {
+      const emomTime = time - warmUpDuration;
+      const currentRound = Math.floor(emomTime / 60) + 1;
+      return Math.min(currentRound, this.rounds);
+    } else {
+      return this.rounds; // In cool-down phase
+    }
+  }
+
+  getRemainingRounds(time: number): number {
+    const currentRound = this.getCurrentRound(time);
+    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
+    const emomDuration = this.getEMOMDuration();
+    
+    if (time < warmUpDuration || time >= warmUpDuration + emomDuration) {
+      return 0; // Not in EMOM phase
+    }
+    
+    return Math.max(0, this.rounds - currentRound);
+  }
+
+  getNextSection(time: number): SectionWithColor | null {
+    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
+    const emomDuration = this.getEMOMDuration();
+    
+    if (time < warmUpDuration) {
+      // In warm-up - check if next section is EMOM
+      const nextSection = super.getNextSection(time);
+      if (nextSection && time >= warmUpDuration - 60) { // Within 60 seconds of EMOM
+        // Return the first EMOM round
+        const exerciseNames = this.data.workout.exercises.map(ex => ex.name).join(', ');
+        return {
+          name: `Round 1 of ${this.rounds}`,
+          duration: 60,
+          description: exerciseNames,
+          color: '#3B82F6'
+        };
+      }
+      return nextSection;
+    } else if (time < warmUpDuration + emomDuration) {
+      // In EMOM - show next round or cool-down
+      const emomTime = time - warmUpDuration;
+      const currentRound = Math.floor(emomTime / 60) + 1;
+      
+      if (currentRound < this.rounds) {
+        // Show next EMOM round
+        const exerciseNames = this.data.workout.exercises.map(ex => ex.name).join(', ');
+        return {
+          name: `Round ${currentRound + 1} of ${this.rounds}`,
+          duration: 60,
+          description: exerciseNames,
+          color: '#3B82F6'
+        };
+      } else {
+        // Show cool-down
+        return this.data.coolDown.length > 0 ? {
+          name: this.data.coolDown[0].name,
+          duration: this.data.coolDown[0].duration,
+          description: this.data.coolDown[0].description,
+          color: '#10B981' // Green for cool-down
+        } : null;
+      }
+    } else {
+      // In cool-down
+      return super.getNextSection(time);
+    }
   }
 }

@@ -5,7 +5,7 @@ import { AMRAPWorkout, Workout, WorkoutSection } from '@/workouts';
 import { SectionWithColor } from '@/utils/colorUtils';
 
 export const CountdownDisplay: React.FC = () => {
-  const { workout, time, isPreWorkout, preWorkoutCountdown } = useWorkoutContext();
+  const { workout, time, isPreWorkout, preWorkoutCountdown, hasRounds, getCurrentRound, getTotalRounds } = useWorkoutContext();
 
   if (!workout) return null;
 
@@ -92,6 +92,16 @@ export const CountdownDisplay: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Rounds Display - only show for Tabata, not EMOM */}
+      {!isPreWorkout && !isWorkoutComplete && hasRounds() && getCurrentRound() > 0 && workout?.type === 'tabata' && (
+        <div className="pt-2 pb-2">
+          <div className="text-base sm:text-lg text-muted-foreground/80 font-medium" 
+               aria-label={`Round ${getCurrentRound()} of ${getTotalRounds()}`}>
+            Round {getCurrentRound()} of {getTotalRounds()}
+          </div>
+        </div>
+      )}
 
       {/* Next Exercise Preview */}
       {!isPreWorkout && !isWorkoutComplete && nextSection && (

@@ -1,6 +1,8 @@
 // src/app/WorkoutContext.tsx
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { Workout } from '@/workouts';
+import { EMOMWorkout } from '@/workouts/EMOMWorkout';
+import { TabataWorkout } from '@/workouts/TabataWorkout';
 import { useAudioCue } from '@/hooks/useAudioCue';
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 
@@ -18,6 +20,10 @@ interface WorkoutContextType {
   resetWorkout: () => void;
   playAudioCue: (delay?: number) => void;
   speakSectionInfo: (currentSection: string, nextSection: string | null) => void;
+  getCurrentRound: () => number;
+  getRemainingRounds: () => number;
+  getTotalRounds: () => number;
+  hasRounds: () => boolean;
 }
 
 const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
@@ -55,6 +61,40 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
     speak(message);
   }, [speak]);
 
+  const getCurrentRound = useCallback(() => {
+    if (!workout) return 0;
+    if (workout instanceof EMOMWorkout) {
+      return workout.getCurrentRound(time);
+    } else if (workout instanceof TabataWorkout) {
+      return workout.getCurrentRound(time);
+    }
+    return 0;
+  }, [workout, time]);
+
+  const getRemainingRounds = useCallback(() => {
+    if (!workout) return 0;
+    if (workout instanceof EMOMWorkout) {
+      return workout.getRemainingRounds(time);
+    } else if (workout instanceof TabataWorkout) {
+      return workout.getRemainingRounds(time);
+    }
+    return 0;
+  }, [workout, time]);
+
+  const getTotalRounds = useCallback(() => {
+    if (!workout) return 0;
+    if (workout instanceof EMOMWorkout) {
+      return workout.getRounds();
+    } else if (workout instanceof TabataWorkout) {
+      return workout.getTabataInfo().rounds;
+    }
+    return 0;
+  }, [workout]);
+
+  const hasRounds = useCallback(() => {
+    return workout instanceof EMOMWorkout || workout instanceof TabataWorkout;
+  }, [workout]);
+
   return (
     <WorkoutContext.Provider 
       value={{ 
@@ -70,7 +110,11 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
         startPreWorkoutCountdown,
         resetWorkout,
         playAudioCue,
-        speakSectionInfo
+        speakSectionInfo,
+        getCurrentRound,
+        getRemainingRounds,
+        getTotalRounds,
+        hasRounds
       }}
     >
       {children}

@@ -106,4 +106,35 @@ export class TabataWorkout extends Workout {
     const lastSection = this.sections[this.sections.length - 1];
     return [lastSection, this.duration - elapsedTime];
   }
+
+  getCurrentRound(time: number): number {
+    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
+    const coolDownDuration = this.data.coolDown.reduce((total, section) => total + (section.duration || 0), 0);
+    const tabataDuration = this.duration - warmUpDuration - coolDownDuration;
+    
+    if (time < warmUpDuration) {
+      return 0; // In warm-up phase
+    } else if (time < warmUpDuration + tabataDuration) {
+      const tabataTime = time - warmUpDuration;
+      const { workDuration, restDuration, exercises } = this.getTabataInfo();
+      const roundDuration = exercises.length * (workDuration + restDuration);
+      return Math.floor(tabataTime / roundDuration) + 1;
+    } else {
+      return this.getTabataInfo().rounds; // In cool-down phase
+    }
+  }
+
+  getRemainingRounds(time: number): number {
+    const currentRound = this.getCurrentRound(time);
+    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
+    const coolDownDuration = this.data.coolDown.reduce((total, section) => total + (section.duration || 0), 0);
+    const tabataDuration = this.duration - warmUpDuration - coolDownDuration;
+    
+    if (time < warmUpDuration || time >= warmUpDuration + tabataDuration) {
+      return 0; // Not in Tabata phase
+    }
+    
+    const totalRounds = this.getTabataInfo().rounds;
+    return Math.max(0, totalRounds - currentRound);
+  }
 }
