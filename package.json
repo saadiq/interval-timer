@@ -17,25 +17,25 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
-    "@vercel/og": "^0.6.5",
+    "@vercel/og": "^0.6.8",
     "date-fns": "^4.1.0",
     "date-fns-tz": "^3.2.0",
     "lucide-react": "^0.424.0",
-    "next": "^15.2.3",
+    "next": "^15.4.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-use": "^17.6.0"
   },
   "devDependencies": {
-    "@types/node": "^20.17.24",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
+    "@types/node": "^20.19.10",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.5",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5.8.2"
+    "typescript": "^5.9.2"
   }
 }
