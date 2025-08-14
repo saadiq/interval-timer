@@ -1,7 +1,7 @@
 // src/app/api/og/route.tsx
 import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
-import { getAllWorkouts } from "@/utils/workoutLoader";
+import { getAllWorkoutsEdge } from "@/utils/workoutLoaderEdge";
 import {
   CircuitWorkout,
   AMRAPWorkout,
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   const date = searchParams.get("date") || getLocalDate();
   
   // Load all workouts for fallback logic
-  const typedWorkoutsData = await getAllWorkouts();
+  const typedWorkoutsData = await getAllWorkoutsEdge();
 
 
   // Get all available workout dates
