@@ -1,6 +1,6 @@
 // src/components/KeyboardShortcuts.tsx
 import React, { useState, useEffect } from 'react';
-import { Keyboard, X, Play, Pause, SkipBack, SkipForward, RotateCcw } from 'lucide-react';
+import { Keyboard, X, Play, SkipBack, SkipForward, RotateCcw } from 'lucide-react';
 
 export const KeyboardShortcuts: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);

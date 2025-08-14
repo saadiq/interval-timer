@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { parseDate } from "@/utils/timezone";
 import { format } from "date-fns";
-import { LoadingSpinner, WorkoutListSkeleton } from "@/components/LoadingSpinner";
+import { WorkoutListSkeleton } from "@/components/LoadingSpinner";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import { generateWorkoutUrl } from "@/utils/dateUrls";
 

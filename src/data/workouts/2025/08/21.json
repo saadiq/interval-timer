@@ -1,0 +1,22 @@
+{
+  "type": "tabata",
+  "warmUp": [
+    { "name": "Jumping Jacks", "duration": 30 },
+    { "name": "Dynamic Stretching", "duration": 30 }
+  ],
+  "workout": {
+    "workDuration": 20,
+    "restDuration": 10,
+    "rounds": 7,
+    "exercises": [
+      { "name": "Burpees" },
+      { "name": "Jump Squats" },
+      { "name": "Mountain Climbers" },
+      { "name": "Star Jumps" }
+    ]
+  },
+  "coolDown": [
+    { "name": "Deep Breathing", "duration": 30 },
+    { "name": "Full Body Stretch", "duration": 30 }
+  ]
+}

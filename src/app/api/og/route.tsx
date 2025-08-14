@@ -1,9 +1,8 @@
 // src/app/api/og/route.tsx
 import { ImageResponse } from "@vercel/og";
 import { NextRequest } from "next/server";
-import workoutsData from "@/data/workouts.json";
+import { getAllWorkouts } from "@/utils/workoutLoader";
 import {
-  WorkoutDataMap,
   CircuitWorkout,
   AMRAPWorkout,
   TabataWorkout,
@@ -22,12 +21,13 @@ export const runtime = "edge";
 // Set cache revalidation time (in seconds)
 export const revalidate = 3600; // Cache for 1 hour
 
-const typedWorkoutsData = workoutsData as WorkoutDataMap;
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const isDateExplicitlyProvided = searchParams.has("date");
   const date = searchParams.get("date") || getLocalDate();
+  
+  // Load all workouts for fallback logic
+  const typedWorkoutsData = await getAllWorkouts();
 
 
   // Get all available workout dates

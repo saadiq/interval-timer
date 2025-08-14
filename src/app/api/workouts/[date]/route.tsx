@@ -1,10 +1,6 @@
 // src/app/api/workouts/[date]/route.tsx
 import { NextRequest, NextResponse } from "next/server";
-import workoutsData from "@/data/workouts.json";
-import { WorkoutDataMap } from "@/workouts/types";
-
-// Type assertion to treat the imported JSON as WorkoutDataMap type
-const workouts = workoutsData as unknown as WorkoutDataMap;
+import { loadWorkout, getAllWorkoutDates } from "@/utils/workoutLoader";
 
 export async function GET(
   request: NextRequest,
@@ -13,31 +9,37 @@ export async function GET(
   // Await the params object before accessing its properties
   const { date } = await params;
 
-  // Check if there's an exact match for the requested date
-  if (date in workouts) {
+  // Try to load the exact workout for the requested date
+  const workout = await loadWorkout(date);
+  
+  if (workout) {
     // Return the exact workout for the requested date
-    return NextResponse.json(workouts[date]);
+    return NextResponse.json(workout);
   } else {
     // If no exact match, find the most recent workout before the requested date
-    const workoutDates = Object.keys(workouts).sort(
+    const allDates = await getAllWorkoutDates();
+    const workoutDates = allDates.sort(
       (a, b) => new Date(b).getTime() - new Date(a).getTime()
     );
 
     const mostRecentDate = workoutDates.find((d) => d <= date);
 
     if (mostRecentDate) {
-      // Return the most recent workout with a note that it's not the exact date
-      return NextResponse.json({
-        ...workouts[mostRecentDate],
-        _note: `No workout found for ${date}. Showing workout for ${mostRecentDate} instead.`,
-        _actualDate: mostRecentDate,
-      });
-    } else {
-      // No workout found before the requested date
-      return NextResponse.json(
-        { message: "No workout found for the given date or any previous date" },
-        { status: 404 }
-      );
+      const recentWorkout = await loadWorkout(mostRecentDate);
+      if (recentWorkout) {
+        // Return the most recent workout with a note that it's not the exact date
+        return NextResponse.json({
+          ...recentWorkout,
+          _note: `No workout found for ${date}. Showing workout for ${mostRecentDate} instead.`,
+          _actualDate: mostRecentDate,
+        });
+      }
     }
+    
+    // No workout found before the requested date
+    return NextResponse.json(
+      { message: "No workout found for the given date or any previous date" },
+      { status: 404 }
+    );
   }
 }

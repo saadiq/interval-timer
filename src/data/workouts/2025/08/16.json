@@ -1,0 +1,21 @@
+{
+  "type": "amrap",
+  "warmUp": [
+    { "name": "Jumping Jacks", "duration": 30 },
+    { "name": "Arm Swings", "duration": 30 }
+  ],
+  "workout": {
+    "duration": 840,
+    "exercises": [
+      { "name": "5 Burpees" },
+      { "name": "10 Push-ups" },
+      { "name": "15 Squats" },
+      { "name": "20 Mountain Climbers" },
+      { "name": "25 High Knees" }
+    ]
+  },
+  "coolDown": [
+    { "name": "Deep Breathing", "duration": 30 },
+    { "name": "Hamstring Stretch", "duration": 30 }
+  ]
+}

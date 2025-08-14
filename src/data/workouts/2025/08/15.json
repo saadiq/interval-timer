@@ -1,0 +1,30 @@
+{
+  "type": "circuit",
+  "warmUp": [
+    { "name": "Arm Circles", "duration": 20 },
+    { "name": "Leg Swings", "duration": 20 },
+    { "name": "Torso Twists", "duration": 20 }
+  ],
+  "workout": {
+    "exercises": [
+      { "name": "Burpees", "duration": 30 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Push-ups", "duration": 30 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Jump Squats", "duration": 30 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Mountain Climbers", "duration": 30 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Plank to Downward Dog", "duration": 30 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Lunges", "duration": 30 },
+      { "name": "Rest", "duration": 30 }
+    ],
+    "rounds": 3
+  },
+  "coolDown": [
+    { "name": "Forward Fold", "duration": 30 },
+    { "name": "Quad Stretch", "duration": 30 },
+    { "name": "Shoulder Stretch", "duration": 30 }
+  ]
+}

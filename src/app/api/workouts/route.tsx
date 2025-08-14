@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import workoutsData from '@/data/workouts.json';
-import { WorkoutDataMap, CircuitWorkout, AMRAPWorkout, TabataWorkout, EMOMWorkout } from '@/workouts/types';
-
-// Type assertion to treat the imported JSON as WorkoutDataMap type
-const workouts = workoutsData as unknown as WorkoutDataMap;
+import { getAllWorkouts } from '@/utils/workoutLoader';
+import { CircuitWorkout, AMRAPWorkout, TabataWorkout, EMOMWorkout } from '@/workouts/types';
 
 export async function GET() {
+  // Get all available workouts
+  const workouts = await getAllWorkouts();
+  
   // Get all available workout dates
   const dates = Object.keys(workouts);
   

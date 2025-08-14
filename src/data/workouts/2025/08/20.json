@@ -1,0 +1,21 @@
+{
+  "type": "amrap",
+  "warmUp": [
+    { "name": "High Knees", "duration": 30 },
+    { "name": "Butt Kicks", "duration": 30 }
+  ],
+  "workout": {
+    "duration": 660,
+    "exercises": [
+      { "name": "3 Burpee Box Jumps" },
+      { "name": "6 V-Ups" },
+      { "name": "9 Jump Lunges" },
+      { "name": "12 Hand-Release Push-ups" },
+      { "name": "15 Hollow Body Rocks" }
+    ]
+  },
+  "coolDown": [
+    { "name": "Cat-Cow Stretch", "duration": 30 },
+    { "name": "Pigeon Pose", "duration": 30 }
+  ]
+}

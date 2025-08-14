@@ -1,0 +1,22 @@
+{
+  "type": "tabata",
+  "warmUp": [
+    { "name": "Leg Swings", "duration": 30 },
+    { "name": "Hip Circles", "duration": 30 }
+  ],
+  "workout": {
+    "workDuration": 20,
+    "restDuration": 10,
+    "rounds": 8,
+    "exercises": [
+      { "name": "Squat Jumps" },
+      { "name": "Bicycle Crunches" },
+      { "name": "Lunges" },
+      { "name": "Russian Twists" }
+    ]
+  },
+  "coolDown": [
+    { "name": "Child's Pose", "duration": 30 },
+    { "name": "Hip Flexor Stretch", "duration": 30 }
+  ]
+}

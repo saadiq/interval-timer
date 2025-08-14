@@ -1,0 +1,19 @@
+{
+  "type": "emom",
+  "warmUp": [
+    { "name": "Dynamic Stretching", "duration": 60 }
+  ],
+  "workout": {
+    "rounds": 12,
+    "exercises": [
+      { "name": "8 Burpees" },
+      { "name": "12 Push-ups" },
+      { "name": "16 Squats" },
+      { "name": "20 Mountain Climbers" }
+    ]
+  },
+  "coolDown": [
+    { "name": "Standing Quad Stretch", "duration": 30 },
+    { "name": "Calf Stretch", "duration": 30 }
+  ]
+}
