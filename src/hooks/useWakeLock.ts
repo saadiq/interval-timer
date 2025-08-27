@@ -5,17 +5,17 @@ export function useWakeLock() {
   const [isSupported, setIsSupported] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsSupported('wakeLock' in navigator);
+    setIsSupported(typeof navigator !== 'undefined' && 'wakeLock' in navigator);
   }, []);
 
   const request = useCallback(async () => {
-    if (!isSupported) return;
+    if (!isSupported || !navigator.wakeLock) return;
 
     try {
-      const wl = await (navigator as unknown as { wakeLock: { request: (type: string) => Promise<WakeLockSentinel> } }).wakeLock.request('screen');
+      const wl = await navigator.wakeLock.request('screen');
       setWakeLock(wl);
     } catch (err) {
-      // Failed to request wake lock
+      console.warn('Failed to request wake lock:', err);
     }
   }, [isSupported]);
 

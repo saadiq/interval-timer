@@ -6,6 +6,8 @@ import "./globals.css";
 import "../styles/focus.css";
 import Navigation from "@/components/Navigation";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ServiceWorkerRegistration } from "./sw-register";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,6 +18,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.svg",
   },
+  manifest: "/manifest.json",
   openGraph: {
     title: "Interval Timer - Workout of the Day",
     description:
@@ -49,14 +52,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider>
-          <a href="#main-content" className="skip-to-content">
-            Skip to main content
-          </a>
-          <Navigation />
-          <main id="main-content" className="min-h-screen pt-4 bg-background text-foreground">{children}</main>
-          <Analytics />
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <a href="#main-content" className="skip-to-content">
+              Skip to main content
+            </a>
+            <Navigation />
+            <main id="main-content" className="min-h-screen pt-4 bg-background text-foreground">
+              {children}
+            </main>
+            <ServiceWorkerRegistration />
+            <Analytics />
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

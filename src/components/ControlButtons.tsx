@@ -1,10 +1,10 @@
 // src/components/ControlButtons.tsx
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, memo } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useScreenReader } from '@/hooks/useScreenReader';
 
-export const ControlButtons: React.FC = () => {
+export const ControlButtons: React.FC = memo(() => {
   const { 
     workout, 
     time, 
@@ -215,4 +215,6 @@ export const ControlButtons: React.FC = () => {
       </button>
     </div>
   );
-};
+});
+
+ControlButtons.displayName = 'ControlButtons';

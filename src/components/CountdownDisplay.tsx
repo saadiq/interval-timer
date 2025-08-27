@@ -1,10 +1,10 @@
 // src/components/CountdownDisplay.tsx
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { AMRAPWorkout, Workout, WorkoutSection } from '@/workouts';
 import { SectionWithColor } from '@/utils/colorUtils';
 
-export const CountdownDisplay: React.FC = () => {
+export const CountdownDisplay: React.FC = memo(() => {
   const { workout, time, isPreWorkout, preWorkoutCountdown, hasRounds, getCurrentRound, getTotalRounds } = useWorkoutContext();
 
   if (!workout) return null;
@@ -18,9 +18,9 @@ export const CountdownDisplay: React.FC = () => {
   const isLastSection = workout.sections[workout.sections.length - 1] === currentSection;
   const isWorkoutComplete = !isPreWorkout && isLastSection && timeRemaining <= 0;
 
-  const formatTime = (seconds: number): string => {
+  const formatTime = useMemo(() => (seconds: number): string => {
     return `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
-  };
+  }, []);
 
   const renderPreWorkoutDisplay = () => {
     if (preWorkoutCountdown === null) {
@@ -124,7 +124,7 @@ export const CountdownDisplay: React.FC = () => {
       )}
     </div>
   );
-};
+});
 
 function isSectionWithColor(section: WorkoutSection): section is SectionWithColor {
   return 'color' in section;
@@ -155,3 +155,5 @@ const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, curre
     .reduce((total, s) => total + (isSectionWithDuration(s) ? s.duration : 0), 0);
   return Math.max(0, section.duration - (currentTime - sectionStart));
 };
+
+CountdownDisplay.displayName = 'CountdownDisplay';
