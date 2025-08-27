@@ -1,34 +1,24 @@
 // src/app/api/og/route.tsx
-import { ImageResponse } from "@vercel/og";
-import { NextRequest } from "next/server";
-import { getAllWorkoutsEdge } from "@/utils/workoutLoaderEdge";
-import {
-  CircuitWorkout,
-  AMRAPWorkout,
-  TabataWorkout,
-  EMOMWorkout,
-} from "@/workouts/types";
-import { WorkoutFactory } from "@/workouts/WorkoutFactory";
-import { format } from "date-fns";
-import {
-  getLocalDate,
-  formatDateWithTimezone,
-  parseDate,
-} from "@/utils/timezone";
+import { ImageResponse } from '@vercel/og';
+import { NextRequest } from 'next/server';
+import { getAllWorkoutsEdge } from '@/utils/workoutLoaderEdge';
+import { CircuitWorkout, AMRAPWorkout, TabataWorkout, EMOMWorkout } from '@/workouts/types';
+import { WorkoutFactory } from '@/workouts/WorkoutFactory';
+import { format } from 'date-fns';
+import { getLocalDate, formatDateWithTimezone, parseDate } from '@/utils/timezone';
 
-export const runtime = "edge";
+export const runtime = 'edge';
 
 // Set cache revalidation time (in seconds)
 export const revalidate = 3600; // Cache for 1 hour
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const isDateExplicitlyProvided = searchParams.has("date");
-  const date = searchParams.get("date") || getLocalDate();
-  
+  const isDateExplicitlyProvided = searchParams.has('date');
+  const date = searchParams.get('date') || getLocalDate();
+
   // Load all workouts for fallback logic
   const typedWorkoutsData = await getAllWorkoutsEdge();
-
 
   // Get all available workout dates
   const workoutDates = Object.keys(typedWorkoutsData).sort(
@@ -53,26 +43,25 @@ export async function GET(req: NextRequest) {
   try {
     // If no workout is found for the requested date
     if (!workoutDate) {
-
       // Return a basic image with cache headers for not found
       const notFoundResponse = new ImageResponse(
         (
           <div
             style={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               fontSize: 60,
-              color: "black",
-              background: "white",
-              width: "100%",
-              height: "100%",
-              textAlign: "center",
-              justifyContent: "center",
-              alignItems: "center",
-              fontFamily: "Inter, sans-serif",
+              color: 'black',
+              background: 'white',
+              width: '100%',
+              height: '100%',
+              textAlign: 'center',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontFamily: 'Inter, sans-serif',
             }}
           >
-            <div style={{ display: "flex", marginBottom: "20px" }}>
+            <div style={{ display: 'flex', marginBottom: '20px' }}>
               <svg
                 width="80"
                 height="80"
@@ -88,15 +77,11 @@ export async function GET(req: NextRequest) {
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
             </div>
-            <div style={{ display: "flex", fontWeight: "bold" }}>
-              No Workout Found
-            </div>
-            <div
-              style={{ display: "flex", fontSize: "24px", marginTop: "10px" }}
-            >
+            <div style={{ display: 'flex', fontWeight: 'bold' }}>No Workout Found</div>
+            <div style={{ display: 'flex', fontSize: '24px', marginTop: '10px' }}>
               {isDateExplicitlyProvided
-                ? `No workout for ${format(parseDate(date), "MMMM d, yyyy")}`
-                : "Try another date"}
+                ? `No workout for ${format(parseDate(date), 'MMMM d, yyyy')}`
+                : 'Try another date'}
             </div>
           </div>
         ),
@@ -106,7 +91,7 @@ export async function GET(req: NextRequest) {
       // Add cache headers to the not found response
       const headers = new Headers(notFoundResponse.headers);
       headers.set(
-        "Cache-Control",
+        'Cache-Control',
         `public, max-age=${cacheMaxAge}, s-maxage=${cacheMaxAge}, stale-while-revalidate=60`
       );
 
@@ -122,32 +107,31 @@ export async function GET(req: NextRequest) {
 
     // Calculate total time
     const warmUpTime = workoutData.warmUp.reduce(
-      (total: number, exercise: { duration: number }) =>
-        total + exercise.duration,
+      (total: number, exercise: { duration: number }) => total + exercise.duration,
       0
     );
 
     let mainWorkoutTime = 0;
 
     switch (workoutData.type) {
-      case "circuit":
+      case 'circuit':
         mainWorkoutTime =
           (workoutData as CircuitWorkout).workout.exercises.reduce(
             (total, exercise) => total + (exercise.duration || 0),
             0
           ) * (workoutData as CircuitWorkout).workout.rounds;
         break;
-      case "amrap":
+      case 'amrap':
         mainWorkoutTime = (workoutData as AMRAPWorkout).workout.duration;
         break;
-      case "tabata":
+      case 'tabata':
         mainWorkoutTime =
           ((workoutData as TabataWorkout).workout.workDuration +
             (workoutData as TabataWorkout).workout.restDuration) *
           (workoutData as TabataWorkout).workout.rounds *
           (workoutData as TabataWorkout).workout.exercises.length;
         break;
-      case "emom":
+      case 'emom':
         mainWorkoutTime =
           (workoutData as EMOMWorkout).workout.rounds *
           (workoutData as EMOMWorkout).workout.exercises.length *
@@ -156,8 +140,7 @@ export async function GET(req: NextRequest) {
     }
 
     const coolDownTime = workoutData.coolDown.reduce(
-      (total: number, exercise: { duration: number }) =>
-        total + exercise.duration,
+      (total: number, exercise: { duration: number }) => total + exercise.duration,
       0
     );
 
@@ -167,9 +150,9 @@ export async function GET(req: NextRequest) {
     const formatTime = (seconds: number) => {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
-      return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      return `${minutes.toString().padStart(2, '0')}:${remainingSeconds
         .toString()
-        .padStart(2, "0")}`;
+        .padStart(2, '0')}`;
     };
 
     // Format the date for display in OG image
@@ -177,40 +160,40 @@ export async function GET(req: NextRequest) {
     let formattedDate;
     if (isDateExplicitlyProvided) {
       // For explicitly provided dates, use simple formatting without timezone
-      formattedDate = format(parseDate(workoutDate), "MMMM d, yyyy");
+      formattedDate = format(parseDate(workoutDate), 'MMMM d, yyyy');
     } else {
       // For derived dates (current date), show the timezone
-      formattedDate = formatDateWithTimezone(workoutDate, "MMMM d, yyyy", true);
+      formattedDate = formatDateWithTimezone(workoutDate, 'MMMM d, yyyy', true);
     }
 
     // Get workout type color
     const getWorkoutTypeColor = (type: string) => {
       switch (type) {
-        case "circuit":
-          return "rgb(59, 130, 246)"; // Blue
-        case "amrap":
-          return "rgb(16, 185, 129)"; // Green
-        case "tabata":
-          return "rgb(239, 68, 68)"; // Red
-        case "emom":
-          return "rgb(139, 92, 246)"; // Purple
+        case 'circuit':
+          return 'rgb(59, 130, 246)'; // Blue
+        case 'amrap':
+          return 'rgb(16, 185, 129)'; // Green
+        case 'tabata':
+          return 'rgb(239, 68, 68)'; // Red
+        case 'emom':
+          return 'rgb(139, 92, 246)'; // Purple
         default:
-          return "rgb(107, 114, 128)"; // Gray
+          return 'rgb(107, 114, 128)'; // Gray
       }
     };
 
     // Get exercise count
     const getExerciseCount = () => {
       switch (workoutData.type) {
-        case "circuit":
+        case 'circuit':
           return (workoutData as CircuitWorkout).workout.exercises.filter(
-            (ex) => ex.name !== "Rest"
+            (ex) => ex.name !== 'Rest'
           ).length;
-        case "amrap":
+        case 'amrap':
           return (workoutData as AMRAPWorkout).workout.exercises.length;
-        case "tabata":
+        case 'tabata':
           return (workoutData as TabataWorkout).workout.exercises.length;
-        case "emom":
+        case 'emom':
           return (workoutData as EMOMWorkout).workout.exercises.length;
         default:
           return 0;
@@ -220,24 +203,22 @@ export async function GET(req: NextRequest) {
     // Get rounds info
     const getRoundsInfo = () => {
       switch (workoutData.type) {
-        case "circuit":
+        case 'circuit':
           return (workoutData as CircuitWorkout).workout.rounds > 1
             ? `${(workoutData as CircuitWorkout).workout.rounds} Rounds`
-            : "1 Round";
-        case "tabata":
+            : '1 Round';
+        case 'tabata':
           return (workoutData as TabataWorkout).workout.rounds > 1
             ? `${(workoutData as TabataWorkout).workout.rounds} Rounds`
-            : "1 Round";
-        case "emom":
+            : '1 Round';
+        case 'emom':
           return (workoutData as EMOMWorkout).workout.rounds > 1
             ? `${(workoutData as EMOMWorkout).workout.rounds} Minutes`
-            : "1 Minute";
-        case "amrap":
-          return `${formatTime(
-            (workoutData as AMRAPWorkout).workout.duration
-          )}`;
+            : '1 Minute';
+        case 'amrap':
+          return `${formatTime((workoutData as AMRAPWorkout).workout.duration)}`;
         default:
-          return "";
+          return '';
       }
     };
 
@@ -246,45 +227,37 @@ export async function GET(req: NextRequest) {
       let exercises = [];
 
       switch (workoutData.type) {
-        case "circuit":
+        case 'circuit':
           exercises = (workoutData as CircuitWorkout).workout.exercises
-            .filter((ex) => ex.name !== "Rest")
+            .filter((ex) => ex.name !== 'Rest')
             .map((ex, i) => ({
               name: ex.name,
               detail: `${ex.duration}s`,
               index: i + 1,
             }));
           break;
-        case "amrap":
-          exercises = (workoutData as AMRAPWorkout).workout.exercises.map(
-            (ex, i) => ({
-              name: ex.name,
-              detail: `${ex.reps} reps`,
-              index: i + 1,
-            })
-          );
+        case 'amrap':
+          exercises = (workoutData as AMRAPWorkout).workout.exercises.map((ex, i) => ({
+            name: ex.name,
+            detail: `${ex.reps} reps`,
+            index: i + 1,
+          }));
           break;
-        case "tabata":
-          exercises = (workoutData as TabataWorkout).workout.exercises.map(
-            (ex, i) => ({
-              name: ex.name,
-              detail: `${
-                (workoutData as TabataWorkout).workout.workDuration
-              }s work / ${
-                (workoutData as TabataWorkout).workout.restDuration
-              }s rest`,
-              index: i + 1,
-            })
-          );
+        case 'tabata':
+          exercises = (workoutData as TabataWorkout).workout.exercises.map((ex, i) => ({
+            name: ex.name,
+            detail: `${(workoutData as TabataWorkout).workout.workDuration}s work / ${
+              (workoutData as TabataWorkout).workout.restDuration
+            }s rest`,
+            index: i + 1,
+          }));
           break;
-        case "emom":
-          exercises = (workoutData as EMOMWorkout).workout.exercises.map(
-            (ex, i) => ({
-              name: ex.name,
-              detail: "Every minute",
-              index: i + 1,
-            })
-          );
+        case 'emom':
+          exercises = (workoutData as EMOMWorkout).workout.exercises.map((ex, i) => ({
+            name: ex.name,
+            detail: 'Every minute',
+            index: i + 1,
+          }));
           break;
       }
 
@@ -299,22 +272,22 @@ export async function GET(req: NextRequest) {
       (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            width: "100%",
-            height: "100%",
-            backgroundColor: "white",
-            padding: "30px",
-            fontFamily: "Inter, sans-serif",
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'white',
+            padding: '30px',
+            fontFamily: 'Inter, sans-serif',
           }}
         >
           {/* App title */}
           <div
             style={{
-              display: "flex",
-              fontSize: "20px",
-              color: "rgb(107, 114, 128)",
-              marginBottom: "10px",
+              display: 'flex',
+              fontSize: '20px',
+              color: 'rgb(107, 114, 128)',
+              marginBottom: '10px',
             }}
           >
             Interval Timer
@@ -323,11 +296,11 @@ export async function GET(req: NextRequest) {
           {/* Workout title */}
           <div
             style={{
-              display: "flex",
-              fontSize: "42px",
-              fontWeight: "bold",
-              color: "rgb(17, 24, 39)",
-              marginBottom: "10px",
+              display: 'flex',
+              fontSize: '42px',
+              fontWeight: 'bold',
+              color: 'rgb(17, 24, 39)',
+              marginBottom: '10px',
             }}
           >
             Workout for {formattedDate}
@@ -336,42 +309,42 @@ export async function GET(req: NextRequest) {
           {/* Workout type */}
           <div
             style={{
-              display: "flex",
-              fontSize: "28px",
-              fontWeight: "bold",
+              display: 'flex',
+              fontSize: '28px',
+              fontWeight: 'bold',
               color: getWorkoutTypeColor(workoutData.type),
-              marginBottom: "15px",
+              marginBottom: '15px',
             }}
           >
             {workoutData.type.toUpperCase()} • {getRoundsInfo()}
           </div>
 
           {/* Stats row */}
-          <div style={{ display: "flex", marginBottom: "20px" }}>
+          <div style={{ display: 'flex', marginBottom: '20px' }}>
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor: "rgb(249, 250, 251)",
-                padding: "10px 20px",
-                borderRadius: "8px",
-                marginRight: "15px",
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: 'rgb(249, 250, 251)',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                marginRight: '15px',
               }}
             >
               <div
                 style={{
-                  display: "flex",
-                  fontSize: "12px",
-                  color: "rgb(107, 114, 128)",
+                  display: 'flex',
+                  fontSize: '12px',
+                  color: 'rgb(107, 114, 128)',
                 }}
               >
                 TOTAL TIME
               </div>
               <div
                 style={{
-                  display: "flex",
-                  fontSize: "20px",
-                  fontWeight: "bold",
+                  display: 'flex',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
                 }}
               >
                 {formatTime(totalTime)}
@@ -380,27 +353,27 @@ export async function GET(req: NextRequest) {
 
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                backgroundColor: "rgb(249, 250, 251)",
-                padding: "10px 20px",
-                borderRadius: "8px",
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: 'rgb(249, 250, 251)',
+                padding: '10px 20px',
+                borderRadius: '8px',
               }}
             >
               <div
                 style={{
-                  display: "flex",
-                  fontSize: "12px",
-                  color: "rgb(107, 114, 128)",
+                  display: 'flex',
+                  fontSize: '12px',
+                  color: 'rgb(107, 114, 128)',
                 }}
               >
                 EXERCISES
               </div>
               <div
                 style={{
-                  display: "flex",
-                  fontSize: "20px",
-                  fontWeight: "bold",
+                  display: 'flex',
+                  fontSize: '20px',
+                  fontWeight: 'bold',
                 }}
               >
                 {getExerciseCount()}
@@ -409,14 +382,14 @@ export async function GET(req: NextRequest) {
           </div>
 
           {/* Exercise list */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div
               style={{
-                display: "flex",
-                fontSize: "18px",
-                fontWeight: "bold",
-                marginBottom: "10px",
-                color: "rgb(17, 24, 39)",
+                display: 'flex',
+                fontSize: '18px',
+                fontWeight: 'bold',
+                marginBottom: '10px',
+                color: 'rgb(17, 24, 39)',
               }}
             >
               Exercises
@@ -424,10 +397,10 @@ export async function GET(req: NextRequest) {
 
             <div
               style={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                gap: "16px",
+                display: 'flex',
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                gap: '16px',
               }}
             >
               {/* Exercise cards - 2 columns of 3 exercises each */}
@@ -435,47 +408,47 @@ export async function GET(req: NextRequest) {
                 <div
                   key={index}
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    width: "48%",
-                    backgroundColor: "rgb(249, 250, 251)",
-                    padding: "16px",
-                    borderRadius: "8px",
-                    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '48%',
+                    backgroundColor: 'rgb(249, 250, 251)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
                   }}
                 >
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "32px",
-                      height: "32px",
-                      borderRadius: "50%",
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '50%',
                       backgroundColor: getWorkoutTypeColor(workoutData.type),
-                      color: "white",
-                      marginRight: "12px",
-                      fontSize: "16px",
-                      fontWeight: "bold",
+                      color: 'white',
+                      marginRight: '12px',
+                      fontSize: '16px',
+                      fontWeight: 'bold',
                     }}
                   >
                     {exercise.index}
                   </div>
-                  <div style={{ display: "flex", flexDirection: "column" }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <div
                       style={{
-                        display: "flex",
-                        fontWeight: "600",
-                        fontSize: "18px",
+                        display: 'flex',
+                        fontWeight: '600',
+                        fontSize: '18px',
                       }}
                     >
                       {exercise.name}
                     </div>
                     <div
                       style={{
-                        display: "flex",
-                        fontSize: "14px",
-                        color: "rgb(107, 114, 128)",
+                        display: 'flex',
+                        fontSize: '14px',
+                        color: 'rgb(107, 114, 128)',
                       }}
                     >
                       {exercise.detail}
@@ -489,10 +462,10 @@ export async function GET(req: NextRequest) {
             {exercises.length > maxExercisesToShow && (
               <div
                 style={{
-                  display: "flex",
-                  fontSize: "14px",
-                  color: "rgb(107, 114, 128)",
-                  marginTop: "12px",
+                  display: 'flex',
+                  fontSize: '14px',
+                  color: 'rgb(107, 114, 128)',
+                  marginTop: '12px',
                 }}
               >
                 +{exercises.length - maxExercisesToShow} more exercises
@@ -503,10 +476,10 @@ export async function GET(req: NextRequest) {
           {/* Footer */}
           <div
             style={{
-              display: "flex",
-              fontSize: "12px",
-              color: "rgb(107, 114, 128)",
-              marginTop: "auto",
+              display: 'flex',
+              fontSize: '12px',
+              color: 'rgb(107, 114, 128)',
+              marginTop: 'auto',
             }}
           >
             Interval Timer • Get moving
@@ -519,7 +492,7 @@ export async function GET(req: NextRequest) {
     // Add cache headers to the response
     const headers = new Headers(imageResponse.headers);
     headers.set(
-      "Cache-Control",
+      'Cache-Control',
       `public, max-age=${cacheMaxAge}, s-maxage=${cacheMaxAge}, stale-while-revalidate=60`
     );
 
@@ -527,7 +500,7 @@ export async function GET(req: NextRequest) {
       status: imageResponse.status,
       headers,
     });
-  } catch (error) {
+  } catch {
     // Error generating OG image
 
     // Return a fallback image with cache headers
@@ -535,32 +508,30 @@ export async function GET(req: NextRequest) {
       (
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
+            display: 'flex',
+            flexDirection: 'column',
             fontSize: 60,
-            color: "black",
-            background: "white",
-            width: "100%",
-            height: "100%",
-            textAlign: "center",
-            justifyContent: "center",
-            alignItems: "center",
-            fontFamily: "Inter, sans-serif",
+            color: 'black',
+            background: 'white',
+            width: '100%',
+            height: '100%',
+            textAlign: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+            fontFamily: 'Inter, sans-serif',
           }}
         >
           <div
             style={{
-              display: "flex",
-              fontSize: "24px",
-              color: "rgb(107, 114, 128)",
-              marginBottom: "10px",
+              display: 'flex',
+              fontSize: '24px',
+              color: 'rgb(107, 114, 128)',
+              marginBottom: '10px',
             }}
           >
             Interval Timer
           </div>
-          <div style={{ display: "flex", fontWeight: "bold" }}>
-            Workout of the Day
-          </div>
+          <div style={{ display: 'flex', fontWeight: 'bold' }}>Workout of the Day</div>
         </div>
       ),
       { width: 1200, height: 630 }
@@ -568,10 +539,7 @@ export async function GET(req: NextRequest) {
 
     // Add cache headers to the fallback response
     const headers = new Headers(fallbackResponse.headers);
-    headers.set(
-      "Cache-Control",
-      "public, max-age=300, s-maxage=300, stale-while-revalidate=60"
-    ); // Shorter cache for errors
+    headers.set('Cache-Control', 'public, max-age=300, s-maxage=300, stale-while-revalidate=60'); // Shorter cache for errors
 
     return new Response(fallbackResponse.body, {
       status: fallbackResponse.status,

@@ -1,19 +1,16 @@
 // src/app/WorkoutPageWithDate.tsx
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { WorkoutTimer } from "./WorkoutTimer";
-import { WorkoutData } from "../workouts/types";
-import { WorkoutFactory } from "../workouts/WorkoutFactory";
-import { Workout } from "@/workouts";
-import {
-  formatDateWithTimezone,
-  parseDate,
-} from "@/utils/timezone";
-import { format } from "date-fns";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
+import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { WorkoutTimer } from './WorkoutTimer';
+import { WorkoutData } from '../workouts/types';
+import { WorkoutFactory } from '../workouts/WorkoutFactory';
+import { Workout } from '@/workouts';
+import { formatDateWithTimezone, parseDate } from '@/utils/timezone';
+import { format } from 'date-fns';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorDisplay } from '@/components/ErrorDisplay';
 
 // Extended interface for the API response
 interface WorkoutResponse {
@@ -39,7 +36,7 @@ async function fetchWorkoutData(
     if (response.status === 404) {
       return { workout: null };
     }
-    throw new Error("Failed to fetch workout data");
+    throw new Error('Failed to fetch workout data');
   }
 
   const data = (await response.json()) as WorkoutResponse;
@@ -53,7 +50,7 @@ async function fetchWorkoutData(
     type: data.type,
     warmUp: data.warmUp,
     workout: data.workout,
-    coolDown: data.coolDown
+    coolDown: data.coolDown,
   } as WorkoutData;
 
   return {
@@ -68,7 +65,7 @@ const formatDate = (dateString: string, isExplicitDate: boolean = false) => {
   if (isExplicitDate) {
     // For explicitly provided dates, use simple formatting without timezone
     // Use parseDate to ensure consistent date handling
-    return format(parseDate(dateString), "MMMM d, yyyy");
+    return format(parseDate(dateString), 'MMMM d, yyyy');
   } else {
     // For derived dates (current date), show with timezone context
     return formatDateWithTimezone(dateString);
@@ -80,7 +77,10 @@ interface WorkoutPageWithDateProps {
   isExplicitDate?: boolean;
 }
 
-export default function WorkoutPageWithDate({ date, isExplicitDate = true }: WorkoutPageWithDateProps) {
+export default function WorkoutPageWithDate({
+  date,
+  isExplicitDate = true,
+}: WorkoutPageWithDateProps) {
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,12 +92,9 @@ export default function WorkoutPageWithDate({ date, isExplicitDate = true }: Wor
     setNotFound(false);
     setDateNote(null);
     setError(null);
-    
+
     try {
-      const {
-        workout: fetchedWorkout,
-        note,
-      } = await fetchWorkoutData(date);
+      const { workout: fetchedWorkout, note } = await fetchWorkoutData(date);
 
       if (fetchedWorkout === null) {
         setNotFound(true);
@@ -109,8 +106,8 @@ export default function WorkoutPageWithDate({ date, isExplicitDate = true }: Wor
           setDateNote(note);
         }
       }
-    } catch (err) {
-      setError("Failed to load workout. Please try again later.");
+    } catch {
+      setError('Failed to load workout. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -131,10 +128,7 @@ export default function WorkoutPageWithDate({ date, isExplicitDate = true }: Wor
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen p-4 bg-background">
-        <ErrorDisplay 
-          message={error}
-          onRetry={loadWorkout}
-        />
+        <ErrorDisplay message={error} onRetry={loadWorkout} />
       </div>
     );
   }
@@ -146,7 +140,7 @@ export default function WorkoutPageWithDate({ date, isExplicitDate = true }: Wor
           <div className="text-6xl mb-4">🏃‍♂️</div>
           <h1 className="text-3xl font-bold text-foreground">No Workout Found</h1>
           <p className="text-lg text-muted-foreground">
-            There is no workout available for{" "}
+            There is no workout available for{' '}
             <span className="font-semibold text-foreground">
               {formatDate(date, isExplicitDate)}
             </span>

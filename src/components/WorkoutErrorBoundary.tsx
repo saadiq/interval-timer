@@ -20,7 +20,7 @@ const WorkoutErrorFallback: React.FC = () => {
           Workout Loading Error
         </h2>
         <p className="text-center text-muted-foreground mb-6">
-          We couldn't load this workout. The workout data might be corrupted or unavailable.
+          We couldn&apos;t load this workout. The workout data might be corrupted or unavailable.
         </p>
         <div className="space-y-3">
           <Link
@@ -28,7 +28,7 @@ const WorkoutErrorFallback: React.FC = () => {
             className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
           >
             <Home className="h-4 w-4" />
-            Go to Today's Workout
+            Go to Today&apos;s Workout
           </Link>
           <Link
             href="/workouts"
@@ -43,9 +43,5 @@ const WorkoutErrorFallback: React.FC = () => {
 };
 
 export const WorkoutErrorBoundary: React.FC<Props> = ({ children }) => {
-  return (
-    <ErrorBoundary fallback={<WorkoutErrorFallback />}>
-      {children}
-    </ErrorBoundary>
-  );
+  return <ErrorBoundary fallback={<WorkoutErrorFallback />}>{children}</ErrorBoundary>;
 };

@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import { parseDate } from "@/utils/timezone";
-import { format } from "date-fns";
-import { WorkoutListSkeleton } from "@/components/LoadingSpinner";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
-import { generateWorkoutUrl } from "@/utils/dateUrls";
+import React, { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { parseDate } from '@/utils/timezone';
+import { format } from 'date-fns';
+import { WorkoutListSkeleton } from '@/components/LoadingSpinner';
+import { ErrorDisplay } from '@/components/ErrorDisplay';
+import { generateWorkoutUrl } from '@/utils/dateUrls';
 
 interface WorkoutDetails {
   type: string;
@@ -23,9 +23,7 @@ interface WorkoutListResponse {
 
 export default function WorkoutListPage() {
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
-  const [workoutDetails, setWorkoutDetails] = useState<
-    Record<string, WorkoutDetails>
-  >({});
+  const [workoutDetails, setWorkoutDetails] = useState<Record<string, WorkoutDetails>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,15 +31,15 @@ export default function WorkoutListPage() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/workouts");
+      const response = await fetch('/api/workouts');
       if (!response.ok) {
-        throw new Error("Failed to fetch workout dates");
+        throw new Error('Failed to fetch workout dates');
       }
       const data = (await response.json()) as WorkoutListResponse;
       setWorkoutDates(data.dates);
       setWorkoutDetails(data.workoutDetails);
-    } catch (err) {
-      setError("Failed to load workout dates. Please try again later.");
+    } catch {
+      setError('Failed to load workout dates. Please try again later.');
       // Error fetching workout dates
     } finally {
       setIsLoading(false);
@@ -55,7 +53,7 @@ export default function WorkoutListPage() {
   // Group workouts by month
   const workoutsByMonth: Record<string, string[]> = {};
   workoutDates.forEach((date) => {
-    const [year, month] = date.split("-");
+    const [year, month] = date.split('-');
     const monthKey = `${year}-${month}`;
     if (!workoutsByMonth[monthKey]) {
       workoutsByMonth[monthKey] = [];
@@ -66,37 +64,37 @@ export default function WorkoutListPage() {
   // Format date for display - in the workout list, all dates are explicit
   const formatDate = (dateString: string) => {
     // Use parseDate to ensure consistent date handling
-    return format(parseDate(dateString), "MMMM d, yyyy");
+    return format(parseDate(dateString), 'MMMM d, yyyy');
   };
 
   // Format month for display
   const formatMonth = (monthKey: string) => {
-    const [year, month] = monthKey.split("-");
+    const [year, month] = monthKey.split('-');
     // Use UTC date to avoid timezone issues
     const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
-    return format(date, "MMMM yyyy");
+    return format(date, 'MMMM yyyy');
   };
 
   // Format duration in minutes and seconds
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}m${remainingSeconds > 0 ? ` ${remainingSeconds}s` : ""}`;
+    return `${minutes}m${remainingSeconds > 0 ? ` ${remainingSeconds}s` : ''}`;
   };
 
   // Get workout type badge color
   const getWorkoutTypeColor = (type: string) => {
     switch (type) {
-      case "CIRCUIT":
-        return "bg-indigo-500/20 text-indigo-600 border-indigo-500/30 dark:text-indigo-400";
-      case "AMRAP":
-        return "bg-teal-400/20 text-teal-600 border-teal-400/30 dark:text-teal-400";
-      case "TABATA":
-        return "bg-amber-500/20 text-amber-600 border-amber-500/30 dark:text-amber-400";
-      case "EMOM":
-        return "bg-violet-400/20 text-violet-600 border-violet-400/30 dark:text-violet-400";
+      case 'CIRCUIT':
+        return 'bg-indigo-500/20 text-indigo-600 border-indigo-500/30 dark:text-indigo-400';
+      case 'AMRAP':
+        return 'bg-teal-400/20 text-teal-600 border-teal-400/30 dark:text-teal-400';
+      case 'TABATA':
+        return 'bg-amber-500/20 text-amber-600 border-amber-500/30 dark:text-amber-400';
+      case 'EMOM':
+        return 'bg-violet-400/20 text-violet-600 border-violet-400/30 dark:text-violet-400';
       default:
-        return "bg-muted text-muted-foreground border-border";
+        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -107,10 +105,7 @@ export default function WorkoutListPage() {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen p-4">
-        <ErrorDisplay 
-          message={error}
-          onRetry={fetchWorkoutDates}
-        />
+        <ErrorDisplay message={error} onRetry={fetchWorkoutDates} />
       </div>
     );
   }
@@ -119,9 +114,7 @@ export default function WorkoutListPage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen p-4">
         <h1 className="text-2xl font-bold mb-4">No Workouts Available</h1>
-        <p className="text-lg mb-4">
-          There are currently no workouts available in the system.
-        </p>
+        <p className="text-lg mb-4">There are currently no workouts available in the system.</p>
       </div>
     );
   }
@@ -129,11 +122,10 @@ export default function WorkoutListPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-3 text-foreground">
-          Available Workouts
-        </h1>
+        <h1 className="text-4xl font-bold mb-3 text-foreground">Available Workouts</h1>
         <p className="text-lg text-muted-foreground">
-          Browse and select from {workoutDates.length} available workout{workoutDates.length !== 1 ? 's' : ''}
+          Browse and select from {workoutDates.length} available workout
+          {workoutDates.length !== 1 ? 's' : ''}
         </p>
       </div>
 
@@ -144,15 +136,14 @@ export default function WorkoutListPage() {
           .map((monthKey) => (
             <div key={monthKey} className="space-y-6">
               <div className="flex items-center space-x-4">
-                <h2 className="text-2xl font-bold text-foreground">
-                  {formatMonth(monthKey)}
-                </h2>
+                <h2 className="text-2xl font-bold text-foreground">{formatMonth(monthKey)}</h2>
                 <div className="flex-1 h-px bg-border"></div>
                 <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                  {workoutsByMonth[monthKey].length} workout{workoutsByMonth[monthKey].length !== 1 ? 's' : ''}
+                  {workoutsByMonth[monthKey].length} workout
+                  {workoutsByMonth[monthKey].length !== 1 ? 's' : ''}
                 </span>
               </div>
-              
+
               <div className="grid grid-cols-1 gap-6">
                 {workoutsByMonth[monthKey].map((date) => {
                   const details = workoutDetails[date];
@@ -170,10 +161,11 @@ export default function WorkoutListPage() {
                               {formatDate(date)}
                             </h3>
                             <p className="text-sm text-muted-foreground mt-1">
-                              {details.exerciseCount} exercises • {formatDuration(details.totalDuration)}
+                              {details.exerciseCount} exercises •{' '}
+                              {formatDuration(details.totalDuration)}
                             </p>
                           </div>
-                          
+
                           <div className="flex flex-wrap gap-2">
                             <span
                               className={`text-xs font-semibold px-3 py-1.5 rounded-lg border ${getWorkoutTypeColor(
@@ -192,16 +184,16 @@ export default function WorkoutListPage() {
                               Featured exercises:
                             </div>
                             <div className="text-sm text-card-foreground font-medium">
-                              {details.primaryExercises.slice(0, 3).join(", ")}
+                              {details.primaryExercises.slice(0, 3).join(', ')}
                               {details.primaryExercises.length > 3 && (
                                 <span className="text-muted-foreground">
-                                  {" "}and {details.primaryExercises.length - 3} more
+                                  {' '}
+                                  and {details.primaryExercises.length - 3} more
                                 </span>
                               )}
                             </div>
                           </div>
                         </div>
-
                       </div>
                     </Link>
                   );

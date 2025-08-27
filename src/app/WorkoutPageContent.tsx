@@ -1,21 +1,17 @@
 // src/app/WorkoutPageContent.tsx
-"use client";
+'use client';
 
-import React, { useState, useEffect, useCallback, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { WorkoutTimer } from "./WorkoutTimer";
-import { WorkoutData } from "../workouts/types";
-import { WorkoutFactory } from "../workouts/WorkoutFactory";
-import { Workout } from "@/workouts";
-import {
-  getLocalDate,
-  formatDateWithTimezone,
-  parseDate,
-} from "@/utils/timezone";
-import { format } from "date-fns";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { ErrorDisplay } from "@/components/ErrorDisplay";
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { WorkoutTimer } from './WorkoutTimer';
+import { WorkoutData } from '../workouts/types';
+import { WorkoutFactory } from '../workouts/WorkoutFactory';
+import { Workout } from '@/workouts';
+import { getLocalDate, formatDateWithTimezone, parseDate } from '@/utils/timezone';
+import { format } from 'date-fns';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { ErrorDisplay } from '@/components/ErrorDisplay';
 
 // Extended interface for the API response
 interface WorkoutResponse {
@@ -41,7 +37,7 @@ async function fetchWorkoutData(
     if (response.status === 404) {
       return { workout: null };
     }
-    throw new Error("Failed to fetch workout data");
+    throw new Error('Failed to fetch workout data');
   }
 
   const data = (await response.json()) as WorkoutResponse;
@@ -55,7 +51,7 @@ async function fetchWorkoutData(
     type: data.type,
     warmUp: data.warmUp,
     workout: data.workout,
-    coolDown: data.coolDown
+    coolDown: data.coolDown,
   } as WorkoutData;
 
   return {
@@ -70,7 +66,7 @@ const formatDate = (dateString: string, isExplicitDate: boolean = false) => {
   if (isExplicitDate) {
     // For explicitly provided dates, use simple formatting without timezone
     // Use parseDate to ensure consistent date handling
-    return format(parseDate(dateString), "MMMM d, yyyy");
+    return format(parseDate(dateString), 'MMMM d, yyyy');
   } else {
     // For derived dates (current date), show with timezone context
     return formatDateWithTimezone(dateString);
@@ -85,7 +81,7 @@ const WorkoutPageContentInner: React.FC = () => {
   const [notFound, setNotFound] = useState(false);
   const [isExplicitDate, setIsExplicitDate] = useState(false);
   const [dateNote, setDateNote] = useState<string | null>(null);
-  const [requestedDate, setRequestedDate] = useState<string>("");
+  const [requestedDate, setRequestedDate] = useState<string>('');
 
   const loadWorkout = useCallback(async () => {
     setIsLoading(true);
@@ -93,7 +89,7 @@ const WorkoutPageContentInner: React.FC = () => {
     setDateNote(null);
     setError(null);
     try {
-      const dateParam = searchParams.get("date");
+      const dateParam = searchParams.get('date');
       const isDateExplicit = !!dateParam;
       setIsExplicitDate(isDateExplicit);
 
@@ -101,10 +97,7 @@ const WorkoutPageContentInner: React.FC = () => {
       const date = dateParam || getLocalDate();
       setRequestedDate(date);
 
-      const {
-        workout: fetchedWorkout,
-        note,
-      } = await fetchWorkoutData(date);
+      const { workout: fetchedWorkout, note } = await fetchWorkoutData(date);
 
       if (fetchedWorkout === null) {
         setNotFound(true);
@@ -116,8 +109,8 @@ const WorkoutPageContentInner: React.FC = () => {
           setDateNote(note);
         }
       }
-    } catch (err) {
-      setError("Failed to load workout. Please try again later.");
+    } catch {
+      setError('Failed to load workout. Please try again later.');
       // Error loading workout
     } finally {
       setIsLoading(false);
@@ -139,10 +132,7 @@ const WorkoutPageContentInner: React.FC = () => {
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-screen p-4 bg-background">
-        <ErrorDisplay 
-          message={error}
-          onRetry={loadWorkout}
-        />
+        <ErrorDisplay message={error} onRetry={loadWorkout} />
       </div>
     );
   }
@@ -154,7 +144,7 @@ const WorkoutPageContentInner: React.FC = () => {
           <div className="text-6xl mb-4">🏃‍♂️</div>
           <h1 className="text-3xl font-bold text-foreground">No Workout Found</h1>
           <p className="text-lg text-muted-foreground">
-            There is no workout available for{" "}
+            There is no workout available for{' '}
             <span className="font-semibold text-foreground">
               {formatDate(requestedDate, isExplicitDate)}
             </span>

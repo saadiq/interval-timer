@@ -10,7 +10,7 @@
     "lint": "next lint",
     "lint:strict": "next lint --max-warnings=0",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "lint:dev": "eslint . --ext .js,.jsx,.ts,.tsx --config .eslintrc.dev.json",
+    "lint:dev": "eslint . --config eslint.config.dev.mjs",
     "typecheck": "tsc --noEmit",
     "prebuild": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0 && tsc --noEmit",
     "test": "vitest",
@@ -20,7 +20,7 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix --config .eslintrc.dev.json",
+      "eslint --fix --config eslint.config.dev.mjs",
       "prettier --write"
     ],
     "*.{json,md,css}": [
