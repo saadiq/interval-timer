@@ -33,10 +33,15 @@ export function assignColorsToWorkout(workoutData: WorkoutData): SectionWithColo
       ])
     ).flat();
   } else if (workoutData.type === 'emom') {
-    // EMOM uses different colors for each minute
-    mainWorkoutColors = Array.from({ length: workoutData.workout.rounds }, (_, index) => 
-      getWorkoutColor('emom', index)
-    );
+    // EMOM uses different colors for each minute, with rest period visualization
+    mainWorkoutColors = Array.from({ length: workoutData.workout.rounds * 2 }, (_, index) => {
+      // Alternate between workout and implicit rest within each minute
+      if (index % 2 === 0) {
+        return getWorkoutColor('emom', Math.floor(index / 2));
+      } else {
+        return getRestColor(); // Visual representation of rest within the minute
+      }
+    });
   } else {
     mainWorkoutColors = [];
   }
@@ -70,15 +75,22 @@ function getMainWorkoutSections(workoutData: WorkoutData): WorkoutSection[] {
         ])
       ).flat();
     case 'emom': {
-      // Create one section per minute, each containing all exercises
+      // Create two sections per minute: work and rest
       const exerciseList = workoutData.workout.exercises.map(ex => 
         ex.name.replace(/^\d+\s+/, '') // Remove leading numbers from exercise names
       ).join(', ');
-      return Array.from({ length: workoutData.workout.rounds }, (_, index) => ({
-        name: `Minute ${index + 1}`,
-        duration: 60,
-        description: exerciseList
-      }));
+      return Array.from({ length: workoutData.workout.rounds }, (_, index) => [
+        {
+          name: `Minute ${index + 1}`,
+          duration: 40, // Assume 40 seconds of work
+          description: exerciseList
+        },
+        {
+          name: 'Rest',
+          duration: 20, // And 20 seconds of rest
+          description: 'Rest until next minute'
+        }
+      ]).flat();
     }
     default:
       return [];

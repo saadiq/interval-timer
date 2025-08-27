@@ -143,7 +143,7 @@ export const WorkoutSummary: React.FC = () => {
 
     // Get the AMRAP section color from the workout sections
     const amrapSectionIndex = amrapWorkout.data.warmUp.length;
-    const amrapColor = amrapWorkout.sections[amrapSectionIndex]?.color || 'bg-green-500';
+    const amrapColor = amrapWorkout.sections[amrapSectionIndex]?.color || 'bg-teal-400';
 
     return (
       <div className="workout-section mt-4">
@@ -177,7 +177,7 @@ export const WorkoutSummary: React.FC = () => {
     
     // Get the EMOM section color from the first minute section
     const emomSectionIndex = emomWorkout.data.warmUp.length;
-    const emomColor = emomWorkout.sections[emomSectionIndex]?.color || 'bg-purple-500';
+    const emomColor = emomWorkout.sections[emomSectionIndex]?.color || 'bg-violet-400';
 
     return (
       <div className="workout-section mt-4">

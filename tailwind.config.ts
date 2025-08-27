@@ -96,21 +96,26 @@ const config: Config = {
   plugins: [],
   safelist: [
     // Warm-up and cool-down colors
-    'bg-amber-400',
-    // Rest period color
-    'bg-slate-400',
-    // Circuit workout colors - multiple shades
-    'bg-blue-500', 'bg-blue-400', 'bg-blue-600', 'bg-blue-300', 'bg-blue-700',
-    // AMRAP workout colors - multiple shades
-    'bg-green-500', 'bg-green-400', 'bg-green-600', 'bg-green-300', 'bg-green-700',
-    // Tabata workout colors - multiple shades
-    'bg-red-500', 'bg-red-400', 'bg-red-600', 'bg-red-300', 'bg-red-700',
-    // EMOM workout colors - multiple shades
-    'bg-purple-500', 'bg-purple-400', 'bg-purple-600', 'bg-purple-300', 'bg-purple-700',
-    // Legacy colors for backward compatibility
-    'bg-pink-300',
+    'bg-amber-300', 'bg-amber-400', 'bg-amber-500',
+    // Rest period colors
+    'bg-gray-300', 'bg-slate-300', 'bg-slate-400',
+    // Circuit workout colors - indigo/blue palette
+    'bg-indigo-400', 'bg-indigo-500', 'bg-indigo-600', 'bg-blue-400', 'bg-blue-500',
+    // AMRAP workout colors - teal/cyan palette
+    'bg-teal-400', 'bg-teal-500', 'bg-cyan-400',
+    // Tabata workout colors - amber/orange palette
+    'bg-amber-400', 'bg-amber-500', 'bg-orange-400',
+    // EMOM workout colors - violet/purple palette
+    'bg-violet-300', 'bg-violet-400', 'bg-purple-300',
+    // Additional colors for variety
     'bg-indigo-300',
-    'bg-teal-300',
+    'bg-rose-300',
+    'bg-emerald-300',
+    // Workout type badge colors with opacity and text
+    'bg-indigo-500/20', 'text-indigo-600', 'border-indigo-500/30', 'dark:text-indigo-400',
+    'bg-teal-400/20', 'text-teal-600', 'border-teal-400/30', 'dark:text-teal-400',
+    'bg-amber-500/20', 'text-amber-600', 'border-amber-500/30', 'dark:text-amber-400',
+    'bg-violet-400/20', 'text-violet-600', 'border-violet-400/30', 'dark:text-violet-400',
   ],
 };
 export default config;

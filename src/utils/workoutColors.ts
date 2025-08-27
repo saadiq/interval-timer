@@ -5,29 +5,29 @@ export const WORKOUT_COLORS = {
   // Section type colors
   warmUp: 'bg-amber-400',
   coolDown: 'bg-amber-400',
-  rest: 'bg-slate-400',
+  rest: 'bg-slate-300',
   
-  // Workout type colors with multiple shades for visual variety
+  // Workout type colors with multiple shades for visual variety - refined palette
   circuit: {
-    primary: 'bg-blue-500',
-    secondary: 'bg-blue-400',
+    primary: 'bg-indigo-500',
+    secondary: 'bg-indigo-400',
     // Multiple shades for different exercises
-    exercises: ['bg-blue-500', 'bg-blue-400', 'bg-blue-600', 'bg-blue-300', 'bg-blue-700']
+    exercises: ['bg-indigo-500', 'bg-indigo-400', 'bg-blue-500', 'bg-indigo-600', 'bg-blue-400']
   },
   amrap: {
-    primary: 'bg-green-500',
+    primary: 'bg-teal-400',
     // Multiple shades for different exercises in AMRAP
-    exercises: ['bg-green-500', 'bg-green-400', 'bg-green-600', 'bg-green-300', 'bg-green-700']
+    exercises: ['bg-teal-400', 'bg-teal-500', 'bg-cyan-400', 'bg-teal-400', 'bg-cyan-400']
   },
   tabata: {
-    primary: 'bg-red-500',
+    primary: 'bg-amber-500',
     // Multiple shades for different exercises in Tabata
-    exercises: ['bg-red-500', 'bg-red-400', 'bg-red-600', 'bg-red-300', 'bg-red-700']
+    exercises: ['bg-amber-500', 'bg-amber-400', 'bg-orange-400', 'bg-amber-500', 'bg-orange-400']
   },
   emom: {
-    primary: 'bg-purple-500',
+    primary: 'bg-violet-400',
     // Multiple shades for different exercises in EMOM
-    exercises: ['bg-purple-500', 'bg-purple-400', 'bg-purple-600', 'bg-purple-300', 'bg-purple-700']
+    exercises: ['bg-violet-400', 'bg-violet-300', 'bg-purple-300', 'bg-violet-400', 'bg-purple-300']
   }
 } as const;
 

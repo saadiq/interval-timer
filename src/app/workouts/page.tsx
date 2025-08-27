@@ -88,13 +88,13 @@ export default function WorkoutListPage() {
   const getWorkoutTypeColor = (type: string) => {
     switch (type) {
       case "CIRCUIT":
-        return "bg-workout-circuit/20 text-workout-circuit border-workout-circuit/30";
+        return "bg-indigo-500/20 text-indigo-600 border-indigo-500/30 dark:text-indigo-400";
       case "AMRAP":
-        return "bg-workout-amrap/20 text-workout-amrap border-workout-amrap/30";
+        return "bg-teal-400/20 text-teal-600 border-teal-400/30 dark:text-teal-400";
       case "TABATA":
-        return "bg-workout-tabata/20 text-workout-tabata border-workout-tabata/30";
+        return "bg-amber-500/20 text-amber-600 border-amber-500/30 dark:text-amber-400";
       case "EMOM":
-        return "bg-workout-emom/20 text-workout-emom border-workout-emom/30";
+        return "bg-violet-400/20 text-violet-600 border-violet-400/30 dark:text-violet-400";
       default:
         return "bg-muted text-muted-foreground border-border";
     }
@@ -129,7 +129,7 @@ export default function WorkoutListPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-3 bg-gradient-primary bg-clip-text text-transparent">
+        <h1 className="text-4xl font-bold mb-3 text-foreground">
           Available Workouts
         </h1>
         <p className="text-lg text-muted-foreground">

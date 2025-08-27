@@ -181,7 +181,7 @@ export const ControlButtons: React.FC = memo(() => {
         className={`control-button start-stop-button group p-4 sm:p-4 rounded-full transition-all duration-200 transform hover:scale-105 active:scale-90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background shadow-lg hover:shadow-xl touch-target ${
           isRunning 
             ? 'bg-warning hover:bg-warning/90 text-warning-foreground' 
-            : 'bg-gradient-primary hover:brightness-110 text-primary-foreground'
+            : 'bg-primary hover:bg-primary/90 text-primary-foreground'
         }`}
         aria-label={isRunning ? "Pause workout" : "Start workout"}
         title={isRunning ? "Pause workout (Space/K)" : "Start workout (Space/K)"}

@@ -150,10 +150,10 @@ export const ProgressBar: React.FC = () => {
         </div>
         <div className="flex items-center space-x-1">
           <div className={`w-3 h-3 rounded-full ${
-            workout.data.type.toLowerCase() === 'circuit' ? 'bg-blue-500' :
-            workout.data.type.toLowerCase() === 'amrap' ? 'bg-green-500' :
-            workout.data.type.toLowerCase() === 'tabata' ? 'bg-red-500' :
-            workout.data.type.toLowerCase() === 'emom' ? 'bg-purple-500' :
+            workout.data.type.toLowerCase() === 'circuit' ? 'bg-slate-500' :
+            workout.data.type.toLowerCase() === 'amrap' ? 'bg-teal-400' :
+            workout.data.type.toLowerCase() === 'tabata' ? 'bg-amber-500' :
+            workout.data.type.toLowerCase() === 'emom' ? 'bg-violet-400' :
             'bg-primary'
           }`}></div>
           <span className="text-muted-foreground">Exercise</span>

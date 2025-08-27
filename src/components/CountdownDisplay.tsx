@@ -57,7 +57,7 @@ export const CountdownDisplay: React.FC = memo(() => {
             : 'text-7xl sm:text-8xl lg:text-9xl text-foreground'
       } leading-normal`} 
       aria-label={`Time remaining: ${renderTimeDisplay()}`}>
-        <div className={`${isPreWorkout || isWorkoutComplete ? 'bg-gradient-primary bg-clip-text text-transparent' : ''} py-4`}>
+        <div className={`${isPreWorkout || isWorkoutComplete ? 'text-primary' : ''} py-4`}>
           {renderTimeDisplay()}
         </div>
       </div>
@@ -78,7 +78,7 @@ export const CountdownDisplay: React.FC = memo(() => {
               <span className="text-4xl">🎉</span>
             </div>
           ) : (
-            <div className="bg-gradient-primary bg-clip-text text-transparent">
+            <div className="text-primary font-semibold">
               {currentSection!.name}
             </div>
           )}
