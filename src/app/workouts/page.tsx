@@ -83,17 +83,17 @@ export default function WorkoutListPage() {
     return `${minutes}m${remainingSeconds > 0 ? ` ${remainingSeconds}s` : ''}`;
   };
 
-  // Get workout type badge color
-  const getWorkoutTypeColor = (type: string) => {
+  // Get workout type badge class
+  const getWorkoutTypeClass = (type: string) => {
     switch (type) {
       case 'CIRCUIT':
-        return 'bg-indigo-500/20 text-indigo-600 border-indigo-500/30 dark:text-indigo-400';
+        return 'workout-badge-circuit';
       case 'AMRAP':
-        return 'bg-teal-400/20 text-teal-600 border-teal-400/30 dark:text-teal-400';
+        return 'workout-badge-amrap';
       case 'TABATA':
-        return 'bg-amber-500/20 text-amber-600 border-amber-500/30 dark:text-amber-400';
+        return 'workout-badge-tabata';
       case 'EMOM':
-        return 'bg-violet-400/20 text-violet-600 border-violet-400/30 dark:text-violet-400';
+        return 'workout-badge-emom';
       default:
         return 'bg-muted text-muted-foreground border-border';
     }
@@ -170,7 +170,7 @@ export default function WorkoutListPage() {
 
                           <div className="flex flex-wrap gap-2">
                             <span
-                              className={`text-xs font-semibold px-3 py-1.5 rounded-lg border ${getWorkoutTypeColor(
+                              className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${getWorkoutTypeClass(
                                 details.type
                               )}`}
                             >

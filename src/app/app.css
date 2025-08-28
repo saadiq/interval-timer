@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+/* Theme Configuration */
+@theme {
+  /* Extended font sizes */
+  --font-size-10xl: 10rem;
+  --font-size-11xl: 12rem;
+  --font-size-12xl: 14rem;
+  --font-size-13xl: 16rem;
+
+  /* Custom animations */
+  --animate-fade-in: fade-in 0.5s ease-in-out;
+  --animate-fade-in-up: fade-in-up 0.5s ease-in-out;
+  --animate-scale-in: scale-in 0.3s ease-in-out;
+  --animate-pulse-scale: pulse-scale 2s ease-in-out infinite;
+}
+
+/* Keyframes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-scale {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}

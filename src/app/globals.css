@@ -1,172 +1,435 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './app.css';
 
-/* Custom styles for WorkoutTimer component */
-@layer components {
-  .workout-timer {
-    @apply max-w-7xl mx-auto mt-10 px-4 sm:px-6 lg:px-8;
-  }
-
-  .workout-timer .control-button {
-    @apply p-3 rounded-full;
-  }
-
-  .workout-timer .start-stop-button {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
-  }
-
-  .workout-timer .reset-button {
-    @apply bg-destructive text-destructive-foreground hover:bg-destructive/90;
-  }
-
-  .workout-timer .progress-bar {
-    @apply relative h-6 rounded-full overflow-hidden bg-gray-200;
-  }
-
-  .workout-timer .progress-indicator {
-    @apply absolute top-0 h-full bg-black opacity-75 w-1;
-  }
-
-  .workout-timer .expand-button {
-    @apply w-full flex justify-between items-center p-2 bg-gray-100 rounded;
-  }
-
-  .workout-timer .expanded-view {
-    @apply mt-2 p-2 bg-gray-50 rounded max-h-[60vh] overflow-y-auto;
-  }
-
-  .workout-timer .workout-section {
-    @apply mb-4;
-  }
-
-  .workout-timer .workout-section h3 {
-    @apply text-lg font-bold mb-2 text-muted-foreground;
-  }
-
-  .workout-timer .section-item {
-    @apply flex justify-between items-center py-2 px-3 rounded;
-  }
-
-  .workout-timer .section-item-active {
-    @apply bg-primary/10 font-bold;
-  }
-
-  .workout-timer .section-color-indicator {
-    @apply w-4 h-4 rounded-full inline-block mr-2 flex-shrink-0;
-  }
-
-  /* Mobile-specific touch optimizations */
-  @media (max-width: 768px) {
-    .control-buttons button {
-      @apply active:scale-90;
-      touch-action: manipulation;
-    }
-    
-    .workout-card,
-    .theme-toggle,
-    .keyboard-shortcuts-button {
-      touch-action: manipulation;
-    }
-  }
-
-  /* Prevent zoom on inputs (iOS Safari) */
-  input[type="text"],
-  input[type="number"],
-  input[type="email"],
-  textarea {
-    font-size: 16px;
-  }
-
-  /* Better touch targets */
-  .touch-target {
-    @apply min-h-[44px] min-w-[44px];
-  }
+/* Modern CSS Custom Properties with @property */
+@property --background {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(251 251 251);
 }
 
+@property --foreground {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(23 23 23);
+}
+
+@property --card {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(255 255 255);
+}
+
+@property --primary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(79 70 229);
+}
+
+@property --secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(243 244 246);
+}
+
+@property --destructive {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: rgb(225 29 72);
+}
+
+/* Light Theme */
 :root {
-  /* Light theme colors - refined palette */
-  --background: 251 251 251;
-  --foreground: 23 23 23;
-  --card: 255 255 255;
-  --card-foreground: 23 23 23;
-  --popover: 255 255 255;
-  --popover-foreground: 23 23 23;
-  --primary: 79 70 229; /* Refined indigo */
-  --primary-foreground: 255 255 255;
-  --secondary: 243 244 246;
-  --secondary-foreground: 23 23 23;
-  --muted: 243 244 246;
-  --muted-foreground: 107 114 128;
-  --accent: 243 244 246;
-  --accent-foreground: 23 23 23;
-  --destructive: 225 29 72; /* Softer rose-red */
-  --destructive-foreground: 255 255 255;
-  --border: 229 231 235;
-  --input: 229 231 235;
-  --ring: 147 197 253; /* Lighter ring color */
-  --success: 34 197 94;
-  --warning: 245 158 11;
-  --info: 59 130 246;
-  
-  /* Refined workout type colors - muted palette */
-  --circuit: 100 116 139; /* Slate blue */
-  --amrap: 45 212 191; /* Teal */
-  --tabata: 251 146 60; /* Warm amber */
-  --emom: 167 139 250; /* Soft lavender */
-  
-  /* Subtle gradients */
-  --gradient-primary: linear-gradient(135deg, rgb(243 244 246) 0%, rgb(255 255 255) 100%);
-  --gradient-secondary: linear-gradient(135deg, rgb(249 250 251) 0%, rgb(243 244 246) 100%);
-  --gradient-accent: linear-gradient(135deg, rgb(243 244 246) 0%, rgb(249 250 251) 100%);
+  /* Core colors */
+  --background: rgb(251 251 251);
+  --foreground: rgb(23 23 23);
+  --card: rgb(255 255 255);
+  --card-foreground: rgb(23 23 23);
+  --popover: rgb(255 255 255);
+  --popover-foreground: rgb(23 23 23);
+  --primary: rgb(79 70 229);
+  --primary-foreground: rgb(255 255 255);
+  --secondary: rgb(243 244 246);
+  --secondary-foreground: rgb(23 23 23);
+  --muted: rgb(243 244 246);
+  --muted-foreground: rgb(107 114 128);
+  --accent: rgb(243 244 246);
+  --accent-foreground: rgb(23 23 23);
+  --destructive: rgb(225 29 72);
+  --destructive-foreground: rgb(255 255 255);
+  --border: rgb(229 231 235);
+  --input: rgb(229 231 235);
+  --ring: rgb(147 197 253);
+  --success: rgb(34 197 94);
+  --warning: rgb(245 158 11);
+  --info: rgb(59 130 246);
+
+  /* Workout type colors */
+  --circuit: rgb(100 116 139);
+  --amrap: rgb(45 212 191);
+  --tabata: rgb(251 146 60);
+  --emom: rgb(167 139 250);
 }
 
-[data-theme="dark"] {
-  /* Dark theme colors - refined palette */
-  --background: 9 9 11;
-  --foreground: 244 244 245;
-  --card: 24 24 27;
-  --card-foreground: 244 244 245;
-  --popover: 24 24 27;
-  --popover-foreground: 244 244 245;
-  --primary: 124 58 237; /* Refined violet */
-  --primary-foreground: 250 250 250;
-  --secondary: 39 39 42;
-  --secondary-foreground: 244 244 245;
-  --muted: 39 39 42;
-  --muted-foreground: 161 161 170;
-  --accent: 39 39 42;
-  --accent-foreground: 244 244 245;
-  --destructive: 244 63 94; /* Softer rose in dark */
-  --destructive-foreground: 250 250 250;
-  --border: 39 39 42;
-  --input: 39 39 42;
-  --ring: 139 92 246; /* Softer ring in dark */
-  --success: 74 222 128;
-  --warning: 251 191 36;
-  --info: 96 165 250;
-  
-  /* Refined workout type colors - harmonious dark palette */
-  --circuit: 148 163 184; /* Cool slate */
-  --amrap: 94 234 212; /* Soft cyan */
-  --tabata: 253 186 116; /* Warm peach */
-  --emom: 196 181 253; /* Muted purple */
-  
-  /* Subtle gradients for dark mode */
-  --gradient-primary: linear-gradient(135deg, rgb(24 24 27) 0%, rgb(39 39 42) 100%);
-  --gradient-secondary: linear-gradient(135deg, rgb(39 39 42) 0%, rgb(24 24 27) 100%);
-  --gradient-accent: linear-gradient(135deg, rgb(24 24 27) 0%, rgb(9 9 11) 100%);
+/* Dark Theme */
+[data-theme='dark'] {
+  --background: rgb(9 9 11);
+  --foreground: rgb(244 244 245);
+  --card: rgb(24 24 27);
+  --card-foreground: rgb(244 244 245);
+  --popover: rgb(24 24 27);
+  --popover-foreground: rgb(244 244 245);
+  --primary: rgb(124 58 237);
+  --primary-foreground: rgb(250 250 250);
+  --secondary: rgb(39 39 42);
+  --secondary-foreground: rgb(244 244 245);
+  --muted: rgb(39 39 42);
+  --muted-foreground: rgb(161 161 170);
+  --accent: rgb(39 39 42);
+  --accent-foreground: rgb(244 244 245);
+  --destructive: rgb(244 63 94);
+  --destructive-foreground: rgb(250 250 250);
+  --border: rgb(39 39 42);
+  --input: rgb(39 39 42);
+  --ring: rgb(139 92 246);
+  --success: rgb(74 222 128);
+  --warning: rgb(251 191 36);
+  --info: rgb(96 165 250);
+
+  /* Workout type colors */
+  --circuit: rgb(148 163 184);
+  --amrap: rgb(94 234 212);
+  --tabata: rgb(253 186 116);
+  --emom: rgb(196 181 253);
 }
 
-
+/* Base Styles */
 body {
-  color: rgb(var(--foreground));
-  background: rgb(var(--background));
-  transition: background-color 0.3s ease, color 0.3s ease;
+  color: var(--foreground);
+  background: var(--background);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Component Styles using Modern CSS */
+.workout-timer {
+  max-width: 80rem;
+  margin: 2.5rem auto 0;
+  padding: 0 1rem;
+
+  @media (min-width: 640px) {
+    padding: 0 1.5rem;
   }
+
+  @media (min-width: 1024px) {
+    padding: 0 2rem;
+  }
+}
+
+.control-button {
+  padding: 0.75rem;
+  border-radius: 9999px;
+  transition: transform 0.1s;
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.start-stop-button {
+  background: var(--primary);
+  color: var(--primary-foreground);
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.reset-button {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+.progress-bar {
+  position: relative;
+  height: 1.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgb(229 231 235);
+
+  [data-theme='dark'] & {
+    background: rgb(39 39 42);
+  }
+}
+
+.progress-indicator {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgb(0 0 0 / 0.75);
+  width: 0.25rem;
+
+  [data-theme='dark'] & {
+    background: rgb(255 255 255 / 0.75);
+  }
+}
+
+.expand-button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgb(243 244 246);
+  border-radius: 0.25rem;
+
+  [data-theme='dark'] & {
+    background: rgb(39 39 42);
+  }
+}
+
+.expanded-view {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: rgb(249 250 251);
+  border-radius: 0.25rem;
+  max-height: 60vh;
+  overflow-y: auto;
+
+  [data-theme='dark'] & {
+    background: rgb(24 24 27);
+  }
+}
+
+.workout-section {
+  margin-bottom: 1rem;
+
+  h3 {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--muted-foreground);
+  }
+}
+
+.section-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+
+  &.section-item-active {
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+    font-weight: bold;
+  }
+}
+
+.section-color-indicator {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  display: inline-block;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Touch optimizations */
+@media (max-width: 768px) {
+  .control-buttons button {
+    touch-action: manipulation;
+
+    &:active {
+      transform: scale(0.9);
+    }
+  }
+
+  .workout-card,
+  .theme-toggle,
+  .keyboard-shortcuts-button {
+    touch-action: manipulation;
+  }
+}
+
+/* Prevent zoom on inputs (iOS Safari) */
+input[type='text'],
+input[type='number'],
+input[type='email'],
+textarea {
+  font-size: 16px;
+}
+
+/* Better touch targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Utility classes for theme colors */
+.bg-background {
+  background: var(--background);
+}
+.bg-foreground {
+  background: var(--foreground);
+}
+.bg-card {
+  background: var(--card);
+}
+.bg-primary {
+  background: var(--primary);
+}
+.bg-secondary {
+  background: var(--secondary);
+}
+.bg-destructive {
+  background: var(--destructive);
+}
+.bg-muted {
+  background: var(--muted);
+}
+.bg-accent {
+  background: var(--accent);
+}
+
+.text-foreground {
+  color: var(--foreground);
+}
+.text-card-foreground {
+  color: var(--card-foreground);
+}
+.text-primary {
+  color: var(--primary);
+}
+.text-primary-foreground {
+  color: var(--primary-foreground);
+}
+.text-secondary-foreground {
+  color: var(--secondary-foreground);
+}
+.text-destructive {
+  color: var(--destructive);
+}
+.text-destructive-foreground {
+  color: var(--destructive-foreground);
+}
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+.border-border {
+  border-color: var(--border);
+}
+.border-input {
+  border-color: var(--input);
+}
+.ring-ring {
+  --tw-ring-color: var(--ring);
+}
+
+/* Workout type colors */
+.bg-circuit {
+  background: var(--circuit);
+}
+.bg-amrap {
+  background: var(--amrap);
+}
+.bg-tabata {
+  background: var(--tabata);
+}
+.bg-emom {
+  background: var(--emom);
+}
+
+/* Dynamic color mapping for exercises */
+[data-color='amber-300'] {
+  background: rgb(252 211 77);
+}
+[data-color='amber-400'] {
+  background: rgb(251 191 36);
+}
+[data-color='amber-500'] {
+  background: rgb(245 158 11);
+}
+[data-color='gray-300'] {
+  background: rgb(209 213 219);
+}
+[data-color='slate-300'] {
+  background: rgb(203 213 225);
+}
+[data-color='slate-400'] {
+  background: rgb(148 163 184);
+}
+[data-color='indigo-300'] {
+  background: rgb(165 180 252);
+}
+[data-color='indigo-400'] {
+  background: rgb(129 140 248);
+}
+[data-color='indigo-500'] {
+  background: rgb(99 102 241);
+}
+[data-color='indigo-600'] {
+  background: rgb(79 70 229);
+}
+[data-color='blue-400'] {
+  background: rgb(96 165 250);
+}
+[data-color='blue-500'] {
+  background: rgb(59 130 246);
+}
+[data-color='teal-400'] {
+  background: rgb(45 212 191);
+}
+[data-color='teal-500'] {
+  background: rgb(20 184 166);
+}
+[data-color='cyan-400'] {
+  background: rgb(34 211 238);
+}
+[data-color='orange-400'] {
+  background: rgb(251 146 60);
+}
+[data-color='violet-300'] {
+  background: rgb(196 181 253);
+}
+[data-color='violet-400'] {
+  background: rgb(167 139 250);
+}
+[data-color='purple-300'] {
+  background: rgb(216 180 254);
+}
+[data-color='rose-300'] {
+  background: rgb(253 164 175);
+}
+[data-color='emerald-300'] {
+  background: rgb(110 231 183);
+}
+
+/* Workout badge styles */
+.workout-badge-circuit {
+  background: color-mix(in srgb, var(--circuit) 20%, transparent);
+  color: var(--circuit);
+  border: 1px solid color-mix(in srgb, var(--circuit) 30%, transparent);
+}
+
+.workout-badge-amrap {
+  background: color-mix(in srgb, var(--amrap) 20%, transparent);
+  color: var(--amrap);
+  border: 1px solid color-mix(in srgb, var(--amrap) 30%, transparent);
+}
+
+.workout-badge-tabata {
+  background: color-mix(in srgb, var(--tabata) 20%, transparent);
+  color: var(--tabata);
+  border: 1px solid color-mix(in srgb, var(--tabata) 30%, transparent);
+}
+
+.workout-badge-emom {
+  background: color-mix(in srgb, var(--emom) 20%, transparent);
+  color: var(--emom);
+  border: 1px solid color-mix(in srgb, var(--emom) 30%, transparent);
 }
