@@ -103,6 +103,11 @@ export async function GET(req: NextRequest) {
 
     const workoutData = typedWorkoutsData[workoutDate];
 
+    if (!workoutData) {
+      // This shouldn't happen as we already checked workoutDate exists
+      throw new Error('Workout data not found');
+    }
+
     WorkoutFactory.createWorkout(workoutData, workoutDate);
 
     // Calculate total time

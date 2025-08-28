@@ -13,12 +13,15 @@ export function ThemeToggle() {
     { value: 'system', icon: Monitor, label: 'System preference' },
   ] as const;
 
-  const currentOption = themeOptions.find(option => option.value === theme) || themeOptions[2];
+  const currentOption = themeOptions.find((option) => option.value === theme) || themeOptions[2];
 
   const handleCycleTheme = () => {
-    const currentIndex = themeOptions.findIndex(option => option.value === theme);
+    const currentIndex = themeOptions.findIndex((option) => option.value === theme);
     const nextIndex = (currentIndex + 1) % themeOptions.length;
-    setTheme(themeOptions[nextIndex].value);
+    const nextTheme = themeOptions[nextIndex];
+    if (nextTheme) {
+      setTheme(nextTheme.value);
+    }
   };
 
   return (

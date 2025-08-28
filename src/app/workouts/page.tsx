@@ -70,6 +70,7 @@ export default function WorkoutListPage() {
   // Format month for display
   const formatMonth = (monthKey: string) => {
     const [year, month] = monthKey.split('-');
+    if (!year || !month) return monthKey;
     // Use UTC date to avoid timezone issues
     const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
     return format(date, 'MMMM yyyy');
@@ -139,14 +140,15 @@ export default function WorkoutListPage() {
                 <h2 className="text-2xl font-bold text-foreground">{formatMonth(monthKey)}</h2>
                 <div className="flex-1 h-px bg-border"></div>
                 <span className="text-sm text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                  {workoutsByMonth[monthKey].length} workout
-                  {workoutsByMonth[monthKey].length !== 1 ? 's' : ''}
+                  {workoutsByMonth[monthKey]?.length ?? 0} workout
+                  {(workoutsByMonth[monthKey]?.length ?? 0) !== 1 ? 's' : ''}
                 </span>
               </div>
 
               <div className="grid grid-cols-1 gap-6">
-                {workoutsByMonth[monthKey].map((date) => {
+                {workoutsByMonth[monthKey]?.map((date) => {
                   const details = workoutDetails[date];
+                  if (!details) return null;
                   return (
                     <Link
                       href={generateWorkoutUrl(date)}
