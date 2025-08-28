@@ -9,8 +9,8 @@ export async function GET() {
   // Get all available workout dates
   const dates = Object.keys(workouts);
 
-  // Sort dates in ascending order
-  dates.sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+  // Sort dates in descending order (newest first)
+  dates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
   // Create a map with workout details for each date
   const workoutDetails = dates.reduce(
