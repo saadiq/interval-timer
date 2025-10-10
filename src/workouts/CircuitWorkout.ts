@@ -20,21 +20,39 @@ export class CircuitWorkout extends Workout {
   }
 
   private validateWorkoutData(data: CircuitWorkoutData): void {
-    const allSections = [
-      ...data.warmUp,
-      ...data.workout.exercises,
-      ...data.coolDown
-    ];
-    allSections.forEach((section, index) => {
-      const hasReps = 'reps' in section && section.reps !== undefined;
-      const hasDuration = section.duration !== undefined;
+    // Validate warm-up sections (must have duration only)
+    data.warmUp.forEach((section, index) => {
+      if (section.duration === undefined) {
+        throw new Error(
+          `Warm-up section "${section.name}" at index ${index} must have duration`
+        );
+      }
+    });
 
-      if (!hasReps && !hasDuration) {
-        throw new Error(`Section must have either duration or reps. Found neither at index ${index}`);
+    // Validate workout exercises (must have duration OR reps, not neither, not both)
+    data.workout.exercises.forEach((exercise, index) => {
+      const hasDuration = exercise.duration !== undefined;
+      const hasReps = exercise.reps !== undefined;
+
+      if (!hasDuration && !hasReps) {
+        throw new Error(
+          `Workout exercise "${exercise.name}" at index ${index} must have either duration or reps`
+        );
       }
 
-      if (hasReps && hasDuration) {
-        throw new Error(`Section cannot have both duration and reps. Found both at index ${index}`);
+      if (hasDuration && hasReps) {
+        throw new Error(
+          `Workout exercise "${exercise.name}" at index ${index} cannot have both duration and reps`
+        );
+      }
+    });
+
+    // Validate cool-down sections (must have duration only)
+    data.coolDown.forEach((section, index) => {
+      if (section.duration === undefined) {
+        throw new Error(
+          `Cool-down section "${section.name}" at index ${index} must have duration`
+        );
       }
     });
   }
