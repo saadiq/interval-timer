@@ -98,10 +98,11 @@ export const WorkoutSummary: React.FC = () => {
                     <ClickableMovementName name={exercise.name} />
                   </div>
                   <div>
-                    {exercise.duration !== undefined && (
+                    {exercise.duration !== undefined ? (
                       <span>{formatTime(exercise.duration)}</span>
-                    )}
-                    {exercise.reps !== undefined && <span>{exercise.reps} reps</span>}
+                    ) : exercise.reps !== undefined ? (
+                      <span>{exercise.reps} reps</span>
+                    ) : null}
                   </div>
                 </li>
               );
