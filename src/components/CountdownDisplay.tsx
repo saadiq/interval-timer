@@ -37,12 +37,17 @@ export const CountdownDisplay: React.FC = memo(() => {
       return renderPreWorkoutDisplay();
     } else if (isWorkoutComplete) {
       return "Workout Complete";
-    } else if (!isSectionWithDuration(currentSection!)) {
-      // Rep-based exercise - show "REPS" as placeholder
-      return "REPS";
     } else {
-      // Always use formatTime for consistency during the workout
-      return formatTime(timeRemaining);
+      // Check if current section is rep-based
+      if (currentSection && !isSectionWithDuration(currentSection)) {
+        // Rep-based: show elapsed time (stopwatch counting up)
+        const sectionStart = calculateElapsedTime(workout, currentSection);
+        const elapsedTime = time - sectionStart;
+        return formatTime(elapsedTime);
+      } else {
+        // Timed exercise - show countdown
+        return formatTime(timeRemaining);
+      }
     }
   };
 
