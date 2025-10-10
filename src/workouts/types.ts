@@ -60,3 +60,12 @@ export type WorkoutData = CircuitWorkout | AMRAPWorkout | TabataWorkout | EMOMWo
 export type WorkoutDataMap = {
   [date: string]: WorkoutData;
 };
+
+// Type guard functions
+export function isRepBasedExercise(exercise: BaseExercise): boolean {
+  return exercise.reps !== undefined && exercise.duration === undefined;
+}
+
+export function isTimedExercise(exercise: BaseExercise): boolean {
+  return exercise.duration !== undefined;
+}
