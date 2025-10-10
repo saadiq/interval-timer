@@ -94,8 +94,18 @@ export const ControlButtons: React.FC = memo(() => {
             .reduce((total, s) => total + (s.duration ?? 0), 0);
           const sectionEndTime = sectionStartTime + (currentSection.duration ?? 0);
 
+          // Check if current section is rep-based (no duration)
+          const isRepBased = currentSection.duration === undefined;
+
+          // If on a rep-based exercise, pause and don't auto-advance
+          if (isRepBased && newTime >= sectionEndTime) {
+            setIsRunning(false);
+            announce("Complete your reps, then press next", 'polite');
+            return;
+          }
+
           // Play audio cue 2 seconds before the end of the section (reverted back)
-          if (sectionEndTime - newTime === 2) {
+          if (!isRepBased && sectionEndTime - newTime === 2) {
             playAudioCue();
           }
 
@@ -107,8 +117,8 @@ export const ControlButtons: React.FC = memo(() => {
           // Speak section info at the second second of each new section
           if (newTime === sectionStartTime + 1) {
             speakSectionInfo(currentSection.name, nextSection?.name ?? null);
-            const sectionAnnouncement = nextSection 
-              ? `Starting ${currentSection.name}. Next: ${nextSection.name}` 
+            const sectionAnnouncement = nextSection
+              ? `Starting ${currentSection.name}. Next: ${nextSection.name}`
               : `Starting ${currentSection.name}. Final exercise`;
             announce(sectionAnnouncement, 'assertive');
           }
