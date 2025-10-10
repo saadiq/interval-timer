@@ -1,16 +1,28 @@
 {
   "type": "circuit",
   "warmUp": [
-    { "name": "Jumping Jacks", "duration": 30 }
+    { "name": "Jumping Jacks", "duration": 30 },
+    { "name": "Arm Circles", "duration": 30 },
+    { "name": "Bodyweight Squats", "duration": 30 },
+    { "name": "High Knees", "duration": 30 }
   ],
   "workout": {
     "exercises": [
-      { "name": "Push-ups", "reps": "8-10" },
-      { "name": "Rest", "duration": 15 }
+      { "name": "Kettlebell Swings", "reps": 15 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Goblet Squats", "reps": 12 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Kettlebell Rows (Each Side)", "reps": 10 },
+      { "name": "Rest", "duration": 15 },
+      { "name": "Jump Rope", "duration": 60 },
+      { "name": "Rest", "duration": 30 }
     ],
-    "rounds": 2
+    "rounds": 3
   },
   "coolDown": [
-    { "name": "Stretching", "duration": 30 }
+    { "name": "Standing Hamstring Stretch", "duration": 30 },
+    { "name": "Quad Stretch", "duration": 30 },
+    { "name": "Shoulder Stretch", "duration": 30 },
+    { "name": "Deep Breathing", "duration": 30 }
   ]
 }
