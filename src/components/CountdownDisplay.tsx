@@ -68,10 +68,10 @@ export const CountdownDisplay: React.FC = memo(() => {
       {/* Current Exercise */}
       <div className="space-y-2">
         <div className={`font-bold transition-all duration-300 ${
-          isWorkoutComplete 
-            ? 'text-3xl sm:text-4xl lg:text-5xl text-success animate-fade-in-up' 
+          isWorkoutComplete
+            ? 'text-3xl sm:text-4xl lg:text-5xl text-success animate-fade-in-up'
             : 'text-2xl sm:text-3xl lg:text-4xl text-foreground'
-        }`} 
+        }`}
         aria-label={isPreWorkout ? "Pre-workout phase" : isWorkoutComplete ? "Workout completed" : `Current exercise: ${currentSection!.name}`}>
           {isPreWorkout ? (
             <div className="text-transparent">&nbsp;</div>
@@ -87,9 +87,18 @@ export const CountdownDisplay: React.FC = memo(() => {
           )}
         </div>
 
+        {/* Rep Count Badge - show for rep-based exercises */}
+        {!isPreWorkout && !isWorkoutComplete && currentSection && 'reps' in currentSection && currentSection.reps && (
+          <div className="flex items-center justify-center mt-2">
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-primary/20 text-primary border border-primary/30">
+              {currentSection.reps} reps
+            </span>
+          </div>
+        )}
+
         {/* Exercise Description */}
         {!isPreWorkout && !isWorkoutComplete && currentSection?.description && (
-          <div className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed" 
+          <div className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed"
                aria-label={`Exercise description: ${currentSection.description}`}>
             {currentSection.description}
           </div>
