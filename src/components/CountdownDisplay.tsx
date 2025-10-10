@@ -37,6 +37,9 @@ export const CountdownDisplay: React.FC = memo(() => {
       return renderPreWorkoutDisplay();
     } else if (isWorkoutComplete) {
       return "Workout Complete";
+    } else if (!isSectionWithDuration(currentSection!)) {
+      // Rep-based exercise - show "REPS" as placeholder
+      return "REPS";
     } else {
       // Always use formatTime for consistency during the workout
       return formatTime(timeRemaining);
@@ -135,8 +138,13 @@ function isSectionWithDuration(section: WorkoutSection): section is WorkoutSecti
 }
 
 const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, currentTime: number): number => {
-  if (!isSectionWithColor(section) || !isSectionWithDuration(section)) {
-    // Section without color or duration encountered
+  if (!isSectionWithColor(section)) {
+    // Section without color encountered
+    return 0;
+  }
+
+  // Rep-based exercises don't have time remaining
+  if (!isSectionWithDuration(section)) {
     return 0;
   }
 
@@ -149,11 +157,20 @@ const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, curre
       return Math.max(0, amrapSection.duration - (currentTime - amrapStartTime));
     }
   }
-  
-  const sectionStart = workout.sections
-    .slice(0, workout.sections.indexOf(section))
-    .reduce((total, s) => total + (isSectionWithDuration(s) ? s.duration : 0), 0);
+
+  const sectionStart = calculateElapsedTime(workout, section);
   return Math.max(0, section.duration - (currentTime - sectionStart));
+};
+
+const calculateElapsedTime = (workout: Workout, currentSection: WorkoutSection): number => {
+  let elapsed = 0;
+  for (const section of workout.sections) {
+    if (section === currentSection) break;
+    if (isSectionWithColor(section)) {
+      elapsed += isSectionWithDuration(section) ? section.duration : 1;
+    }
+  }
+  return elapsed;
 };
 
 CountdownDisplay.displayName = 'CountdownDisplay';
