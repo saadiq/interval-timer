@@ -1,5 +1,5 @@
 // src/workouts/CircuitWorkout.ts
-import { CircuitWorkout as CircuitWorkoutData } from './types';
+import { CircuitWorkout as CircuitWorkoutData, isRepBasedExercise } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/utils/colorUtils';
 
@@ -26,8 +26,15 @@ export class CircuitWorkout extends Workout {
       ...data.coolDown
     ];
     allSections.forEach((section, index) => {
-      if (section.duration === undefined) {
-        throw new Error(`Section duration must be defined. Undefined duration found at index ${index}`);
+      const hasReps = 'reps' in section && section.reps !== undefined;
+      const hasDuration = section.duration !== undefined;
+
+      if (!hasReps && !hasDuration) {
+        throw new Error(`Section must have either duration or reps. Found neither at index ${index}`);
+      }
+
+      if (hasReps && hasDuration) {
+        throw new Error(`Section cannot have both duration and reps. Found both at index ${index}`);
       }
     });
   }
@@ -55,7 +62,7 @@ export class CircuitWorkout extends Workout {
 
   protected getSectionDuration(section: SectionWithColor): number {
     if (section.duration === undefined) {
-      throw new Error(`Undefined duration found in section: ${section.name}`);
+      return 1;  // Rep-based exercises occupy 1s for navigation
     }
     return section.duration;
   }
