@@ -9,7 +9,7 @@ export interface BaseSection {
 export interface BaseExercise {
   name: string;
   duration?: number;
-  reps?: number;
+  reps?: string;  // String to support ranges like "8-10" or "8 per arm"
   description?: string;
 }
 

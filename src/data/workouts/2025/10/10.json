@@ -5,7 +5,7 @@
   ],
   "workout": {
     "exercises": [
-      { "name": "Push-ups", "reps": 10 },
+      { "name": "Push-ups", "reps": "8-10" },
       { "name": "Rest", "duration": 15 }
     ],
     "rounds": 2
