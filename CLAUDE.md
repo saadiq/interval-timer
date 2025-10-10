@@ -76,14 +76,14 @@ bun run lint:strict   # No warnings allowed
 - **Duration**: Each exercise has either:
   - A specific duration (e.g., 40 seconds) for timed exercises
   - A specific rep count (e.g., 15 reps) for rep-based exercises
-- **Rep-based exercises**: Display "REPS" instead of countdown, pause for manual advancement
+- **Rep-based exercises**: Display elapsed time stopwatch (00:00 → 00:01...) instead of countdown timer
 - **Flow**: Round 1: [Ex1→Ex2→Ex3→Rest] → Round 2: [Ex1→Ex2→Ex3→Rest] → Round 3: [Ex1→Ex2→Ex3→Rest]
 - **Example**: 3 rounds of [Kettlebell Swings 15 reps, Rest 15s, Jump Rope 60s, Rest 30s]
 - **Total Duration**: rounds × sum(all exercise durations, with rep exercises counting as 1s each)
 - **Key Points**:
   - Each round is a complete pass through ALL exercises
-  - Rep-based exercises require manual "Next" button press to advance
-  - Exercises must have EITHER duration OR reps, not both
+  - Rep-based exercises keep timer running (stopwatch mode), user manually clicks "Next" to advance
+  - Exercises can have duration only, reps only, or both (duration takes precedence for display)
 
 ### AMRAP (As Many Rounds As Possible)
 
@@ -150,7 +150,7 @@ Create JSON file in `/src/data/workouts/YYYY/MM/DD.json`:
   "warmUp": [{ "name": "Jumping Jacks", "duration": 30 }],
   "workout": {
     "exercises": [
-      { "name": "Kettlebell Swings", "reps": 15 },
+      { "name": "Kettlebell Swings", "reps": "12-15" },
       { "name": "Rest", "duration": 15 },
       { "name": "Jump Rope", "duration": 60 }
     ],
@@ -160,12 +160,13 @@ Create JSON file in `/src/data/workouts/YYYY/MM/DD.json`:
 }
 ```
 
-**Note**: Exercises must have EITHER `duration` OR `reps`, not both. Rep-based exercises will:
+**Note**: Exercises can have `duration`, `reps`, or both. Rep-based exercises (without duration) will:
 
-- Display "REPS" in the timer area instead of a countdown
-- Show a badge with the rep count (e.g., "15 reps")
-- Automatically pause when complete, requiring manual "Next" button press
+- Display elapsed time stopwatch (00:00 → 00:01...) in the timer area
+- Show a badge with the rep count (e.g., "12-15 reps")
+- Keep timer running in stopwatch mode, user manually clicks "Next" to advance
 - Count as 1 second each for total workout duration calculation
+- If both `duration` and `reps` are present, duration takes precedence for timer display
 
 ## Development Guidelines
 
