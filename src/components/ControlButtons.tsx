@@ -94,18 +94,12 @@ export const ControlButtons: React.FC = memo(() => {
             .reduce((total, s) => total + (s.duration ?? 0), 0);
           const sectionEndTime = sectionStartTime + (currentSection.duration ?? 0);
 
-          // Check if current section is rep-based (no duration)
-          const isRepBased = currentSection.duration === undefined;
+          // Check if we're in a rep-based exercise
+          const isInRepExercise = currentSection.duration === undefined;
+          const hasPassedScheduledTime = newTime >= workout.duration;
 
-          // If on a rep-based exercise, pause and don't auto-advance
-          if (isRepBased && newTime >= sectionEndTime) {
-            setIsRunning(false);
-            announce("Complete your reps, then press next", 'polite');
-            return;
-          }
-
-          // Play audio cue 2 seconds before the end of the section (reverted back)
-          if (!isRepBased && sectionEndTime - newTime === 2) {
+          // For timed exercises, play audio cue before transition
+          if (!isInRepExercise && sectionEndTime - newTime === 2) {
             playAudioCue();
           }
 
@@ -123,13 +117,15 @@ export const ControlButtons: React.FC = memo(() => {
             announce(sectionAnnouncement, 'assertive');
           }
 
-          if (newTime >= workout.duration) {
+          // Check if workout is complete
+          // Only complete if we've passed scheduled time AND not in a rep exercise
+          if (hasPassedScheduledTime && !isInRepExercise) {
             clearInterval(intervalId);
             setIsRunning(false);
             setTime(workout.duration);
             announce("Workout completed! Great job!", 'assertive');
           } else {
-            setTime(newTime);
+            setTime(newTime);  // Always increment time, even during rep exercises
           }
         }, 1000);
       }
