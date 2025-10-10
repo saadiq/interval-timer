@@ -11,10 +11,10 @@ describe('EMOMWorkout', () => {
     workout: {
       rounds: 8, // 8 minutes
       exercises: [
-        { name: '5 Burpees', reps: 5 },
-        { name: '10 Squats', reps: 10 },
-        { name: '8 Push-ups', reps: 8 },
-        { name: '10 Mountain Climbers', reps: 10 },
+        { name: '5 Burpees', reps: "5" },
+        { name: '10 Squats', reps: "10" },
+        { name: '8 Push-ups', reps: "8" },
+        { name: '10 Mountain Climbers', reps: "10" },
       ],
     },
     coolDown: [
@@ -135,7 +135,7 @@ describe('EMOMWorkout', () => {
       workout: {
         rounds: 5,
         exercises: [
-          { name: '10 Burpees', reps: 10 },
+          { name: '10 Burpees', reps: "10" },
         ],
       },
       coolDown: [],
@@ -186,7 +186,7 @@ describe('EMOMWorkout', () => {
       warmUp: [],
       workout: {
         rounds: undefined as any,
-        exercises: [{ name: 'Test', reps: 5 }],
+        exercises: [{ name: 'Test', reps: "5" }],
       },
       coolDown: [],
     };

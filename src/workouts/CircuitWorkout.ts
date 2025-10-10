@@ -1,5 +1,5 @@
 // src/workouts/CircuitWorkout.ts
-import { CircuitWorkout as CircuitWorkoutData, isRepBasedExercise } from './types';
+import { CircuitWorkout as CircuitWorkoutData } from './types';
 import { Workout } from './Workout';
 import { SectionWithColor, assignColorsToWorkout } from '@/utils/colorUtils';
 
@@ -29,7 +29,7 @@ export class CircuitWorkout extends Workout {
       }
     });
 
-    // Validate workout exercises (must have duration OR reps, not neither, not both)
+    // Validate workout exercises (must have duration OR reps, not neither)
     data.workout.exercises.forEach((exercise, index) => {
       const hasDuration = exercise.duration !== undefined;
       const hasReps = exercise.reps !== undefined;
@@ -40,11 +40,7 @@ export class CircuitWorkout extends Workout {
         );
       }
 
-      if (hasDuration && hasReps) {
-        throw new Error(
-          `Workout exercise "${exercise.name}" at index ${index} cannot have both duration and reps`
-        );
-      }
+      // Both duration and reps is allowed (duration takes precedence, reps are informational)
     });
 
     // Validate cool-down sections (must have duration only)
