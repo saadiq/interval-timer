@@ -1,0 +1,16 @@
+{
+  "type": "circuit",
+  "warmUp": [
+    { "name": "Jumping Jacks", "duration": 30 }
+  ],
+  "workout": {
+    "exercises": [
+      { "name": "Push-ups", "reps": 10 },
+      { "name": "Rest", "duration": 15 }
+    ],
+    "rounds": 2
+  },
+  "coolDown": [
+    { "name": "Stretching", "duration": 30 }
+  ]
+}
