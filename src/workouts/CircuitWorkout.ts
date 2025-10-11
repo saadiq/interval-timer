@@ -20,14 +20,35 @@ export class CircuitWorkout extends Workout {
   }
 
   private validateWorkoutData(data: CircuitWorkoutData): void {
-    const allSections = [
-      ...data.warmUp,
-      ...data.workout.exercises,
-      ...data.coolDown
-    ];
-    allSections.forEach((section, index) => {
+    // Validate warm-up sections (must have duration only)
+    data.warmUp.forEach((section, index) => {
       if (section.duration === undefined) {
-        throw new Error(`Section duration must be defined. Undefined duration found at index ${index}`);
+        throw new Error(
+          `Warm-up section "${section.name}" at index ${index} must have duration`
+        );
+      }
+    });
+
+    // Validate workout exercises (must have duration OR reps, not neither)
+    data.workout.exercises.forEach((exercise, index) => {
+      const hasDuration = exercise.duration !== undefined;
+      const hasReps = exercise.reps !== undefined;
+
+      if (!hasDuration && !hasReps) {
+        throw new Error(
+          `Workout exercise "${exercise.name}" at index ${index} must have either duration or reps`
+        );
+      }
+
+      // Both duration and reps is allowed (duration takes precedence, reps are informational)
+    });
+
+    // Validate cool-down sections (must have duration only)
+    data.coolDown.forEach((section, index) => {
+      if (section.duration === undefined) {
+        throw new Error(
+          `Cool-down section "${section.name}" at index ${index} must have duration`
+        );
       }
     });
   }
@@ -55,7 +76,7 @@ export class CircuitWorkout extends Workout {
 
   protected getSectionDuration(section: SectionWithColor): number {
     if (section.duration === undefined) {
-      throw new Error(`Undefined duration found in section: ${section.name}`);
+      return 1;  // Rep-based exercises occupy 1s for navigation
     }
     return section.duration;
   }

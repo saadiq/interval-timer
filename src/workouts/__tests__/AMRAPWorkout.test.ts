@@ -12,9 +12,9 @@ describe('AMRAPWorkout', () => {
     workout: {
       duration: 600, // 10 minutes
       exercises: [
-        { name: '5 Push-ups', reps: 5 },
-        { name: '10 Squats', reps: 10 },
-        { name: '15 Sit-ups', reps: 15 },
+        { name: '5 Push-ups', reps: "5" },
+        { name: '10 Squats', reps: "10" },
+        { name: '15 Sit-ups', reps: "15" },
       ],
     },
     coolDown: [
@@ -108,7 +108,7 @@ describe('AMRAPWorkout', () => {
       workout: {
         duration: 300,
         exercises: [
-          { name: 'Burpees', reps: 10 },
+          { name: 'Burpees', reps: "10" },
         ],
       },
       coolDown: [],

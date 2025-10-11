@@ -98,10 +98,11 @@ export const WorkoutSummary: React.FC = () => {
                     <ClickableMovementName name={exercise.name} />
                   </div>
                   <div>
-                    {exercise.duration !== undefined && (
+                    {exercise.duration !== undefined ? (
                       <span>{formatTime(exercise.duration)}</span>
-                    )}
-                    {exercise.reps !== undefined && <span>{exercise.reps} reps</span>}
+                    ) : exercise.reps !== undefined ? (
+                      <span>{exercise.reps} reps</span>
+                    ) : null}
                   </div>
                 </li>
               );
@@ -227,7 +228,10 @@ export const WorkoutSummary: React.FC = () => {
   ) => {
     if (sections.length === 0) return null;
 
-    const groupDuration = sections.reduce((total, section) => total + (section.duration || 0), 0);
+    const groupDuration = sections.reduce((total, section) => {
+      // Rep-based exercises count as 1s for duration calculation
+      return total + (section.duration !== undefined ? section.duration : 1);
+    }, 0);
 
     return (
       <div className="workout-section mt-4">

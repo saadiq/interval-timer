@@ -38,8 +38,16 @@ export const CountdownDisplay: React.FC = memo(() => {
     } else if (isWorkoutComplete) {
       return "Workout Complete";
     } else {
-      // Always use formatTime for consistency during the workout
-      return formatTime(timeRemaining);
+      // Check if current section is rep-based
+      if (currentSection && !isSectionWithDuration(currentSection)) {
+        // Rep-based: show elapsed time (stopwatch counting up)
+        const sectionStart = calculateElapsedTime(workout, currentSection);
+        const elapsedTime = time - sectionStart;
+        return formatTime(elapsedTime);
+      } else {
+        // Timed exercise - show countdown
+        return formatTime(timeRemaining);
+      }
     }
   };
 
@@ -65,10 +73,10 @@ export const CountdownDisplay: React.FC = memo(() => {
       {/* Current Exercise */}
       <div className="space-y-2">
         <div className={`font-bold transition-all duration-300 ${
-          isWorkoutComplete 
-            ? 'text-3xl sm:text-4xl lg:text-5xl text-success animate-fade-in-up' 
+          isWorkoutComplete
+            ? 'text-3xl sm:text-4xl lg:text-5xl text-success animate-fade-in-up'
             : 'text-2xl sm:text-3xl lg:text-4xl text-foreground'
-        }`} 
+        }`}
         aria-label={isPreWorkout ? "Pre-workout phase" : isWorkoutComplete ? "Workout completed" : `Current exercise: ${currentSection!.name}`}>
           {isPreWorkout ? (
             <div className="text-transparent">&nbsp;</div>
@@ -84,9 +92,18 @@ export const CountdownDisplay: React.FC = memo(() => {
           )}
         </div>
 
+        {/* Rep Count Badge - show for rep-based exercises */}
+        {!isPreWorkout && !isWorkoutComplete && currentSection && 'reps' in currentSection && currentSection.reps && (
+          <div className="flex items-center justify-center mt-2">
+            <span className="inline-flex items-center px-4 py-1.5 rounded-full text-sm font-medium bg-primary/20 text-primary border border-primary/30">
+              {currentSection.reps} reps
+            </span>
+          </div>
+        )}
+
         {/* Exercise Description */}
         {!isPreWorkout && !isWorkoutComplete && currentSection?.description && (
-          <div className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed" 
+          <div className="text-base sm:text-lg text-muted-foreground max-w-md mx-auto leading-relaxed"
                aria-label={`Exercise description: ${currentSection.description}`}>
             {currentSection.description}
           </div>
@@ -135,8 +152,13 @@ function isSectionWithDuration(section: WorkoutSection): section is WorkoutSecti
 }
 
 const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, currentTime: number): number => {
-  if (!isSectionWithColor(section) || !isSectionWithDuration(section)) {
-    // Section without color or duration encountered
+  if (!isSectionWithColor(section)) {
+    // Section without color encountered
+    return 0;
+  }
+
+  // Rep-based exercises don't have time remaining
+  if (!isSectionWithDuration(section)) {
     return 0;
   }
 
@@ -149,11 +171,20 @@ const calculateTimeRemaining = (workout: Workout, section: WorkoutSection, curre
       return Math.max(0, amrapSection.duration - (currentTime - amrapStartTime));
     }
   }
-  
-  const sectionStart = workout.sections
-    .slice(0, workout.sections.indexOf(section))
-    .reduce((total, s) => total + (isSectionWithDuration(s) ? s.duration : 0), 0);
+
+  const sectionStart = calculateElapsedTime(workout, section);
   return Math.max(0, section.duration - (currentTime - sectionStart));
+};
+
+const calculateElapsedTime = (workout: Workout, currentSection: WorkoutSection): number => {
+  let elapsed = 0;
+  for (const section of workout.sections) {
+    if (section === currentSection) break;
+    if (isSectionWithColor(section)) {
+      elapsed += isSectionWithDuration(section) ? section.duration : 1;
+    }
+  }
+  return elapsed;
 };
 
 CountdownDisplay.displayName = 'CountdownDisplay';

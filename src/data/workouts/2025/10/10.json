@@ -1,0 +1,33 @@
+{
+  "type": "circuit",
+  "warmUp": [
+    { "name": "Light Jump Rope", "duration": 30 },
+    { "name": "Rest", "duration": 30 },
+    { "name": "Light Jump Rope", "duration": 30 },
+    { "name": "Rest", "duration": 30 },
+    { "name": "Light Jump Rope", "duration": 30 },
+    { "name": "Rest", "duration": 30 },
+    { "name": "Arm Circles", "duration": 30 },
+    { "name": "Leg Swings", "duration": 30 },
+    { "name": "Bodyweight Squats", "duration": 30 }
+  ],
+  "workout": {
+    "exercises": [
+      { "name": "Kettlebell Goblet Squats", "reps": "10-12" },
+      { "name": "Jump Rope", "duration": 45 },
+      { "name": "Kettlebell Swings", "reps": "12-15" },
+      { "name": "Push-ups", "reps": "8-10" },
+      { "name": "Jump Rope", "duration": 30 },
+      { "name": "Kettlebell Single-Arm Rows", "reps": "8 per arm" },
+      { "name": "Rest Between Rounds", "duration": 75 }
+    ],
+    "rounds": 3
+  },
+  "coolDown": [
+    { "name": "Easy Jump Rope or Walk", "duration": 120 },
+    { "name": "Standing Hamstring Stretch", "duration": 45 },
+    { "name": "Quad Stretch", "duration": 45 },
+    { "name": "Shoulder Stretch", "duration": 45 },
+    { "name": "Deep Breathing", "duration": 45 }
+  ]
+}
