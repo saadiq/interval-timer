@@ -9,10 +9,12 @@ export interface BaseSection {
 export interface BaseExercise {
   name: string;
   duration?: number;
-  reps?: string;  // String to support ranges like "8-10" or "8 per arm"
+  reps?: string; // String to support ranges like "8-10" or "8 per arm"
   description?: string;
 }
 
+// WorkoutSection can be either a BaseSection (warmup/cooldown with required duration)
+// or BaseExercise (workout exercise with optional duration and/or reps)
 export type WorkoutSection = BaseSection | BaseExercise;
 
 export interface BaseWorkout {

@@ -13,7 +13,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { CircuitWorkout } from '@/workouts/CircuitWorkout';
-import { CircuitWorkout as CircuitWorkoutData } from '@/workouts/types';
+import { CircuitWorkout as CircuitWorkoutData, BaseExercise } from '@/workouts/types';
 
 describe('ControlButtons - Rep-Based Exercise Logic', () => {
   describe('Workout Duration Calculations with Rep Exercises', () => {
@@ -66,7 +66,7 @@ describe('ControlButtons - Rep-Based Exercise Logic', () => {
       const section0 = workout.getCurrentSection(0);
       expect(section0.name).toBe('Kettlebell Swings');
       expect(section0.duration).toBeUndefined();
-      expect(section0.reps).toBe('15');
+      expect('reps' in section0 ? section0.reps : undefined).toBe('15');
 
       const section1 = workout.getCurrentSection(1);
       expect(section1.name).toBe('Rest');
@@ -98,11 +98,11 @@ describe('ControlButtons - Rep-Based Exercise Logic', () => {
 
       // Rep section should have no duration but have reps
       expect(repSection.duration).toBeUndefined();
-      expect(repSection.reps).toBe('12-15');
+      expect('reps' in repSection ? repSection.reps : undefined).toBe('12-15');
 
       // Timed section should have duration
       expect(timedSection.duration).toBe(15);
-      expect(timedSection.reps).toBeUndefined();
+      expect('reps' in timedSection ? timedSection.reps : undefined).toBeUndefined();
     });
 
     it('should handle workout with only rep-based exercises', () => {
@@ -134,9 +134,9 @@ describe('ControlButtons - Rep-Based Exercise Logic', () => {
       expect(section1.duration).toBeUndefined();
       expect(section2.duration).toBeUndefined();
 
-      expect(section0.reps).toBe('15');
-      expect(section1.reps).toBe('30');
-      expect(section2.reps).toBe('10');
+      expect('reps' in section0 ? section0.reps : undefined).toBe('15');
+      expect('reps' in section1 ? section1.reps : undefined).toBe('30');
+      expect('reps' in section2 ? section2.reps : undefined).toBe('10');
     });
 
     it('should correctly calculate section positions with multiple rep exercises', () => {
@@ -170,9 +170,9 @@ describe('ControlButtons - Rep-Based Exercise Logic', () => {
 
   describe('Rep Exercise Type Guards', () => {
     it('should correctly identify rep-based vs timed exercises', () => {
-      const repExercise = { name: 'Kettlebell Swings', reps: '15' };
-      const timedExercise = { name: 'Jump Rope', duration: 60 };
-      const bothExercise = { name: 'Push-ups', duration: 40, reps: '20' };
+      const repExercise: BaseExercise = { name: 'Kettlebell Swings', reps: '15' };
+      const timedExercise: BaseExercise = { name: 'Jump Rope', duration: 60 };
+      const bothExercise: BaseExercise = { name: 'Push-ups', duration: 40, reps: '20' };
 
       // Rep-based: has reps, no duration
       expect(repExercise.duration).toBeUndefined();
