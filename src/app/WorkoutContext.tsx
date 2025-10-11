@@ -26,7 +26,7 @@ interface WorkoutContextType {
   hasRounds: () => boolean;
 }
 
-const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
+export const WorkoutContext = createContext<WorkoutContextType | undefined>(undefined);
 
 interface WorkoutProviderProps {
   children: ReactNode;
@@ -54,12 +54,15 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
     setPreWorkoutCountdown(null);
   };
 
-  const speakSectionInfo = useCallback((currentSection: string, nextSection: string | null) => {
-    const message = nextSection
-      ? `${currentSection}. Next up, ${nextSection}.`
-      : `${currentSection}. This is the final movement.`;
-    speak(message);
-  }, [speak]);
+  const speakSectionInfo = useCallback(
+    (currentSection: string, nextSection: string | null) => {
+      const message = nextSection
+        ? `${currentSection}. Next up, ${nextSection}.`
+        : `${currentSection}. This is the final movement.`;
+      speak(message);
+    },
+    [speak]
+  );
 
   const getCurrentRound = useCallback(() => {
     if (!workout) return 0;
@@ -96,12 +99,12 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
   }, [workout]);
 
   return (
-    <WorkoutContext.Provider 
-      value={{ 
-        workout, 
-        time, 
-        setTime, 
-        isRunning, 
+    <WorkoutContext.Provider
+      value={{
+        workout,
+        time,
+        setTime,
+        isRunning,
         setIsRunning,
         isPreWorkout,
         setIsPreWorkout,
@@ -114,7 +117,7 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
         getCurrentRound,
         getRemainingRounds,
         getTotalRounds,
-        hasRounds
+        hasRounds,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 // src/components/ControlButtons.tsx
-import React, { useEffect, useCallback, memo } from 'react';
+import React, { useEffect, useCallback, memo, useRef } from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
 import { Play, Pause, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useScreenReader } from '@/hooks/useScreenReader';
@@ -7,11 +7,25 @@ import { WorkoutSection } from '@/workouts';
 
 /**
  * Get the effective duration of a section for timer calculations.
- * Rep-based exercises (duration === undefined) occupy 1 second for navigation.
+ * Rep-based exercises (duration === undefined) occupy 1 second for navigation purposes.
  * This matches the logic in CircuitWorkout.getSectionDuration().
+ *
+ * @param section - The workout section to get the duration for
+ * @returns The duration in seconds (1 for rep-based exercises, actual duration for timed exercises)
  */
 const getEffectiveDuration = (section: WorkoutSection): number => {
   return section.duration ?? 1;
+};
+
+/**
+ * Check if a section is a rep-based exercise (no duration, only reps).
+ * Rep-based exercises freeze the timer and require manual advancement.
+ *
+ * @param section - The workout section to check
+ * @returns true if the section is rep-based, false otherwise
+ */
+const isRepBasedSection = (section: WorkoutSection): boolean => {
+  return section.duration === undefined;
 };
 
 export const ControlButtons: React.FC = memo(() => {
@@ -33,6 +47,13 @@ export const ControlButtons: React.FC = memo(() => {
 
   const { announce } = useScreenReader();
 
+  /**
+   * Track which sections we've announced to avoid duplicate announcements.
+   * This ref is independent of time progression to prevent re-announcements
+   * when timer is frozen on rep-based exercises.
+   */
+  const announcedSectionRef = useRef<number | null>(null);
+
   const handleStartStop = useCallback(() => {
     if (isPreWorkout && preWorkoutCountdown === null) {
       startPreWorkoutCountdown();
@@ -51,6 +72,8 @@ export const ControlButtons: React.FC = memo(() => {
   ]);
 
   const handleReset = useCallback(() => {
+    // Reset announcement tracking when workout resets
+    announcedSectionRef.current = null;
     resetWorkout();
     announce('Workout reset');
   }, [resetWorkout, announce]);
@@ -77,7 +100,7 @@ export const ControlButtons: React.FC = memo(() => {
 
     // Check if currently in a rep-based exercise
     const currentSection = workout.getCurrentSection(time);
-    const isInRepExercise = currentSection.duration === undefined;
+    const isInRepExercise = isRepBasedSection(currentSection);
     const wasRunning = isRunning;
 
     let newTime = time;
@@ -105,20 +128,11 @@ export const ControlButtons: React.FC = memo(() => {
     setIsPreWorkout(false);
   }, [workout, time, isRunning, setTime, setIsRunning, setIsPreWorkout]);
 
-  // Track which sections we've announced to avoid repeating announcements
-  const announcedSectionRef = React.useRef<number | null>(null);
-
-  // Reset announced section ref when workout resets
-  useEffect(() => {
-    if (!isRunning && time === 0) {
-      announcedSectionRef.current = null;
-    }
-  }, [isRunning, time]);
-
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     if (isRunning) {
       if (preWorkoutCountdown !== null) {
+        // Pre-workout countdown phase
         intervalId = setInterval(() => {
           if (preWorkoutCountdown > 0) {
             if (preWorkoutCountdown === 3) {
@@ -132,6 +146,7 @@ export const ControlButtons: React.FC = memo(() => {
           }
         }, 1000);
       } else if (workout && !isPreWorkout) {
+        // Main workout phase
         intervalId = setInterval(() => {
           const currentSection = workout.getCurrentSection(time);
           const nextSection = workout.getNextSection(time);
@@ -141,24 +156,9 @@ export const ControlButtons: React.FC = memo(() => {
           const sectionEndTime = sectionStartTime + getEffectiveDuration(currentSection);
 
           // Check if we're in a rep-based exercise
-          const isInRepExercise = currentSection.duration === undefined;
+          const isInRepExercise = isRepBasedSection(currentSection);
 
-          const newTime = time + 1;
-          const isAtSectionEnd = newTime >= sectionEndTime;
-          const hasPassedScheduledTime = newTime >= workout.duration;
-
-          // For timed exercises, play audio cue before transition
-          if (!isInRepExercise && sectionEndTime - newTime === 2) {
-            playAudioCue();
-          }
-
-          // Play audio cue at the end of the workout
-          if (workout.duration - newTime === 2 && workout.duration - newTime > 0) {
-            playAudioCue();
-          }
-
-          // Speak section info when entering a new section
-          // Track announcements using ref to avoid depending on time increments
+          // Announce current section when entering it (track via ref to avoid time dependency)
           const currentSectionIndex = workout.sections.indexOf(currentSection);
           const shouldAnnounce = announcedSectionRef.current !== currentSectionIndex;
 
@@ -171,31 +171,38 @@ export const ControlButtons: React.FC = memo(() => {
             announce(sectionAnnouncement, 'assertive');
           }
 
-          // Auto-advance logic:
-          // - For TIMED exercises: auto-advance when reaching section end
-          // - For REP exercises: NEVER auto-advance, freeze time at section start
+          // REP EXERCISE: Freeze timer completely - no time updates
           if (isInRepExercise) {
-            // Rep exercise: Keep time frozen at sectionStartTime
+            // Time remains frozen at sectionStartTime
             // User must manually click Next to advance
-            // DO NOT increment time, DO NOT check isAtSectionEnd
-            // Time stays frozen until user manually advances
+            // No setTime() call means timer stays frozen
+            return; // Exit early - no further processing needed
+          }
+
+          // TIMED EXERCISE: Normal auto-advance behavior below
+          const newTime = time + 1;
+          const isAtSectionEnd = newTime >= sectionEndTime;
+          const hasPassedScheduledTime = newTime >= workout.duration;
+
+          // Play audio cue 2 seconds before the end of the section
+          if (sectionEndTime - newTime === 2) {
+            playAudioCue();
+          }
+
+          // Play audio cue at the end of the workout
+          if (workout.duration - newTime === 2 && workout.duration - newTime > 0) {
+            playAudioCue();
+          }
+
+          // Check if workout is complete or continue
+          if (isAtSectionEnd && hasPassedScheduledTime) {
+            clearInterval(intervalId);
+            setIsRunning(false);
+            setTime(workout.duration);
+            announce('Workout completed! Great job!', 'assertive');
           } else {
-            // Timed exercise logic
-            if (isAtSectionEnd) {
-              // Timed exercise reached end: check if workout is complete or continue
-              if (hasPassedScheduledTime) {
-                clearInterval(intervalId);
-                setIsRunning(false);
-                setTime(workout.duration);
-                announce('Workout completed! Great job!', 'assertive');
-              } else {
-                // Continue to next section automatically
-                setTime(newTime);
-              }
-            } else {
-              // Timed exercise still running: increment time
-              setTime(newTime);
-            }
+            // Continue: increment time for timed exercises
+            setTime(newTime);
           }
         }, 1000);
       }
