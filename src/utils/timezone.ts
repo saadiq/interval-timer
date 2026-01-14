@@ -1,55 +1,41 @@
-import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
+import { format } from 'date-fns';
+import { toZonedTime } from 'date-fns-tz';
 
-// Default timezone - can be overridden by user preference
-const DEFAULT_TIMEZONE = "America/New_York";
+const DEFAULT_TIMEZONE = 'America/New_York';
 
 /**
  * Get the user's timezone, falling back to the default if not available
  */
 export function getUserTimezone(): string {
-  // In browser environments, try to get the user's timezone
-  if (typeof window !== "undefined" && window.Intl) {
+  if (typeof window !== 'undefined' && window.Intl) {
     try {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      return timezone;
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
     } catch (e) {
-      console.warn("Could not determine user timezone:", e);
+      console.warn('Could not determine user timezone:', e);
     }
   }
-
-  // Fall back to default timezone
   return DEFAULT_TIMEZONE;
+}
+
+/**
+ * Convert a date string or Date object to a Date object
+ */
+function toDateObject(date: Date | string): Date {
+  if (date instanceof Date) {
+    return date;
+  }
+  // YYYY-MM-DD format uses parseDate for consistent handling
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return parseDate(date);
+  }
+  return new Date(date);
 }
 
 /**
  * Format a date in the user's timezone
  */
-export function formatInTimezone(
-  date: Date | string,
-  formatStr: string
-): string {
-
-  let dateObj: Date;
-
-  // Handle different date input formats
-  if (typeof date === "string") {
-    if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      // If it's a YYYY-MM-DD string, use our parseDate function
-      dateObj = parseDate(date);
-    } else {
-      // Otherwise, use the standard Date constructor
-      dateObj = new Date(date);
-    }
-  } else {
-    // If it's already a Date object, use it directly
-    dateObj = date;
-  }
-
-  // Format the date according to the specified format
-  const formattedDate = format(dateObj, formatStr);
-
-  return formattedDate;
+export function formatInTimezone(date: Date | string, formatStr: string): string {
+  return format(toDateObject(date), formatStr);
 }
 
 /**
@@ -74,9 +60,9 @@ export function getLocalDate(): string {
   const day = zonedDate.getDate();
 
   // Format as YYYY-MM-DD
-  const localDate = `${year}-${month.toString().padStart(2, "0")}-${day
+  const localDate = `${year}-${month.toString().padStart(2, '0')}-${day
     .toString()
-    .padStart(2, "0")}`;
+    .padStart(2, '0')}`;
 
   return localDate;
 }
@@ -89,7 +75,7 @@ export function getLocalDate(): string {
  */
 export function parseDate(dateString: string): Date {
   // Parse the date string
-  const [year, month, day] = dateString.split("-").map(Number);
+  const [year, month, day] = dateString.split('-').map(Number);
 
   // Create a date object for this date in the user's timezone
 
@@ -105,38 +91,18 @@ export function parseDate(dateString: string): Date {
  */
 export function formatDateWithTimezone(
   date: Date | string,
-  formatStr: string = "MMMM d, yyyy",
+  formatStr: string = 'MMMM d, yyyy',
   showTimezone: boolean = false
 ): string {
-
-  let dateObj: Date;
-
-  // Handle different date input formats
-  if (typeof date === "string") {
-    if (date.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      // If it's a YYYY-MM-DD string, use our parseDate function
-      dateObj = parseDate(date);
-    } else {
-      // Otherwise, use the standard Date constructor
-      dateObj = new Date(date);
-    }
-  } else {
-    // If it's already a Date object, use it directly
-    dateObj = date;
-  }
-
-  // Format the date according to the specified format
+  const dateObj = toDateObject(date);
   const formattedDate = format(dateObj, formatStr);
 
-  // Add timezone indicator if requested
-  if (showTimezone) {
-    // Get timezone abbreviation
-    const tzAbbr = dateObj
-      .toLocaleTimeString("en-US", { timeZoneName: "short" })
-      .split(" ")[2];
-
-    return `${formattedDate} (${tzAbbr})`;
+  if (!showTimezone) {
+    return formattedDate;
   }
 
-  return formattedDate;
+  // Get timezone abbreviation
+  const tzAbbr = dateObj.toLocaleTimeString('en-US', { timeZoneName: 'short' }).split(' ')[2];
+
+  return `${formattedDate} (${tzAbbr})`;
 }
