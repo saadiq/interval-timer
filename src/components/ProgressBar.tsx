@@ -1,6 +1,20 @@
 import React from 'react';
 import { useWorkoutContext } from '@/app/WorkoutContext';
-import { SectionWithColor } from '@/utils/colorUtils';
+
+function getExerciseColorKey(workoutType: string): string {
+  switch (workoutType.toLowerCase()) {
+    case 'circuit':
+      return 'slate-500';
+    case 'amrap':
+      return 'teal-400';
+    case 'tabata':
+      return 'amber-500';
+    case 'emom':
+      return 'violet-400';
+    default:
+      return 'primary';
+  }
+}
 
 export const ProgressBar: React.FC = () => {
   const { workout, time, isPreWorkout } = useWorkoutContext();
@@ -8,14 +22,7 @@ export const ProgressBar: React.FC = () => {
   if (!workout) return null;
 
   const progress = workout.getProgress(time);
-
-  const getAllSections = (): ReadonlyArray<SectionWithColor> => {
-    // Use the actual colors from workout.sections
-    // These colors are already assigned by the centralized color system
-    return workout.sections;
-  };
-
-  const sections = getAllSections();
+  const sections = workout.sections;
 
   // Helper function to determine if a section starts a new round
   const isNewRound = (sectionIndex: number): boolean => {
@@ -152,17 +159,7 @@ export const ProgressBar: React.FC = () => {
         <div className="flex items-center space-x-1">
           <div
             className="w-3 h-3 rounded-full"
-            data-color={
-              workout.data.type.toLowerCase() === 'circuit'
-                ? 'slate-500'
-                : workout.data.type.toLowerCase() === 'amrap'
-                  ? 'teal-400'
-                  : workout.data.type.toLowerCase() === 'tabata'
-                    ? 'amber-500'
-                    : workout.data.type.toLowerCase() === 'emom'
-                      ? 'violet-400'
-                      : 'primary'
-            }
+            data-color={getExerciseColorKey(workout.data.type)}
           ></div>
           <span className="text-muted-foreground">Exercise</span>
         </div>

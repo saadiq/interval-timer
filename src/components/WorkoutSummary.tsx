@@ -4,11 +4,11 @@ import { useWorkoutContext } from '@/app/WorkoutContext';
 import { TabataWorkout, CircuitWorkout, AMRAPWorkout, EMOMWorkout, BaseExercise } from '@/workouts';
 import { SectionWithColor } from '@/utils/colorUtils';
 
-const formatTime = (seconds: number): string => {
+function formatTime(seconds: number): string {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-};
+}
 
 const ClickableMovementName: React.FC<{ name: string }> = ({ name }) => {
   const handleClick = (e: React.MouseEvent) => {
@@ -98,11 +98,12 @@ export const WorkoutSummary: React.FC = () => {
                     <ClickableMovementName name={exercise.name} />
                   </div>
                   <div>
-                    {exercise.duration !== undefined ? (
+                    {exercise.duration !== undefined && (
                       <span>{formatTime(exercise.duration)}</span>
-                    ) : exercise.reps !== undefined ? (
+                    )}
+                    {exercise.duration === undefined && exercise.reps !== undefined && (
                       <span>{exercise.reps} reps</span>
-                    ) : null}
+                    )}
                   </div>
                 </li>
               );
@@ -273,23 +274,20 @@ export const WorkoutSummary: React.FC = () => {
     );
   };
 
-  // Function to get warm-up sections
-  const getWarmUpSections = (): ReadonlyArray<SectionWithColor> => {
-    return workout.sections.slice(0, workout.data.warmUp.length);
-  };
+  const warmUpSections = workout.sections.slice(0, workout.data.warmUp.length);
+  const coolDownSections = workout.sections.slice(-workout.data.coolDown.length);
+  const mainWorkoutSections = workout.sections.slice(
+    workout.data.warmUp.length,
+    workout.sections.length - workout.data.coolDown.length
+  );
 
-  // Function to get cool-down sections
-  const getCoolDownSections = (): ReadonlyArray<SectionWithColor> => {
-    return workout.sections.slice(-workout.data.coolDown.length);
-  };
-
-  // Function to get main workout sections
-  const getMainWorkoutSections = (): ReadonlyArray<SectionWithColor> => {
-    return workout.sections.slice(
-      workout.data.warmUp.length,
-      workout.sections.length - workout.data.coolDown.length
-    );
-  };
+  function renderMainWorkout(): React.ReactNode {
+    if (workout instanceof CircuitWorkout) return renderCircuitSummary(workout);
+    if (workout instanceof TabataWorkout) return renderTabataSummary(workout);
+    if (workout instanceof AMRAPWorkout) return renderAMRAPSummary(workout);
+    if (workout instanceof EMOMWorkout) return renderEMOMSummary(workout);
+    return renderSectionGroup(mainWorkoutSections, 'Workout', workout!.data.warmUp.length);
+  }
 
   return (
     <div
@@ -300,18 +298,10 @@ export const WorkoutSummary: React.FC = () => {
       <h2 id="workout-summary-title" className="font-bold text-2xl mb-4 text-card-foreground">
         Workout Summary
       </h2>
-      {renderSectionGroup(getWarmUpSections(), 'Warm-up', 0)}
-      {workout instanceof CircuitWorkout
-        ? renderCircuitSummary(workout)
-        : workout instanceof TabataWorkout
-          ? renderTabataSummary(workout)
-          : workout instanceof AMRAPWorkout
-            ? renderAMRAPSummary(workout)
-            : workout instanceof EMOMWorkout
-              ? renderEMOMSummary(workout)
-              : renderSectionGroup(getMainWorkoutSections(), 'Workout', workout.data.warmUp.length)}
+      {renderSectionGroup(warmUpSections, 'Warm-up', 0)}
+      {renderMainWorkout()}
       {renderSectionGroup(
-        getCoolDownSections(),
+        coolDownSections,
         'Cool-down',
         workout.sections.length - workout.data.coolDown.length
       )}

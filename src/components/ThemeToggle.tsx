@@ -4,25 +4,23 @@ import React from 'react';
 import { Sun, Moon, Monitor } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 
-export function ThemeToggle() {
+const THEME_OPTIONS = [
+  { value: 'light', icon: Sun, label: 'Light mode' },
+  { value: 'dark', icon: Moon, label: 'Dark mode' },
+  { value: 'system', icon: Monitor, label: 'System preference' },
+] as const;
+
+export function ThemeToggle(): React.ReactElement {
   const { theme, setTheme } = useTheme();
 
-  const themeOptions = [
-    { value: 'light', icon: Sun, label: 'Light mode' },
-    { value: 'dark', icon: Moon, label: 'Dark mode' },
-    { value: 'system', icon: Monitor, label: 'System preference' },
-  ] as const;
+  const currentIndex = THEME_OPTIONS.findIndex((option) => option.value === theme);
+  const currentOption = THEME_OPTIONS[currentIndex] ?? THEME_OPTIONS[2];
+  const Icon = currentOption.icon;
 
-  const currentOption = themeOptions.find((option) => option.value === theme) || themeOptions[2];
-
-  const handleCycleTheme = () => {
-    const currentIndex = themeOptions.findIndex((option) => option.value === theme);
-    const nextIndex = (currentIndex + 1) % themeOptions.length;
-    const nextTheme = themeOptions[nextIndex];
-    if (nextTheme) {
-      setTheme(nextTheme.value);
-    }
-  };
+  function handleCycleTheme(): void {
+    const nextIndex = (currentIndex + 1) % THEME_OPTIONS.length;
+    setTheme(THEME_OPTIONS[nextIndex].value);
+  }
 
   return (
     <button
@@ -31,7 +29,7 @@ export function ThemeToggle() {
       aria-label={`Current theme: ${currentOption.label}. Click to cycle themes.`}
       title={`Switch from ${currentOption.label}`}
     >
-      <currentOption.icon size={20} />
+      <Icon size={20} />
     </button>
   );
 }
