@@ -11,22 +11,18 @@ interface TabataSection extends BaseSection {
 
 export class TabataWorkout extends Workout {
   readonly type = 'tabata';
-  private tabataSections: TabataSection[];
+  private readonly tabataSections: TabataSection[];
 
   constructor(data: TabataWorkoutData, date: string) {
-    const tabataSections = TabataWorkout.createTabataSections(data);
-    const allSections = [
-      ...data.warmUp,
-      ...tabataSections,
-      ...data.coolDown
-    ];
+    const rawTabataSections = TabataWorkout.createTabataSections(data);
+    const allSections = [...data.warmUp, ...rawTabataSections, ...data.coolDown];
     const coloredSections = TabataWorkout.assignTabataColors(allSections, data);
     super(data, coloredSections, date);
-    
+
     this.validateWorkoutData(data);
-    this.tabataSections = tabataSections.map((section, index) => ({
+    this.tabataSections = rawTabataSections.map((section, index) => ({
       ...section,
-      color: coloredSections[data.warmUp.length + index].color
+      color: coloredSections[data.warmUp.length + index].color,
     }));
   }
 
@@ -56,14 +52,14 @@ export class TabataWorkout extends Workout {
           duration: workDuration,
           isRest: false,
           exerciseIndex: index,
-          color: '' // This will be filled in later
+          color: '', // Filled in by assignTabataColors
         });
         sections.push({
           name: 'Rest',
           duration: restDuration,
           isRest: true,
           exerciseIndex: index,
-          color: '' // This will be filled in later
+          color: '', // Filled in by assignTabataColors
         });
       });
     }
@@ -71,13 +67,18 @@ export class TabataWorkout extends Workout {
     return sections;
   }
 
-  getTabataInfo(): { workDuration: number; restDuration: number; rounds: number; exercises: BaseExercise[] } {
+  getTabataInfo(): {
+    workDuration: number;
+    restDuration: number;
+    rounds: number;
+    exercises: BaseExercise[];
+  } {
     const tabataData = this.data.workout as TabataWorkoutData['workout'];
     return {
       workDuration: tabataData.workDuration,
       restDuration: tabataData.restDuration,
       rounds: tabataData.rounds,
-      exercises: tabataData.exercises
+      exercises: tabataData.exercises,
     };
   }
 
@@ -85,13 +86,17 @@ export class TabataWorkout extends Workout {
     return this.tabataSections;
   }
 
-  private static assignTabataColors(sections: (BaseSection | TabataSection)[], data: TabataWorkoutData): SectionWithColor[] {
+  private static assignTabataColors(
+    sections: (BaseSection | TabataSection)[],
+    data: TabataWorkoutData
+  ): SectionWithColor[] {
     const colorsFromUtils = assignColorsToWorkout(data);
-    
-    return sections.map((section, index): SectionWithColor => {
-      // Use colors from the centralized color system
-      return { ...section, color: colorsFromUtils[index].color };
-    });
+    return sections.map(
+      (section, index): SectionWithColor => ({
+        ...section,
+        color: colorsFromUtils[index].color,
+      })
+    );
   }
 
   protected getSectionAtTime(time: number): [SectionWithColor, number] {
@@ -108,10 +113,16 @@ export class TabataWorkout extends Workout {
   }
 
   getCurrentRound(time: number): number {
-    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
-    const coolDownDuration = this.data.coolDown.reduce((total, section) => total + (section.duration || 0), 0);
+    const warmUpDuration = this.data.warmUp.reduce(
+      (total, section) => total + (section.duration || 0),
+      0
+    );
+    const coolDownDuration = this.data.coolDown.reduce(
+      (total, section) => total + (section.duration || 0),
+      0
+    );
     const tabataDuration = this.duration - warmUpDuration - coolDownDuration;
-    
+
     if (time < warmUpDuration) {
       return 0; // In warm-up phase
     } else if (time < warmUpDuration + tabataDuration) {
@@ -126,14 +137,20 @@ export class TabataWorkout extends Workout {
 
   getRemainingRounds(time: number): number {
     const currentRound = this.getCurrentRound(time);
-    const warmUpDuration = this.data.warmUp.reduce((total, section) => total + (section.duration || 0), 0);
-    const coolDownDuration = this.data.coolDown.reduce((total, section) => total + (section.duration || 0), 0);
+    const warmUpDuration = this.data.warmUp.reduce(
+      (total, section) => total + (section.duration || 0),
+      0
+    );
+    const coolDownDuration = this.data.coolDown.reduce(
+      (total, section) => total + (section.duration || 0),
+      0
+    );
     const tabataDuration = this.duration - warmUpDuration - coolDownDuration;
-    
+
     if (time < warmUpDuration || time >= warmUpDuration + tabataDuration) {
       return 0; // Not in Tabata phase
     }
-    
+
     const totalRounds = this.getTabataInfo().rounds;
     return Math.max(0, totalRounds - currentRound);
   }

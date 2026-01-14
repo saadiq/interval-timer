@@ -5,27 +5,19 @@ import { SectionWithColor, assignColorsToWorkout } from '@/utils/colorUtils';
 
 export class CircuitWorkout extends Workout {
   readonly type = 'circuit';
-  readonly duration: number;
-  readonly sections: ReadonlyArray<SectionWithColor>;
-  readonly data: CircuitWorkoutData;  // Explicitly type the data property
+  declare readonly data: CircuitWorkoutData;
 
   constructor(data: CircuitWorkoutData, date: string) {
     const sectionsWithColor = assignColorsToWorkout(data);
     super(data, sectionsWithColor, date);
-    
-    this.data = data;  // Assign the data to the class property
     this.validateWorkoutData(data);
-    this.sections = sectionsWithColor;
-    this.duration = this.calculateTotalDuration();
   }
 
   private validateWorkoutData(data: CircuitWorkoutData): void {
     // Validate warm-up sections (must have duration only)
     data.warmUp.forEach((section, index) => {
       if (section.duration === undefined) {
-        throw new Error(
-          `Warm-up section "${section.name}" at index ${index} must have duration`
-        );
+        throw new Error(`Warm-up section "${section.name}" at index ${index} must have duration`);
       }
     });
 
@@ -46,9 +38,7 @@ export class CircuitWorkout extends Workout {
     // Validate cool-down sections (must have duration only)
     data.coolDown.forEach((section, index) => {
       if (section.duration === undefined) {
-        throw new Error(
-          `Cool-down section "${section.name}" at index ${index} must have duration`
-        );
+        throw new Error(`Cool-down section "${section.name}" at index ${index} must have duration`);
       }
     });
   }
@@ -70,14 +60,8 @@ export class CircuitWorkout extends Workout {
     return [lastSection, this.getSectionDuration(lastSection)];
   }
 
-  getProgress(time: number): number {
-    return Math.min(time / this.duration, 1);
-  }
-
-  protected getSectionDuration(section: SectionWithColor): number {
-    if (section.duration === undefined) {
-      return 1;  // Rep-based exercises occupy 1s for navigation
-    }
-    return section.duration;
+  private getSectionDuration(section: SectionWithColor): number {
+    // Rep-based exercises occupy 1s for navigation
+    return section.duration ?? 1;
   }
 }

@@ -9,31 +9,24 @@ interface AMRAPSection extends BaseSection {
 
 export class AMRAPWorkout extends Workout {
   readonly type = 'amrap';
-  readonly duration: number;
-  readonly sections: ReadonlyArray<SectionWithColor>;
-  private amrapSection: (AMRAPSection & SectionWithColor) | null = null;
+  private readonly amrapSection: AMRAPSection & SectionWithColor;
 
   constructor(data: AMRAPWorkoutData, date: string) {
     const sectionsWithColor = assignColorsToWorkout(data);
     super(data, sectionsWithColor, date);
-    
     this.validateWorkoutData(data);
-    
+
     // Find the AMRAP section from the colored sections
     const amrapSectionIndex = data.warmUp.length;
     const amrapSectionWithColor = sectionsWithColor[amrapSectionIndex];
-    
-    const amrapSection: AMRAPSection & SectionWithColor = {
+
+    this.amrapSection = {
       name: 'AMRAP',
       duration: data.workout.duration,
       exercises: data.workout.exercises,
       description: this.generateAmrapDescription(data.workout.exercises),
-      color: amrapSectionWithColor.color // Use color from centralized system
+      color: amrapSectionWithColor.color,
     };
-    
-    this.sections = sectionsWithColor;
-    this.amrapSection = amrapSection;
-    this.duration = this.calculateTotalDuration();
   }
 
   private validateWorkoutData(data: AMRAPWorkoutData): void {
@@ -45,13 +38,8 @@ export class AMRAPWorkout extends Workout {
     }
   }
 
-  protected calculateTotalDuration(): number {
-    return this.sections.reduce((total, section) => total + (section.duration || 0), 0);
-  }
-
   private generateAmrapDescription(exercises: BaseExercise[]): string {
-    const exerciseList = exercises.map(ex => `${ex.reps} ${ex.name}`).join(', ');
-    return `${exerciseList}`;
+    return exercises.map((ex) => `${ex.reps} ${ex.name}`).join(', ');
   }
 
   protected getSectionAtTime(time: number): [SectionWithColor, number] {
@@ -67,7 +55,7 @@ export class AMRAPWorkout extends Workout {
     return [lastSection, this.duration - elapsedTime];
   }
 
-  getAMRAPSection(): (AMRAPSection & SectionWithColor) | null {
+  getAMRAPSection(): AMRAPSection & SectionWithColor {
     return this.amrapSection;
   }
 
