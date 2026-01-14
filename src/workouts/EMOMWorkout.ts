@@ -76,7 +76,9 @@ export class EMOMWorkout extends Workout {
   }
 
   getEMOMDuration(): number {
-    return this.rounds * 60;
+    // Access data directly to handle case where this is called before this.rounds is set
+    const emomData = this.data as EMOMWorkoutData;
+    return emomData.workout.rounds * 60;
   }
 
   getRounds(): number {
