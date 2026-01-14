@@ -4,74 +4,20 @@
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { format } from 'date-fns';
 import { WorkoutTimer } from './WorkoutTimer';
-import { WorkoutData } from '../workouts/types';
-import { WorkoutFactory } from '../workouts/WorkoutFactory';
 import { Workout } from '@/workouts';
 import { getLocalDate, formatDateWithTimezone, parseDate } from '@/utils/timezone';
-import { format } from 'date-fns';
+import { fetchWorkoutData } from '@/utils/workoutFetcher';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ErrorDisplay } from '@/components/ErrorDisplay';
 
-// Extended interface for the API response
-interface WorkoutResponse {
-  _note?: string;
-  _actualDate?: string;
-  type: string;
-  warmUp: Array<{ name: string; duration: number; description?: string }>;
-  workout: {
-    exercises: Array<{ name: string; duration?: number; reps?: number; description?: string }>;
-    rounds?: number;
-    duration?: number;
-    workDuration?: number;
-    restDuration?: number;
-  };
-  coolDown: Array<{ name: string; duration: number; description?: string }>;
-}
-
-async function fetchWorkoutData(
-  date: string
-): Promise<{ workout: Workout | null; actualDate?: string; note?: string }> {
-  const response = await fetch(`/api/workouts/${date}`);
-  if (!response.ok) {
-    if (response.status === 404) {
-      return { workout: null };
-    }
-    throw new Error('Failed to fetch workout data');
-  }
-
-  const data = (await response.json()) as WorkoutResponse;
-
-  // Check if we got a different date's workout
-  const actualDate = data._actualDate || date;
-  const note = data._note;
-
-  // Create a clean workout data object without metadata
-  const cleanWorkoutData: WorkoutData = {
-    type: data.type,
-    warmUp: data.warmUp,
-    workout: data.workout,
-    coolDown: data.coolDown,
-  } as WorkoutData;
-
-  return {
-    workout: WorkoutFactory.createWorkout(cleanWorkoutData, actualDate),
-    actualDate,
-    note,
-  };
-}
-
-// Format date for display
-const formatDate = (dateString: string, isExplicitDate: boolean = false) => {
+function formatDisplayDate(dateString: string, isExplicitDate: boolean): string {
   if (isExplicitDate) {
-    // For explicitly provided dates, use simple formatting without timezone
-    // Use parseDate to ensure consistent date handling
     return format(parseDate(dateString), 'MMMM d, yyyy');
-  } else {
-    // For derived dates (current date), show with timezone context
-    return formatDateWithTimezone(dateString);
   }
-};
+  return formatDateWithTimezone(dateString);
+}
 
 const WorkoutPageContentInner: React.FC = () => {
   const searchParams = useSearchParams();
@@ -146,7 +92,7 @@ const WorkoutPageContentInner: React.FC = () => {
           <p className="text-lg text-muted-foreground">
             There is no workout available for{' '}
             <span className="font-semibold text-foreground">
-              {formatDate(requestedDate, isExplicitDate)}
+              {formatDisplayDate(requestedDate, isExplicitDate)}
             </span>
             .
           </p>
