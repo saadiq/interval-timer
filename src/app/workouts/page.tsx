@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { parseDate } from '@/utils/timezone';
 import { format } from 'date-fns';
+import { parseDate } from '@/utils/timezone';
 import { WorkoutListSkeleton } from '@/components/LoadingSpinner';
 import { ErrorDisplay } from '@/components/ErrorDisplay';
 import { generateWorkoutUrl } from '@/utils/dateUrls';
@@ -20,6 +20,13 @@ interface WorkoutListResponse {
   count: number;
   workoutDetails: Record<string, WorkoutDetails>;
 }
+
+const WORKOUT_BADGE_CLASSES: Record<string, string> = {
+  CIRCUIT: 'workout-badge-circuit',
+  AMRAP: 'workout-badge-amrap',
+  TABATA: 'workout-badge-tabata',
+  EMOM: 'workout-badge-emom',
+};
 
 export default function WorkoutListPage() {
   const [workoutDates, setWorkoutDates] = useState<string[]>([]);
@@ -51,53 +58,33 @@ export default function WorkoutListPage() {
   }, [fetchWorkoutDates]);
 
   // Group workouts by month
-  const workoutsByMonth: Record<string, string[]> = {};
-  workoutDates.forEach((date) => {
-    const [year, month] = date.split('-');
-    const monthKey = `${year}-${month}`;
-    if (!workoutsByMonth[monthKey]) {
-      workoutsByMonth[monthKey] = [];
-    }
-    workoutsByMonth[monthKey].push(date);
-  });
+  const workoutsByMonth = workoutDates.reduce<Record<string, string[]>>((acc, date) => {
+    const monthKey = date.substring(0, 7); // "YYYY-MM"
+    if (!acc[monthKey]) acc[monthKey] = [];
+    acc[monthKey].push(date);
+    return acc;
+  }, {});
 
-  // Format date for display - in the workout list, all dates are explicit
-  const formatDate = (dateString: string) => {
-    // Use parseDate to ensure consistent date handling
+  function formatDate(dateString: string): string {
     return format(parseDate(dateString), 'MMMM d, yyyy');
-  };
+  }
 
-  // Format month for display
-  const formatMonth = (monthKey: string) => {
+  function formatMonth(monthKey: string): string {
     const [year, month] = monthKey.split('-');
     if (!year || !month) return monthKey;
-    // Use UTC date to avoid timezone issues
     const date = new Date(Date.UTC(parseInt(year), parseInt(month) - 1, 1));
     return format(date, 'MMMM yyyy');
-  };
+  }
 
-  // Format duration in minutes and seconds
-  const formatDuration = (seconds: number) => {
+  function formatDuration(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}m${remainingSeconds > 0 ? ` ${remainingSeconds}s` : ''}`;
-  };
+    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  }
 
-  // Get workout type badge class
-  const getWorkoutTypeClass = (type: string) => {
-    switch (type) {
-      case 'CIRCUIT':
-        return 'workout-badge-circuit';
-      case 'AMRAP':
-        return 'workout-badge-amrap';
-      case 'TABATA':
-        return 'workout-badge-tabata';
-      case 'EMOM':
-        return 'workout-badge-emom';
-      default:
-        return 'bg-muted text-muted-foreground border-border';
-    }
-  };
+  function getWorkoutTypeClass(type: string): string {
+    return WORKOUT_BADGE_CLASSES[type] ?? 'bg-muted text-muted-foreground border-border';
+  }
 
   if (isLoading) {
     return <WorkoutListSkeleton />;

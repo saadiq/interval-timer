@@ -64,31 +64,25 @@ export const WorkoutProvider: React.FC<WorkoutProviderProps> = ({ children, init
     [speak]
   );
 
-  const getCurrentRound = useCallback(() => {
-    if (!workout) return 0;
-    if (workout instanceof EMOMWorkout) {
-      return workout.getCurrentRound(time);
-    } else if (workout instanceof TabataWorkout) {
+  const getCurrentRound = useCallback((): number => {
+    if (workout instanceof EMOMWorkout || workout instanceof TabataWorkout) {
       return workout.getCurrentRound(time);
     }
     return 0;
   }, [workout, time]);
 
-  const getRemainingRounds = useCallback(() => {
-    if (!workout) return 0;
-    if (workout instanceof EMOMWorkout) {
-      return workout.getRemainingRounds(time);
-    } else if (workout instanceof TabataWorkout) {
+  const getRemainingRounds = useCallback((): number => {
+    if (workout instanceof EMOMWorkout || workout instanceof TabataWorkout) {
       return workout.getRemainingRounds(time);
     }
     return 0;
   }, [workout, time]);
 
-  const getTotalRounds = useCallback(() => {
-    if (!workout) return 0;
+  const getTotalRounds = useCallback((): number => {
     if (workout instanceof EMOMWorkout) {
       return workout.getRounds();
-    } else if (workout instanceof TabataWorkout) {
+    }
+    if (workout instanceof TabataWorkout) {
       return workout.getTabataInfo().rounds;
     }
     return 0;

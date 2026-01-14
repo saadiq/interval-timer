@@ -1,6 +1,30 @@
 import { NextResponse } from 'next/server';
 import { getAllWorkouts } from '@/utils/workoutLoader';
-import { CircuitWorkout, AMRAPWorkout, TabataWorkout, EMOMWorkout } from '@/workouts/types';
+import { WorkoutData, BaseExercise } from '@/workouts/types';
+
+function getWorkoutExercises(workout: WorkoutData): BaseExercise[] {
+  return workout.workout.exercises;
+}
+
+function calculateMainWorkoutDuration(workout: WorkoutData): number {
+  switch (workout.type) {
+    case 'circuit': {
+      const roundDuration = workout.workout.exercises.reduce(
+        (total, ex) => total + (ex.duration ?? 0),
+        0
+      );
+      return roundDuration * workout.workout.rounds;
+    }
+    case 'amrap':
+      return workout.workout.duration;
+    case 'tabata': {
+      const { workDuration, restDuration, rounds, exercises } = workout.workout;
+      return (workDuration + restDuration) * rounds * exercises.length;
+    }
+    case 'emom':
+      return 60 * workout.workout.exercises.length * workout.workout.rounds;
+  }
+}
 
 export async function GET() {
   // Get all available workouts
@@ -16,88 +40,28 @@ export async function GET() {
   const workoutDetails = dates.reduce(
     (acc, date) => {
       const workout = workouts[date];
+      if (!workout) return acc;
 
-      if (!workout) {
-        return acc;
-      }
+      // Calculate total duration: warm-up + main workout + cool-down
+      const warmUpDuration = workout.warmUp.reduce((sum, s) => sum + s.duration, 0);
+      const coolDownDuration = workout.coolDown.reduce((sum, s) => sum + s.duration, 0);
+      const totalDuration =
+        warmUpDuration + calculateMainWorkoutDuration(workout) + coolDownDuration;
 
-      // Calculate total duration
-      let totalDuration = 0;
-
-      // Add warm-up duration
-      workout.warmUp.forEach((section) => {
-        totalDuration += section.duration;
-      });
-
-      // Add workout duration based on type
-      if (workout.type === 'circuit') {
-        const circuitWorkout = workout as CircuitWorkout;
-        let roundDuration = 0;
-        circuitWorkout.workout.exercises.forEach((exercise) => {
-          roundDuration += exercise.duration || 0;
-        });
-        totalDuration += roundDuration * circuitWorkout.workout.rounds;
-      } else if (workout.type === 'amrap') {
-        const amrapWorkout = workout as AMRAPWorkout;
-        totalDuration += amrapWorkout.workout.duration;
-      } else if (workout.type === 'tabata') {
-        const tabataWorkout = workout as TabataWorkout;
-        totalDuration +=
-          (tabataWorkout.workout.workDuration + tabataWorkout.workout.restDuration) *
-          tabataWorkout.workout.rounds *
-          tabataWorkout.workout.exercises.length;
-      } else if (workout.type === 'emom') {
-        const emomWorkout = workout as EMOMWorkout;
-        // EMOM is typically 1 minute per exercise
-        totalDuration += 60 * emomWorkout.workout.exercises.length * emomWorkout.workout.rounds;
-      }
-
-      // Add cool-down duration
-      workout.coolDown.forEach((section) => {
-        totalDuration += section.duration;
-      });
-
-      // Get all exercises
-      let exercises: string[] = [];
-      if (
-        workout.type === 'circuit' ||
-        workout.type === 'amrap' ||
-        workout.type === 'tabata' ||
-        workout.type === 'emom'
-      ) {
-        const workoutExercises =
-          workout.type === 'circuit'
-            ? (workout as CircuitWorkout).workout.exercises
-            : workout.type === 'amrap'
-              ? (workout as AMRAPWorkout).workout.exercises
-              : workout.type === 'tabata'
-                ? (workout as TabataWorkout).workout.exercises
-                : (workout as EMOMWorkout).workout.exercises;
-
-        // For EMOM workouts, extract the exercise name without the rep count
+      // Get exercise names (EMOM exercises may have rep counts prefixed)
+      const workoutExercises = getWorkoutExercises(workout);
+      const exercises = workoutExercises.map((ex) => {
         if (workout.type === 'emom') {
-          exercises = workoutExercises.map((ex) => {
-            const name = ex.name;
-            // Extract the exercise name without the rep count (e.g., "10 Kettlebell Swings" -> "Kettlebell Swings")
-            const match = name.match(/^\d+\s+(.+)$/);
-            return match?.[1] ?? name;
-          });
-        } else {
-          exercises = workoutExercises.map((ex) => ex.name);
+          const match = ex.name.match(/^\d+\s+(.+)$/);
+          return match?.[1] ?? ex.name;
         }
-      }
+        return ex.name;
+      });
 
       acc[date] = {
         type: workout.type.toUpperCase(),
         totalDuration,
-        exerciseCount:
-          workout.type === 'circuit'
-            ? (workout as CircuitWorkout).workout.exercises.length
-            : workout.type === 'amrap'
-              ? (workout as AMRAPWorkout).workout.exercises.length
-              : workout.type === 'tabata'
-                ? (workout as TabataWorkout).workout.exercises.length
-                : (workout as EMOMWorkout).workout.exercises.length,
+        exerciseCount: workoutExercises.length,
         primaryExercises: exercises,
       };
 
