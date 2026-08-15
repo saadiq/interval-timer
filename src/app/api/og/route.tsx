@@ -7,7 +7,7 @@ import { WorkoutFactory } from '@/workouts/WorkoutFactory';
 import { format } from 'date-fns';
 import { getLocalDate, formatDateWithTimezone, parseDate } from '@/utils/timezone';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // Set cache revalidation time (in seconds)
 export const revalidate = 3600; // Cache for 1 hour
